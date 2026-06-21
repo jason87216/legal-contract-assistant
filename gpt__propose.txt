@@ -1,0 +1,993 @@
+> From: https://chatgpt.com/c/6a361bba-7904-83ee-a69c-6372a6a543e3
+
+# you asked
+
+message time: 2026-06-20 12:50:25
+
+我現在在做一個台灣合約審查機器人，目前我模仿一個MCP做出了一個含有SQL法條快取的常用合約查詢工具，裡面包含合約相關的常用法條。
+我想先做三種合約類型，買賣、勞動、租賃。我應該針對這幾種合約再擴充資料庫。
+然後我應該做什麼呢？決定平台嗎？使用langchain做出這個合約審查機器人？
+除了法條，我還應該提供什麼模板或是資料來讓機器人工作呢？怎麼設定他的提示詞？
+
+---
+
+# chatgpt response
+
+你這個題目已經不是「先接 LangChain」那麼簡單了，核心其實是：先把審查任務拆成可驗證流程，再決定平台與框架。我會先幫你把資料庫、模板、提示詞、LangChain/平台選擇整理成一個可落地架構。
+
+你的下一步不要先糾結「要不要 LangChain」，而是先把它做成**可驗證的合約審查流程**。我的建議是：
+
+**先做 MVP：使用者上傳合約 → 系統判斷合約類型 → 抽取條款 → 對照法條/模板/審查規則 → 輸出風險報告。**
+
+LangChain 可以用，但它不是核心。核心是你的資料結構、審查規則、引用來源、輸出格式。
+
+---
+
+## 1. 你現在已有「SQL 法條快取」，下一步應該擴成「審查知識庫」
+
+只放法條不夠，因為合約審查不是單純問答，而是要判斷：
+
+「這份合約缺了什麼？」
+「這個條款是不是違法、顯失公平或風險過高？」
+「應該怎麼改？」
+「依據是什麼？」
+
+所以資料庫至少要分成 5 類：
+
+### A. 法條資料表
+
+你已經有了，可以繼續擴充。三種合約至少先放：
+
+買賣：民法買賣章、債編總則、消保法定型化契約。民法第 345 條定義買賣為一方移轉財產權、他方支付價金，且標的物與價金合意時買賣成立。([法律法规数据库](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=B0000001))
+
+租賃：民法租賃章、租賃住宅市場發展及管理條例、住宅租賃相關定型化契約規範。民法第 421 條定義租賃為一方以物租與他方使用收益、他方支付租金；第 422 條也規定不動產租賃逾一年者應以字據訂立。([法律法规数据库](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=B0000001)) 租賃住宅市場發展及管理條例則明確把住宅租賃契約定義為建築物供居住使用並支付租金的契約。([法律法规数据库](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0060125))
+
+勞動：勞動基準法、勞工退休金條例、勞工保險、就業服務法、性別平等工作法等。勞基法本身是最低標準，雇主與勞工約定的勞動條件不得低於法定最低標準。([法律法规数据库](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0030001))
+
+### B. 條款分類表
+
+不要只存「法條」，還要存「審查項目」。
+
+例如租賃合約：
+
+```text
+租金
+押金
+租期
+提前終止
+修繕責任
+違約金
+房屋現況
+設備清單
+稅費負擔
+轉租
+寵物
+入戶檢查
+遺留物處理
+爭議管轄
+```
+
+勞動合約：
+
+```text
+職稱與工作內容
+工作地點
+工時
+休假
+薪資
+加班費
+試用期
+最低服務年限
+競業禁止
+保密義務
+智慧財產權
+資遣/離職
+違約金
+調職
+勞健保/勞退
+```
+
+買賣合約：
+
+```text
+標的物
+價金
+付款方式
+交付時間
+所有權移轉
+瑕疵擔保
+驗收
+解除契約
+違約金
+遲延責任
+保固
+風險負擔
+爭議管轄
+消費者審閱期
+```
+
+這張表很重要，因為它會讓機器人知道「審查一份合約時要看哪些欄位」。
+
+---
+
+## 2. 除了法條，你還應該提供這些資料
+
+### 第一，官方契約模板
+
+這比單純法條更有價值。因為法條通常很抽象，但模板會告訴你正常合約應該長什麼樣。
+
+你可以收集：
+
+```text
+住宅租賃契約書範本
+勞動契約範本
+買賣契約範本
+各主管機關公布的定型化契約應記載及不得記載事項
+```
+
+尤其是 B2C 買賣、租賃、服務契約，只要牽涉定型化契約，就要特別看消保法。消費者保護法定義定型化契約條款為企業經營者為多數消費者預先擬定的條款，且定型化契約條款有疑義時，應作有利於消費者的解釋。([法律法规数据库](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=J0170001))
+
+### 第二，審查規則表
+
+這是你機器人的真正核心。
+
+例如：
+
+```text
+規則 ID: labor_001
+合約類型: 勞動
+審查項目: 薪資
+風險條件: 約定薪資低於最低工資
+風險等級: 高
+依據: 勞基法第 1 條、最低工資相關規範
+建議: 修改為不得低於現行最低工資，並明確列出本薪、津貼、獎金、加班費計算方式
+```
+
+```text
+規則 ID: lease_003
+合約類型: 租賃
+審查項目: 修繕責任
+風險條件: 將所有修繕責任一概轉嫁給承租人
+風險等級: 中/高
+依據: 民法租賃章、住宅租賃相關規範
+建議: 區分自然耗損、可歸責承租人損害、設備老化
+```
+
+```text
+規則 ID: sale_005
+合約類型: 買賣
+審查項目: 瑕疵擔保
+風險條件: 出賣人完全排除瑕疵責任，且買方為消費者
+風險等級: 高
+依據: 民法買賣章、消費者保護法
+建議: 保留法定瑕疵擔保、退換貨、保固或補救機制
+```
+
+### 第三，常見風險條款庫
+
+你應該整理「常見有問題的條款」，例如：
+
+```text
+甲方得隨時終止契約，乙方不得異議。
+乙方提前離職須賠償三個月薪資。
+承租人不得以任何理由請求修繕。
+商品售出概不負責。
+如有爭議，一律由甲方所在地法院管轄。
+本公司得任意調整工作地點與職務，員工不得拒絕。
+押金不論任何原因均不退還。
+```
+
+這些條款不一定全部違法，但都很適合做為風險比對資料。
+
+### 第四，FAQ / 行政解釋 / 主管機關說明
+
+這對勞動契約特別重要。勞動部 FAQ 已經有很多「怎麼判斷是否為勞動契約」「雇主可以要求簽承攬契約嗎」「試用期」「定期契約」等題目，這些比單純法條更接近使用者問題。([行政院農業委員會](https://www.mol.gov.tw/1607/28690/2282/))
+
+### 第五，測試案例集
+
+這是你展示作品時很重要的東西。
+
+你應該自己做 30～50 份假合約案例：
+
+```text
+正常租賃合約
+押金過高租賃合約
+修繕責任不明租賃合約
+沒有工時與加班費的勞動合約
+把勞動契約偽裝成承攬契約
+沒有瑕疵擔保的買賣合約
+消費者審閱期被排除的買賣契約
+```
+
+每份案例都附上標準答案：
+
+```json
+{
+  "contract_type": "勞動",
+  "risk_count": 4,
+  "high_risks": ["最低服務年限條款過重", "未約定加班費"],
+  "missing_items": ["工作地點", "工時制度"],
+  "expected_laws": ["勞基法第1條", "勞基法第2條"],
+  "suggested_revision": "..."
+}
+```
+
+這會讓你的作品看起來不是玩具，而是有評測設計。
+
+---
+
+## 3. 你的系統架構建議
+
+我建議你不要一開始就做複雜 Agent，而是做成這樣：
+
+```text
+使用者上傳合約
+↓
+文件解析：PDF / DOCX / TXT → 純文字
+↓
+合約類型判斷：買賣 / 勞動 / 租賃 / 不明
+↓
+條款切分：依標題、段落、關鍵字切成條款
+↓
+條款抽取：提取金額、日期、當事人、義務、違約金、管轄法院
+↓
+規則檢查：SQL 審查規則 + 法條快取
+↓
+RAG 補充：法條、模板、FAQ、常見風險條款
+↓
+LLM 產出審查報告
+↓
+引用來源與修改建議
+```
+
+你現在的 SQL 法條快取可以先當作 MCP tool，例如：
+
+```text
+search_law_articles(contract_type, issue)
+search_review_rules(contract_type, clause_type)
+search_template_clauses(contract_type, clause_type)
+search_risk_examples(contract_type, clause_text)
+```
+
+這比單純 `search_law_articles()` 強很多。
+
+---
+
+## 4. 要不要用 LangChain？
+
+**可以用，但不要把 LangChain 當主角。**
+
+你現在要找工作、又想展示 Agent / RAG 能力，所以 LangChain 很適合做成作品。但架構上建議：
+
+### MVP 階段
+
+用：
+
+```text
+FastAPI + SQLite + LangChain/LangGraph + 任一 LLM API
+```
+
+前端先簡單一點：
+
+```text
+Streamlit 或 Gradio
+```
+
+這樣你很快就能展示：
+
+```text
+上傳合約
+選擇合約類型
+產生審查報告
+顯示引用法條
+顯示風險等級
+輸出修改建議
+```
+
+### 展示履歷階段
+
+再升級成：
+
+```text
+React / Next.js 前端
+FastAPI 後端
+PostgreSQL
+向量資料庫：Chroma / Qdrant / pgvector
+LangGraph 工作流
+```
+
+### 我會推薦你用 LangGraph 而不只是 LangChain Chain
+
+因為合約審查比較像流程，不像單輪問答。
+
+你可以設計 5 個節點：
+
+```text
+1. contract_classifier：判斷合約類型
+2. clause_extractor：抽取條款
+3. rule_checker：查 SQL 規則
+4. legal_retriever：查法條/模板/FAQ
+5. report_writer：產出審查報告
+```
+
+這樣很像真正的 Agent 工作流，也很適合作為求職作品。
+
+---
+
+## 5. SQL 資料庫可以這樣設計
+
+先不要太複雜，SQLite 就夠。
+
+```sql
+-- 法規
+laws (
+  id INTEGER PRIMARY KEY,
+  law_name TEXT,
+  article_no TEXT,
+  article_text TEXT,
+  effective_date TEXT,
+  source_url TEXT,
+  tags TEXT
+);
+
+-- 合約類型
+contract_types (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  description TEXT
+);
+
+-- 條款類型
+clause_types (
+  id INTEGER PRIMARY KEY,
+  contract_type TEXT,
+  clause_name TEXT,
+  required BOOLEAN,
+  description TEXT
+);
+
+-- 審查規則
+review_rules (
+  id INTEGER PRIMARY KEY,
+  contract_type TEXT,
+  clause_type TEXT,
+  risk_pattern TEXT,
+  risk_level TEXT,
+  legal_basis TEXT,
+  explanation TEXT,
+  suggestion TEXT
+);
+
+-- 官方或建議模板條款
+template_clauses (
+  id INTEGER PRIMARY KEY,
+  contract_type TEXT,
+  clause_type TEXT,
+  template_text TEXT,
+  source TEXT,
+  source_url TEXT
+);
+
+-- 常見風險條款
+risk_examples (
+  id INTEGER PRIMARY KEY,
+  contract_type TEXT,
+  clause_type TEXT,
+  example_text TEXT,
+  risk_reason TEXT,
+  suggested_fix TEXT
+);
+```
+
+後面如果要做 RAG，再補：
+
+```sql
+documents (
+  id INTEGER PRIMARY KEY,
+  title TEXT,
+  source_type TEXT, -- law / template / faq / explanation / case
+  source_url TEXT,
+  text TEXT,
+  updated_at TEXT
+);
+
+chunks (
+  id INTEGER PRIMARY KEY,
+  document_id INTEGER,
+  chunk_text TEXT,
+  embedding_id TEXT,
+  tags TEXT
+);
+```
+
+---
+
+## 6. 審查報告格式建議
+
+不要讓機器人自由發揮。你要固定格式。
+
+```markdown
+# 合約審查報告
+
+## 一、合約基本判斷
+- 合約類型：
+- 當事人：
+- 合約目的：
+- 審查信心：
+- 是否可能混合其他合約類型：
+
+## 二、總體風險
+- 高風險：
+- 中風險：
+- 低風險：
+- 缺漏條款：
+
+## 三、逐條審查
+
+### 風險 1：條款名稱
+- 原文：
+- 問題：
+- 風險等級：
+- 法律依據：
+- 為什麼有風險：
+- 建議修改：
+- 建議條文：
+
+## 四、缺漏條款
+- 缺少：
+- 為什麼重要：
+- 建議補入：
+
+## 五、簽約前提醒
+- 需要人工確認的事項：
+- 需要補充文件：
+- 不確定或無法判斷的部分：
+
+## 六、免責聲明
+本報告僅為合約風險初步檢查，不構成正式法律意見。
+```
+
+---
+
+## 7. 提示詞應該怎麼寫？
+
+你要分成三層，不要只寫一大段 system prompt。
+
+### System Prompt：角色與限制
+
+```text
+你是台灣法制下的合約審查助手，任務是協助使用者初步檢查合約風險。
+
+你必須遵守：
+1. 不得自稱律師，不得表示本回答構成正式法律意見。
+2. 必須以台灣法律、主管機關資料、內建審查規則與使用者提供的合約內容為依據。
+3. 不得憑空捏造法條、判決、主管機關函釋或引用來源。
+4. 若資料庫未提供依據，必須標示「需人工確認」。
+5. 輸出時要區分：
+   - 明確違反法律或高度疑慮
+   - 條款不明確造成風險
+   - 商業上不利但未必違法
+   - 資料不足無法判斷
+6. 必須引用使用到的法條或資料來源。
+7. 對每個風險提供具體修改建議。
+```
+
+### Developer Prompt：審查流程
+
+```text
+請依以下流程審查：
+
+1. 判斷合約類型：
+   - 買賣
+   - 勞動
+   - 租賃
+   - 混合型
+   - 無法判斷
+
+2. 抽取基本資訊：
+   - 當事人
+   - 標的
+   - 金額
+   - 期限
+   - 付款/給付方式
+   - 終止條款
+   - 違約責任
+   - 爭議解決
+
+3. 依合約類型查詢審查規則。
+4. 逐條比對合約內容與規則。
+5. 查詢相關法條、模板條款、FAQ、風險案例。
+6. 產生固定格式報告。
+7. 不確定時，不要猜測，標示需要人工確認。
+```
+
+### User Prompt Template：每次審查
+
+```text
+請審查以下合約。
+
+使用者身分：
+{user_role}
+例如：買方 / 賣方 / 勞工 / 雇主 / 房東 / 房客
+
+審查重點：
+{review_focus}
+例如：想知道是否有違法條款、是否對我不利、是否可以簽
+
+合約文字：
+{contract_text}
+
+請輸出：
+1. 合約類型判斷
+2. 高中低風險列表
+3. 缺漏條款
+4. 逐條風險分析
+5. 修改建議
+6. 需要人工確認的部分
+```
+
+---
+
+## 8. 最適合你現在做的開發順序
+
+我建議你照這個順序做：
+
+### 第一步：先不要做完整平台
+
+先做 CLI 或簡單 Streamlit。
+
+功能只要：
+
+```text
+貼上合約文字
+選擇合約類型
+按下審查
+輸出 Markdown 報告
+```
+
+### 第二步：把三種合約各做 10 條審查規則
+
+先不要貪多。
+
+```text
+買賣 10 條
+租賃 10 條
+勞動 10 條
+```
+
+你會很快看到系統能不能工作。
+
+### 第三步：加入合約條款切分
+
+讓系統把合約拆成：
+
+```json
+[
+  {
+    "clause_title": "租金",
+    "clause_text": "...",
+    "clause_type": "rent"
+  },
+  {
+    "clause_title": "押金",
+    "clause_text": "...",
+    "clause_type": "deposit"
+  }
+]
+```
+
+### 第四步：加入引用來源
+
+每個風險都要有：
+
+```text
+依據：民法第 X 條 / 勞基法第 X 條 / 消保法第 X 條 / 模板條款
+```
+
+沒有依據就不要說「違法」，只能說「風險」。
+
+### 第五步：做測試集
+
+這一步對求職展示很重要。
+
+你可以在 README 寫：
+
+```text
+本專案包含 30 份測試合約，涵蓋買賣、勞動、租賃三類。
+每份合約均有預期風險標籤，用於測試審查結果。
+```
+
+這比只做一個聊天機器人有說服力很多。
+
+---
+
+## 9. 你的作品定位應該怎麼說
+
+不要說：
+
+```text
+我做了一個法律 AI 聊天機器人
+```
+
+這太普通，而且法律風險高。
+
+你應該說：
+
+```text
+我做了一個台灣合約風險初步審查系統，使用 RAG + SQL 規則庫 + LLM 工作流，針對買賣、勞動、租賃三類合約，自動抽取條款、比對法規與審查規則，輸出含引用依據的風險報告。
+```
+
+這樣就比較像工程作品。
+
+---
+
+## 10. 最小可行版本的範圍
+
+你的 MVP 我建議定成這樣：
+
+```text
+支援合約類型：
+- 買賣
+- 勞動
+- 租賃
+
+輸入：
+- 純文字合約
+- 暫不支援 PDF/OCR，或只支援文字型 PDF
+
+核心功能：
+- 判斷合約類型
+- 條款切分
+- SQL 規則查詢
+- 法條查詢
+- 風險分級
+- 修改建議
+- Markdown 報告
+
+暫時不做：
+- 自動產生完整合約
+- 直接給正式法律意見
+- 複雜判決檢索
+- 多輪法律諮詢
+- 真正商用部署
+```
+
+---
+
+## 11. 我會給你的總建議
+
+你現在應該做的不是「決定平台」，而是先做這三個東西：
+
+```text
+1. 三類合約的審查項目表
+2. 三類合約的審查規則表
+3. 固定格式的審查報告輸出
+```
+
+然後再用 LangChain / LangGraph 把它包成流程。
+
+技術選型我會建議：
+
+```text
+第一版：
+Streamlit + FastAPI + SQLite + LangChain/LangGraph
+
+第二版：
+Next.js + FastAPI + PostgreSQL/pgvector + LangGraph
+
+資料來源：
+全國法規資料庫 + 主管機關模板 + 勞動部 FAQ + 常見風險條款庫
+```
+
+最重要的一句話是：
+
+**法條快取只是資料層，真正讓機器人變強的是「合約類型 → 條款分類 → 審查規則 → 引用依據 → 修改建議」這套流程。**
+
+---
+
+# you asked
+
+message time: 2026-06-20 12:56:09
+
+網上有沒有類似項目參考
+
+---
+
+# chatgpt response
+
+我先幫你找「可參考的開源專案/產品方向」，會特別分成：合約審查、法律 RAG、法規資料庫、LangChain/LangGraph 工作流，避免只找到一堆不能落地的 demo。
+
+有，但我沒找到「完全同款：台灣法 + 合約審查 + LangChain + SQL 法條快取 + 買賣/勞動/租賃」的成熟開源專案。比較適合你的參考方式是：**拿國外合約審查專案學流程，拿台灣法律資料專案學資料來源，拿商業產品學功能設計。**
+
+## 最值得你看的幾個
+
+### 1. `claude-legal-skill`：最像「合約審查 Agent Skill」
+
+這個最值得看。它不是完整 Web App，而是一個合約審查 Skill，支援 Claude Code、OpenAI Codex、Cursor 等工具；功能包含風險分級、紅旗掃描、關鍵條款表、market benchmark、可談判性評估、具體 redline 修改語句、缺漏條款、交叉引用檢查。缺點是偏美國法，但**架構很值得抄**。([GitHub](https://github.com/evolsb/claude-legal-skill))
+
+你可以學它這幾點：
+
+```text
+1. 使用者要先說明自己立場：買方/賣方、房東/房客、雇主/勞工
+2. 不同合約類型有不同 checklist
+3. 不是只說「有風險」，而是輸出替代條文
+4. 風險分級要明確
+5. 要檢查缺漏條款、定義不一致、交叉引用錯誤
+```
+
+你現在做買賣、勞動、租賃，其實可以把它的 NDA / SaaS / M&A checklist 架構改成：
+
+```text
+sale_checklist.md
+labor_checklist.md
+lease_checklist.md
+```
+
+---
+
+### 2. `OpenContracts`：完整文件智慧平台 + MCP
+
+這個是比較大型的開源文件智慧平台。它的定位是把一批文件變成可查詢、可標註、可抽取、可被 Agent 使用的 citation graph，並且內建 MCP server、GraphQL/REST API 和 React UI。([GitHub](https://github.com/Open-Source-Legal/OpenContracts))
+
+這對你有兩個啟發：
+
+第一，你的合約審查機器人不應該只是 chat bot，而應該有「文件 → 條款 → 引用 → 風險 → 建議」的資料結構。
+
+第二，你現在模仿 MCP 做 SQL 法條快取是對的，但還可以擴成：
+
+```text
+合約文件庫
+條款標註庫
+審查規則庫
+法條引用圖
+風險案例庫
+```
+
+OpenContracts 太大，不建議一開始照做，但很適合當長期架構參考。
+
+---
+
+### 3. `legal-tech-chat`：LangChain + CUAD + LangGraph + 知識圖譜
+
+這個專案直接處理 CUAD 合約資料集，用 LangChain 從合約抽取結構化資料，建立 knowledge graph，然後用 LangGraph agent 查詢與分析合約。([GitHub](https://github.com/tomasonjo-labs/legal-tech-chat))
+
+這個很接近你之後可以做的進階版：
+
+```text
+合約全文
+↓
+條款抽取
+↓
+條款分類
+↓
+建立 contract graph
+↓
+Agent 查詢風險
+```
+
+你現在不一定要上 Neo4j 或 GraphRAG，但它能提醒你：**合約不是普通文章，條款之間有關係**。例如租賃合約裡，「提前終止」可能會影響「押金返還」；勞動合約裡，「競業禁止」會牽涉「補償金」與「工作內容」。
+
+---
+
+### 4. Neo4j `graphrag-contract-review`：GraphRAG 合約審查範例
+
+這是 Neo4j 的合約審查 GraphRAG 範例。它的流程是：先用 LLM 從合約抽取關鍵資訊，再存進 Neo4j knowledge graph，接著用 Cypher / vector search / Text-to-Cypher 等方式查詢，最後用 Agent 回答複雜問題。([GitHub](https://github.com/neo4j-product-examples/graphrag-contract-review))
+
+這個適合你之後做「高級版履歷作品」。但第一版不建議用，因為會太重。你可以先用 SQLite 模仿它的概念：
+
+```text
+contracts
+clauses
+parties
+obligations
+risks
+legal_basis
+```
+
+等你的 SQLite 版跑通，再考慮 Neo4j。
+
+---
+
+### 5. `mcp-taiwan-legal-db`：台灣法律 MCP，很重要
+
+這個專案跟你現在做的方向非常接近。它是台灣法規、司法院裁判書、憲法法庭裁判的 MCP Server，資料來源包含司法院裁判書、全國法規資料庫 11,700+ 部法規、憲法法庭資料，並用 Python + FastMCP 實作。([GitHub](https://github.com/lawchat-oss/mcp-taiwan-legal-db))
+
+你可以重點看它：
+
+```text
+1. MCP tool 怎麼設計
+2. 台灣法規資料怎麼查
+3. source_url / citation 怎麼處理
+4. 如何限制只連台灣政府官方來源
+5. 如何處理司法院網站 WAF 問題
+```
+
+你現在的 SQL 法條快取可以參考它，但你的差異化應該是：
+
+```text
+它偏「法律資料查詢」
+你要做「合約審查流程」
+```
+
+也就是你不能只做 `search_law()`，還要做：
+
+```text
+search_review_rules()
+search_contract_templates()
+search_clause_risks()
+check_missing_clauses()
+suggest_revision()
+```
+
+---
+
+### 6. `tw-legal-rag`：台灣判決語意檢索 CLI
+
+這個是台灣法律 RAG CLI，連接法律偵探的台灣裁判語意檢索服務，可用自然語言搜尋判決，再把結果交給自己的 AI 工具使用。它本身不呼叫 LLM，也不產生法律意見，而是做 retrieval-only。([GitHub](https://github.com/aa0101181514/tw-legal-rag))
+
+對你的啟發是：你可以把系統分層，不一定所有東西都塞進一個聊天機器人。
+
+例如：
+
+```text
+法律檢索工具：只負責找法條/判決
+合約審查工具：只負責條款風險分析
+報告生成器：只負責整理成 Markdown / PDF
+```
+
+這樣比一開始做一個「什麼都會的法律 AI」更穩。
+
+---
+
+### 7. LegalSign「法樂多」：台灣商業產品，可參考功能設計
+
+這是台灣商業產品，不是開源，但很值得你看功能方向。它主打 AI 法務助理，能做合約審查、草擬、管理；網站上也提到可以依公司內部政策或外部規範建立審閱模型，讓系統根據審閱規則識別風險並提出修改建議。([LegalSign](https://legalsign.ai/business/assistant))
+
+最關鍵的是它提到「超過 500 份標準契約範本」給系統學習仿效。這剛好證明我前面跟你說的：**只放法條不夠，你還需要模板、審查規則、風險條款範例。**([LegalSign](https://legalsign.ai/business/assistant))
+
+你的作品可以做成它的簡化開源版：
+
+```text
+台灣合約初步審查助手
+- 法條依據
+- 官方模板
+- 審查規則
+- 缺漏條款
+- 修改建議
+```
+
+---
+
+## 學術 / benchmark 參考
+
+### 8. PAKTON：長合約問答的 Multi-Agent 框架
+
+PAKTON 是針對長法律合約 QA 的多 Agent 框架，重點是處理長合約、RAG、開源模型、可解釋性與 grounded justifications。這對你有一個提醒：合約很長時，不要只靠一次 RAG 搜幾個 chunk，最好拆成多階段流程。([arXiv](https://arxiv.org/abs/2506.00608?utm_source=chatgpt.com))
+
+你可以先不用 multi-agent，但可以模仿它的任務拆分：
+
+```text
+分類 Agent
+條款抽取 Agent
+風險檢查 Agent
+法條檢索 Agent
+報告生成 Agent
+```
+
+實作上先用 LangGraph 的節點，不一定真的開多個 Agent。
+
+---
+
+### 9. ContractEval：合約條款級風險識別 benchmark
+
+ContractEval 是針對商業合約條款級風險識別的 benchmark，基於 CUAD 評估不同 LLM 能不能識別合約風險。它的重點不是讓你直接使用，而是提醒你：**合約審查要做到 clause-level，而不是整份合約丟給模型問「有什麼問題」。**([arXiv](https://arxiv.org/abs/2508.03080?utm_source=chatgpt.com))
+
+你的系統最好也設計成：
+
+```text
+每一條 clause 都有：
+- clause_type
+- original_text
+- risk_level
+- legal_basis
+- risk_reason
+- suggested_fix
+```
+
+這樣才像真正的合約審查系統。
+
+---
+
+## 我會建議你怎麼參考，而不是照抄
+
+你的作品可以整合這幾個方向：
+
+```text
+mcp-taiwan-legal-db
+→ 學台灣法律資料 MCP / 法條查詢設計
+
+claude-legal-skill
+→ 學合約審查輸出格式、風險分級、redline 建議
+
+legal-tech-chat
+→ 學 LangChain + LangGraph + 條款抽取流程
+
+OpenContracts
+→ 學長期文件平台、MCP、citation graph、標註資料結構
+
+LegalSign 法樂多
+→ 學台灣商業產品的功能定位：規則庫 + 範本庫 + 審查模型
+```
+
+你現在最適合的版本不是大型平台，而是：
+
+```text
+台灣合約審查 MVP
+
+技術：
+- FastAPI
+- SQLite
+- LangGraph
+- Streamlit
+- 你自己的 MCP / tool
+
+資料：
+- 全國法規資料庫法條
+- 買賣/勞動/租賃審查規則
+- 官方契約範本
+- 常見風險條款
+- 測試合約案例
+
+流程：
+- 上傳/貼上合約
+- 判斷類型
+- 切條款
+- 對照規則
+- 查法條
+- 產生風險報告
+```
+
+## 你可以直接丟給 Codex 的參考任務
+
+```text
+請參考以下開源/公開專案的設計方向，但不要直接複製程式碼：
+
+1. evolsb/claude-legal-skill
+參考它的合約審查輸出格式、風險分級、position-aware review、redline 建議、缺漏條款檢查。
+
+2. lawchat-oss/mcp-taiwan-legal-db
+參考它的台灣法律資料 MCP tool 設計、法規/判決資料來源、citation/source_url 處理方式。
+
+3. tomasonjo-labs/legal-tech-chat
+參考它的「合約 → 條款抽取 → 結構化資料 → LangGraph agent」流程。
+
+4. Open-Source-Legal/OpenContracts
+參考它的文件、標註、citation graph、MCP server、API 分層設計，但本專案先不要做大型平台。
+
+5. Neo4j graphrag-contract-review
+參考它的 targeted extraction + retrieval function + agent QA 概念，但 MVP 先用 SQLite，不使用 Neo4j。
+
+本專案目標：
+建立一個台灣合約初步審查 MVP，支援買賣、勞動、租賃三類合約。
+系統應包含：
+- contract classifier
+- clause extractor
+- SQL law/rule/template retrieval tools
+- risk checker
+- report writer
+
+請先建立資料表：
+- laws
+- contract_types
+- clause_types
+- review_rules
+- template_clauses
+- risk_examples
+- test_contracts
+
+請先完成最小流程：
+輸入合約文字 → 判斷合約類型 → 切分條款 → 查詢審查規則與法條 → 輸出 Markdown 合約審查報告。
+```
+
+結論：**有很多類似項目，但你最該參考的是 `claude-legal-skill + mcp-taiwan-legal-db + legal-tech-chat` 這三個。**  
+你的差異化就是「台灣法制 + 三類民生日常合約 + SQL 規則庫 + 可引用法條 + 可修改建議」。

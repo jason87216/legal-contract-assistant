@@ -1,0 +1,1 @@
+"""Legal contract assistant package."""

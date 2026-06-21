@@ -1,0 +1,344 @@
+[
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "153",
+    "text": "當事人互相表示意思一致者，無論其為明示或默示，契約即為成立。\n當事人對於必要之點，意思一致，而對於非必要之點，未經表示意思者，推定其契約為成立，關於該非必要之點，當事人意思不一致時，法院應依其事件之性質定之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=153",
+    "contract_types": ["sale", "labor", "lease"],
+    "topics": ["contract_formation", "offer_acceptance"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "245-1",
+    "text": "契約未成立時，當事人為準備或商議訂立契約而有左列情形之一者，對於非因過失而信契約能成立致受損害之他方當事人，負賠償責任：\n一、就訂約有重要關係之事項，對他方之詢問，惡意隱匿或為不實之說明者。\n二、知悉或持有他方之秘密，經他方明示應予保密，而因故意或重大過失洩漏之者。\n三、其他顯然違反誠實及信用方法者。\n前項損害賠償請求權，因二年間不行使而消滅。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=245-1",
+    "contract_types": ["sale", "labor", "lease"],
+    "topics": ["precontractual_liability", "confidentiality", "good_faith"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "247-1",
+    "text": "依照當事人一方預定用於同類契約之條款而訂定之契約，為左列各款之約定，按其情形顯失公平者，該部分約定無效：\n一、免除或減輕預定契約條款之當事人之責任者。\n二、加重他方當事人之責任者。\n三、使他方當事人拋棄權利或限制其行使權利者。\n四、其他於他方當事人有重大不利益者。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=247-1",
+    "contract_types": ["sale", "labor", "lease"],
+    "topics": ["standard_terms", "unfair_terms", "liability_limitation"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "252",
+    "text": "約定之違約金額過高者，法院得減至相當之數額。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=252",
+    "contract_types": ["sale", "labor", "lease"],
+    "topics": ["penalty", "liquidated_damages"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "345",
+    "text": "稱買賣者，謂當事人約定一方移轉財產權於他方，他方支付價金之契約。\n當事人就標的物及其價金互相同意時，買賣契約即為成立。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=345",
+    "contract_types": ["sale"],
+    "topics": ["sale", "payment", "delivery", "contract_formation"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "348",
+    "text": "物之出賣人，負交付其物於買受人，並使其取得該物所有權之義務。\n權利之出賣人，負使買受人取得其權利之義務，如因其權利而得占有一定之物者，並負交付其物之義務。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=348",
+    "contract_types": ["sale"],
+    "topics": ["delivery", "ownership_transfer", "seller_obligation"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "354",
+    "text": "物之出賣人對於買受人，應擔保其物依第三百七十三條之規定危險移轉於買受人時無滅失或減少其價值之瑕疵，亦無滅失或減少其通常效用或契約預定效用之瑕疵。但減少之程度，無關重要者，不得視為瑕疵。\n出賣人並應擔保其物於危險移轉時，具有其所保證之品質。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=354",
+    "contract_types": ["sale"],
+    "topics": ["warranty", "defect", "seller_obligation"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "356",
+    "text": "買受人應按物之性質，依通常程序從速檢查其所受領之物。如發見有應由出賣人負擔保責任之瑕疵時，應即通知出賣人。\n買受人怠於為前項之通知者，除依通常之檢查不能發見之瑕疵外，視為承認其所受領之物。\n不能即知之瑕疵，至日後發見者，應即通知出賣人，怠於為通知者，視為承認其所受領之物。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=356",
+    "contract_types": ["sale"],
+    "topics": ["inspection", "defect_notice", "warranty"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "359",
+    "text": "買賣因物有瑕疵，而出賣人依前五條之規定，應負擔保之責者，買受人得解除其契約或請求減少其價金。但依情形，解除契約顯失公平者，買受人僅得請求減少價金。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=359",
+    "contract_types": ["sale"],
+    "topics": ["termination", "price_reduction", "warranty", "defect"]
+  },
+  {
+    "law_name": "消費者保護法",
+    "pcode": "J0170001",
+    "article_no": "11",
+    "text": "企業經營者在定型化契約中所用之條款，應本平等互惠之原則。\n定型化契約條款如有疑義時，應為有利於消費者之解釋。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=J0170001&flno=11",
+    "contract_types": ["sale", "lease"],
+    "topics": ["consumer_contract", "standard_terms", "interpretation"]
+  },
+  {
+    "law_name": "消費者保護法",
+    "pcode": "J0170001",
+    "article_no": "12",
+    "text": "定型化契約中之條款違反誠信原則，對消費者顯失公平者，無效。\n定型化契約中之條款有下列情形之一者，推定其顯失公平：\n一、違反平等互惠原則者。\n二、條款與其所排除不予適用之任意規定之立法意旨顯相矛盾者。\n三、契約之主要權利或義務，因受條款之限制，致契約之目的難以達成者。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=J0170001&flno=12",
+    "contract_types": ["sale", "lease"],
+    "topics": ["consumer_contract", "unfair_terms", "good_faith"]
+  },
+  {
+    "law_name": "消費者保護法",
+    "pcode": "J0170001",
+    "article_no": "17",
+    "text": "中央主管機關為預防消費糾紛，保護消費者權益，促進定型化契約之公平化，得選擇特定行業，擬訂其定型化契約應記載或不得記載事項，報請行政院核定後公告之。\n前項應記載事項，依契約之性質及目的，其內容得包括：\n一、契約之重要權利義務事項。\n二、違反契約之法律效果。\n三、預付型交易之履約擔保。\n四、契約之解除權、終止權及其法律效果。\n五、其他與契約履行有關之事項。\n第一項不得記載事項，依契約之性質及目的，其內容得包括：\n一、企業經營者保留契約內容或期限之變更權或解釋權。\n二、限制或免除企業經營者之義務或責任。\n三、限制或剝奪消費者行使權利，加重消費者之義務或責任。\n四、其他對消費者顯失公平事項。\n違反第一項公告之定型化契約，其定型化契約條款無效。該定型化契約之效力，依前條規定定之。\n中央主管機關公告應記載之事項，雖未記載於定型化契約，仍構成契約之內容。\n企業經營者使用定型化契約者，主管機關得隨時派員查核。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=J0170001&flno=17",
+    "contract_types": ["sale", "lease"],
+    "topics": ["standard_terms", "mandatory_terms", "prohibited_terms", "consumer_contract"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "421",
+    "text": "稱租賃者，謂當事人約定，一方以物租與他方使用收益，他方支付租金之契約。\n前項租金，得以金錢或租賃物之孳息充之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=421",
+    "contract_types": ["lease"],
+    "topics": ["lease", "rent", "contract_formation"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "422",
+    "text": "不動產之租賃契約，其期限逾一年者，應以字據訂立之，未以字據訂立者，視為不定期限之租賃。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=422",
+    "contract_types": ["lease"],
+    "topics": ["lease_term", "written_contract"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "423",
+    "text": "出租人應以合於所約定使用收益之租賃物，交付承租人，並應於租賃關係存續中，保持其合於約定使用、收益之狀態。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=423",
+    "contract_types": ["lease"],
+    "topics": ["landlord_obligation", "delivery", "maintenance"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "424",
+    "text": "租賃物為房屋或其他供居住之處所者，如有瑕疵，危及承租人或其同居人之安全或健康時，承租人雖於訂約時已知其瑕疵，或已拋棄其終止契約之權利，仍得終止契約。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=424",
+    "contract_types": ["lease"],
+    "topics": ["termination", "safety", "housing_defect"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "429",
+    "text": "租賃物之修繕，除契約另有訂定或另有習慣外，由出租人負擔。\n出租人為保存租賃物所為之必要行為，承租人不得拒絕。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=429",
+    "contract_types": ["lease"],
+    "topics": ["repair", "maintenance", "landlord_obligation"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "430",
+    "text": "租賃關係存續中，租賃物如有修繕之必要，應由出租人負擔者，承租人得定相當期限，催告出租人修繕，如出租人於其期限內不為修繕者，承租人得終止契約或自行修繕而請求出租人償還其費用或於租金中扣除之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=430",
+    "contract_types": ["lease"],
+    "topics": ["repair", "termination", "rent_deduction"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "431",
+    "text": "承租人就租賃物支出有益費用，因而增加該物之價值者，如出租人知其情事而不為反對之表示，於租賃關係終止時，應償還其費用。但以其現存之增價額為限。\n承租人就租賃物所增設之工作物，得取回之。但應回復租賃物之原狀。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=431",
+    "contract_types": ["lease"],
+    "topics": ["improvement", "restoration", "expense_reimbursement"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "432",
+    "text": "承租人應以善良管理人之注意，保管租賃物，租賃物有生產力者，並應保持其生產力。\n承租人違反前項義務，致租賃物毀損、滅失者，負損害賠償責任。但依約定之方法或依物之性質而定之方法為使用、收益，致有變更或毀損者，不在此限。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=432",
+    "contract_types": ["lease"],
+    "topics": ["tenant_obligation", "care_duty", "damage"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "434",
+    "text": "租賃物因承租人之重大過失，致失火而毀損、滅失者，承租人對於出租人負損害賠償責任。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=434",
+    "contract_types": ["lease"],
+    "topics": ["damage", "fire", "tenant_liability"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "435",
+    "text": "因不可歸責於承租人之事由，致租賃物之一部滅失者，承租人得按滅失之部分，請求減少租金。\n前項情形，承租人就其存餘部分不能達租賃之目的者，得終止契約。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=435",
+    "contract_types": ["lease"],
+    "topics": ["rent_reduction", "termination", "partial_loss"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "436",
+    "text": "前條規定，於承租人因第三人就租賃物主張權利，致不能為約定之使用、收益者準用之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=436",
+    "contract_types": ["lease"],
+    "topics": ["third_party_claim", "rent_reduction", "termination"]
+  },
+  {
+    "law_name": "民法",
+    "pcode": "B0000001",
+    "article_no": "450",
+    "text": "租賃定有期限者，其租賃關係，於期限屆滿時消滅。\n未定期限者，各當事人得隨時終止契約。但有利於承租人之習慣者，從其習慣。\n前項終止契約，應依習慣先期通知。但不動產之租金，以星期、半個月或一個月定其支付之期限者，出租人應以曆定星期、半個月或一個月之末日為契約終止期，並應至少於一星期、半個月或一個月前通知之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=B0000001&flno=450",
+    "contract_types": ["lease"],
+    "topics": ["termination", "lease_term", "notice"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "1",
+    "text": "為規定勞動條件最低標準，保障勞工權益，加強勞雇關係，促進社會與經濟發展，特制定本法；本法未規定者，適用其他法律之規定。\n雇主與勞工所訂勞動條件，不得低於本法所定之最低標準。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=1",
+    "contract_types": ["labor"],
+    "topics": ["minimum_standards", "labor_conditions"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "2",
+    "text": "本法用詞，定義如下：\n一、勞工：指受雇主僱用從事工作獲致工資者。\n二、雇主：指僱用勞工之事業主、事業經營之負責人或代表事業主處理有關勞工事務之人。\n三、工資：指勞工因工作而獲得之報酬；包括工資、薪金及按計時、計日、計月、計件以現金或實物等方式給付之獎金、津貼及其他任何名義之經常性給與均屬之。\n四、平均工資：指計算事由發生之當日前六個月內所得工資總額除以該期間之總日數所得之金額。工作未滿六個月者，指工作期間所得工資總額除以工作期間之總日數所得之金額。工資按工作日數、時數或論件計算者，其依上述方式計算之平均工資，如少於該期內工資總額除以實際工作日數所得金額百分之六十者，以百分之六十計。\n五、事業單位：指適用本法各業僱用勞工從事工作之機構。\n六、勞動契約：指約定勞雇關係之契約。\n七、派遣事業單位：指從事勞動派遣業務之事業單位。\n八、要派單位：指依據要派契約，實際指揮監督管理派遣勞工從事工作者。\n九、派遣勞工：指受派遣事業單位僱用，並向要派單位提供勞務者。\n十、要派契約：指要派單位與派遣事業單位就勞動派遣事項所訂立之契約。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=2",
+    "contract_types": ["labor"],
+    "topics": ["definition", "wage", "labor_contract", "employment_status"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "9",
+    "text": "勞動契約，分為定期契約及不定期契約。臨時性、短期性、季節性及特定性工作得為定期契約；有繼續性工作應為不定期契約。\n定期契約屆滿後，有下列情形之一，視為不定期契約：\n一、勞工繼續工作而雇主不即表示反對意思者。\n二、雖經另訂新約，惟其前後勞動契約之工作期間超過九十日，前後契約間斷期間未超過三十日者。\n前項規定於特定性或季節性之定期工作不適用之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=9",
+    "contract_types": ["labor"],
+    "topics": ["fixed_term", "employment_status", "contract_term"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "10-1",
+    "text": "雇主調動勞工工作，不得違反勞動契約之約定，並應符合下列原則：\n一、基於企業經營上所必須，且不得有不當動機及目的。但法律另有規定者，從其規定。\n二、對勞工之工資及其他勞動條件，未作不利之變更。\n三、調動後工作為勞工體能及技術可勝任。\n四、調動工作地點過遠，雇主應予以必要之協助。\n五、考量勞工及其家庭之生活利益。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=10-1",
+    "contract_types": ["labor"],
+    "topics": ["transfer", "work_location", "labor_conditions"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "14",
+    "text": "有下列情形之一者，勞工得不經預告終止契約：\n一、雇主於訂立勞動契約時為虛偽之意思表示，使勞工誤信而有受損害之虞者。\n二、雇主、雇主家屬、雇主代理人對於勞工，實施暴行或有重大侮辱之行為者。\n三、契約所訂之工作，對於勞工健康有危害之虞，經通知雇主改善而無效果者。\n四、雇主、雇主代理人或其他勞工患有法定傳染病，對共同工作之勞工有傳染之虞，且重大危害其健康者。\n五、雇主不依勞動契約給付工作報酬，或對於按件計酬之勞工不供給充分之工作者。\n六、雇主違反勞動契約或勞工法令，致有損害勞工權益之虞者。\n勞工依前項第一款、第六款規定終止契約者，應自知悉其情形之日起，三十日內為之。但雇主有前項第六款所定情形者，勞工得於知悉損害結果之日起，三十日內為之。\n有第一項第二款或第四款情形，雇主已將該代理人間之契約終止，或患有法定傳染病者依衛生法規已接受治療時，勞工不得終止契約。\n第十七條規定於本條終止契約準用之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=14",
+    "contract_types": ["labor"],
+    "topics": ["termination", "employee_resignation", "wage"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "15",
+    "text": "特定性定期契約期限逾三年者，於屆滿三年後，勞工得終止契約。但應於三十日前預告雇主。\n不定期契約，勞工終止契約時，應準用第十六條第一項規定期間預告雇主。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=15",
+    "contract_types": ["labor"],
+    "topics": ["termination", "notice", "fixed_term"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "16",
+    "text": "雇主依第十一條或第十三條但書規定終止勞動契約者，其預告期間依左列各款之規定：\n一、繼續工作三個月以上一年未滿者，於十日前預告之。\n二、繼續工作一年以上三年未滿者，於二十日前預告之。\n三、繼續工作三年以上者，於三十日前預告之。\n勞工於接到前項預告後，為另謀工作得於工作時間請假外出。其請假時數，每星期不得超過二日之工作時間，請假期間之工資照給。\n雇主未依第一項規定期間預告而終止契約者，應給付預告期間之工資。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=16",
+    "contract_types": ["labor"],
+    "topics": ["termination", "notice", "severance_related"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "21",
+    "text": "工資由勞雇雙方議定之。但不得低於基本工資。\n前項基本工資，由中央主管機關擬訂後報請行政院核定之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=21",
+    "contract_types": ["labor"],
+    "topics": ["wage", "minimum_wage"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "22",
+    "text": "工資之給付，應以法定通用貨幣為之。但基於習慣或業務性質，得於勞動契約內訂明一部以實物給付之。工資之一部以實物給付時，其實物之作價應公平合理，並適合勞工及其家屬之需要。\n工資應全額直接給付勞工。但法令另有規定或勞雇雙方另有約定者，不在此限。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=22",
+    "contract_types": ["labor"],
+    "topics": ["wage", "payment"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "24",
+    "text": "雇主延長勞工工作時間者，其延長工作時間之工資，依下列標準加給：\n一、延長工作時間在二小時以內者，按平日每小時工資額加給三分之一以上。\n二、再延長工作時間在二小時以內者，按平日每小時工資額加給三分之二以上。\n三、依第三十二條第四項規定，延長工作時間者，按平日每小時工資額加倍發給。\n雇主使勞工於第三十六條所定休息日工作，工作時間在二小時以內者，其工資按平日每小時工資額另再加給一又三分之一以上；工作二小時後再繼續工作者，按平日每小時工資額另再加給一又三分之二以上。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=24",
+    "contract_types": ["labor"],
+    "topics": ["overtime", "wage", "working_hours"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "30",
+    "text": "勞工正常工作時間，每日不得超過八小時，每週不得超過四十小時。\n前項正常工作時間，雇主經工會同意，如事業單位無工會者，經勞資會議同意後，得將其二週內二日之正常工作時數，分配於其他工作日。其分配於其他工作日之時數，每日不得超過二小時。但每週工作總時數不得超過四十八小時。\n第一項正常工作時間，雇主經工會同意，如事業單位無工會者，經勞資會議同意後，得將八週內之正常工作時數加以分配。但每日正常工作時間不得超過八小時，每週工作總時數不得超過四十八小時。\n前二項規定，僅適用於經中央主管機關指定之行業。\n雇主應置備勞工出勤紀錄，並保存五年。\n前項出勤紀錄，應逐日記載勞工出勤情形至分鐘為止。勞工向雇主申請其出勤紀錄副本或影本時，雇主不得拒絕。\n雇主不得以第一項正常工作時間之修正，作為減少勞工工資之事由。\n第一項至第三項及第三十條之一之正常工作時間，雇主應以書面通知勞工。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=30",
+    "contract_types": ["labor"],
+    "topics": ["working_hours", "attendance_records"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "32",
+    "text": "雇主有使勞工在正常工作時間以外工作之必要者，雇主經工會同意，如事業單位無工會者，經勞資會議同意後，得將工作時間延長之。\n前項雇主延長勞工之工作時間連同正常工作時間，一日不得超過十二小時；延長之工作時間，一個月不得超過四十六小時，但雇主經工會同意，如事業單位無工會者，經勞資會議同意後，延長之工作時間，一個月不得超過五十四小時，每三個月不得超過一百三十八小時。\n雇主僱用勞工人數在三十人以上，依前項但書規定延長勞工工作時間者，應報當地主管機關備查。\n因天災、事變或突發事件，雇主有使勞工在正常工作時間以外工作之必要者，得將工作時間延長之。但應於延長開始後二十四小時內通知工會；無工會組織者，應報當地主管機關備查。延長之工作時間，雇主應於事後補給勞工以適當之休息。\n在坑內工作之勞工，其工作時間不得延長。但以監視為主之工作，或有前項所定之情形者，不在此限。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=32",
+    "contract_types": ["labor"],
+    "topics": ["overtime", "working_hours", "labor_management_conference"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "36",
+    "text": "勞工每七日中應有二日之休息，其中一日為例假，一日為休息日。\n雇主有下列情形之一，不受前項規定之限制：\n一、依第三十條第二項規定變更正常工作時間者，勞工每七日中至少應有一日之例假，每二週內之例假及休息日至少應有四日。\n二、依第三十條第三項規定變更正常工作時間者，勞工每七日中至少應有一日之例假，每八週內之例假及休息日至少應有十六日。\n三、依第三十條之一規定變更正常工作時間者，勞工每二週內至少應有二日之例假，每四週內之例假及休息日至少應有八日。\n雇主使勞工於休息日工作之時間，計入第三十二條第二項所定延長工作時間總數。但因天災、事變或突發事件，雇主有使勞工於休息日工作之必要者，其工作時數不受第三十二條第二項規定之限制。\n經中央目的事業主管機關同意，且經中央主管機關指定之行業，雇主得將第一項、第二項第一款及第二款所定之例假，於每七日之週期內調整之。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=36",
+    "contract_types": ["labor"],
+    "topics": ["rest_day", "working_hours"]
+  },
+  {
+    "law_name": "勞動基準法",
+    "pcode": "N0030001",
+    "article_no": "38",
+    "text": "勞工在同一雇主或事業單位，繼續工作滿一定期間者，應依下列規定給予特別休假：\n一、六個月以上一年未滿者，三日。\n二、一年以上二年未滿者，七日。\n三、二年以上三年未滿者，十日。\n四、三年以上五年未滿者，每年十四日。\n五、五年以上十年未滿者，每年十五日。\n六、十年以上者，每一年加給一日，加至三十日為止。\n前項之特別休假期日，由勞工排定之。但雇主基於企業經營上之急迫需求或勞工因個人因素，得與他方協商調整。\n雇主應於勞工符合第一項所定之特別休假條件時，告知勞工依前二項規定排定特別休假。\n勞工之特別休假，因年度終結或契約終止而未休之日數，雇主應發給工資。但年度終結未休之日數，經勞雇雙方協商遞延至次一年度實施者，於次一年度終結或契約終止仍未休之日數，雇主應發給工資。\n雇主應將勞工每年特別休假之期日及未休之日數所發給之工資數額，記載於第二十三條所定之勞工工資清冊，並每年定期將其內容以書面通知勞工。\n勞工依本條主張權利時，雇主如認為其權利不存在，應負舉證責任。",
+    "source_url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=38",
+    "contract_types": ["labor"],
+    "topics": ["leave", "annual_leave", "wage"]
+  }
+]
