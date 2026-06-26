@@ -1,4 +1,4 @@
-__pycache__/
+ï»¿__pycache__/
 *.pyc
 *.pyo
 *.tsbuildinfo
@@ -12,12 +12,5 @@ node_modules/
 dist/
 build/
 .cache/
-<<<<<<< HEAD
 _trash/
 ä½¿ç”¨èªªæ˜Ž.md
-=======
-
-_trash/
-
-¨Ï¥Î»¡©ú.md
->>>>>>> ede0975 (Ignore local trash and Chinese guide duplicate)

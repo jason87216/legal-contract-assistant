@@ -12,6 +12,7 @@ from .review_rules import risk_level_patterns
 from .review_rules import risk_theme_citations
 from .review_rules import risk_theme_patterns
 from .statute_lookup import StatuteLookupService
+from .statute_tools import StatuteRetrievalTool
 from .statutes import StatuteArticle
 
 if TYPE_CHECKING:
@@ -22,6 +23,12 @@ CONTRACT_TYPE_LABELS = {
     "labor": "勞動",
     "lease": "租賃",
     "unknown": "無法判斷",
+}
+
+REVIEW_PERSPECTIVE_LABELS = {
+    "neutral": "中立審查",
+    "party_a": "甲方立場",
+    "party_b": "乙方立場",
 }
 
 CONTRACT_TYPE_KEYWORDS = {
@@ -86,10 +93,21 @@ class ReviewContext:
     risk_themes: tuple[str, ...]
     prompt: str
     model_config: "ModelConfig"
+    contract_mode: str = "unknown"
+    extracted_keywords: tuple[str, ...] = ()
+    candidate_articles: tuple[dict, ...] = ()
+    review_perspective: str = "neutral"
 
     @property
     def contract_type_label(self) -> str:
         return CONTRACT_TYPE_LABELS.get(self.contract_type, self.contract_type)
+
+    @property
+    def review_perspective_label(self) -> str:
+        return REVIEW_PERSPECTIVE_LABELS.get(
+            self.review_perspective,
+            self.review_perspective,
+        )
 
 
 @dataclass(frozen=True)
@@ -100,13 +118,22 @@ class ContractReviewService:
         self.statute_lookup.initialize()
 
     def build_context(
-        self, contract_text: str, contract_type: str | None = None
+        self,
+        contract_text: str,
+        contract_type: str | None = None,
+        review_perspective: str = "neutral",
     ) -> ReviewContext:
         normalized = contract_text.strip()
-        detected_type = contract_type or classify_contract_type(normalized)
-        confidence = "high" if contract_type else ("medium" if detected_type != "unknown" else "low")
+        detected_type = contract_type or "unknown"
+        confidence = "high" if contract_type else "low"
         focus_topics = detect_focus_topics(normalized)
         missing_items = detect_missing_items(normalized, detected_type)
+        retrieval_tool = StatuteRetrievalTool(self.statute_lookup)
+        candidate_result = retrieval_tool.retrieve_candidate_articles(
+            normalized,
+            contract_mode=None if detected_type == "unknown" else detected_type,
+            limit=12,
+        )
         review_rules = self.statute_lookup.cache.list_review_rules() or DEFAULT_REVIEW_RULES
         risk_level, risk_reasons = estimate_risk_level(
             normalized, detected_type, missing_items, review_rules
@@ -118,6 +145,7 @@ class ContractReviewService:
             focus_topics,
             risk_themes,
             risk_theme_citations(review_rules),
+            candidate_result.get("articles", []),
         )
 
         from .llm import REPORT_SYSTEM_PROMPT, ModelConfig
@@ -134,18 +162,27 @@ class ContractReviewService:
             risk_themes=tuple(risk_themes),
             prompt=REPORT_SYSTEM_PROMPT,
             model_config=ModelConfig(),
+            contract_mode=detected_type,
+            extracted_keywords=tuple(candidate_result.get("keywords", [])),
+            candidate_articles=tuple(candidate_result.get("articles", [])),
+            review_perspective=review_perspective,
         )
 
     def generate_markdown_report(
         self,
         contract_text: str,
         contract_type: str | None = None,
+        review_perspective: str = "neutral",
         llm_provider: "LLMProvider | None" = None,
         model_config: "ModelConfig | None" = None,
     ) -> str:
         from .llm import NoopLLMProvider
 
-        context = self.build_context(contract_text, contract_type=contract_type)
+        context = self.build_context(
+            contract_text,
+            contract_type=contract_type,
+            review_perspective=review_perspective,
+        )
         if model_config is not None:
             context = ReviewContext(
                 contract_text=context.contract_text,
@@ -159,6 +196,10 @@ class ContractReviewService:
                 risk_themes=context.risk_themes,
                 prompt=context.prompt,
                 model_config=model_config,
+                contract_mode=context.contract_mode,
+                extracted_keywords=context.extracted_keywords,
+                candidate_articles=context.candidate_articles,
+                review_perspective=context.review_perspective,
             )
         provider = llm_provider or NoopLLMProvider(model_config=context.model_config)
         return provider.generate_report(context)
@@ -249,6 +290,7 @@ def collect_related_articles(
     topics: list[str],
     risk_themes: list[str] | None = None,
     citation_map: dict[str, tuple[tuple[str, str], ...]] | None = None,
+    candidate_articles: list[dict] | None = None,
 ) -> list[StatuteArticle]:
     seen: set[tuple[str, str]] = set()
     articles: list[StatuteArticle] = []
@@ -270,6 +312,17 @@ def collect_related_articles(
             if key not in seen:
                 seen.add(key)
                 articles.append(article)
+
+    for candidate in candidate_articles or []:
+        law_name = str(candidate.get("law_name", ""))
+        article_no = str(candidate.get("article_no", ""))
+        result = statute_lookup.lookup(law_name, article_no, allow_live_query=False)
+        if result.article is None:
+            continue
+        key = (result.article.law_name, result.article.article_no)
+        if key not in seen:
+            seen.add(key)
+            articles.append(result.article)
 
     if len(articles) < 5:
         for article in statute_lookup.search_by_contract_type(contract_type):

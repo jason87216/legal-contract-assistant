@@ -7,6 +7,7 @@ import sys
 
 from .contract_review import ContractReviewService
 from .llm import ModelConfig, OpenAICompatibleLLMProvider
+from .statute_tools import StatuteRetrievalTool
 
 
 def analyze_contract(text: str) -> dict[str, list[str] | str]:
@@ -37,7 +38,10 @@ def generate_review_report(
     service = ContractReviewService()
     service.initialize()
     llm_provider = (
-        OpenAICompatibleLLMProvider(model_config)
+        OpenAICompatibleLLMProvider(
+            model_config,
+            tool_runner=StatuteRetrievalTool(service.statute_lookup),
+        )
         if use_local_llama and model_config is not None
         else None
     )
@@ -54,7 +58,7 @@ def main() -> None:
     parser.add_argument(
         "--contract-type",
         choices=("sale", "labor", "lease"),
-        help="Optional contract type. If omitted, simple keyword classification is used.",
+        help="Optional user-selected contract mode. If omitted, no auto classification is used.",
     )
     parser.add_argument("--text", help="Contract text. If omitted, stdin or a sample is used.")
     parser.add_argument(

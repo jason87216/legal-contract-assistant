@@ -140,6 +140,18 @@ class ContractStatuteCache:
             ).fetchall()
         return [_row_to_article(row) for row in rows if row is not None]
 
+    def list_articles(self) -> list[StatuteArticle]:
+        with closing(self._connect()) as conn:
+            rows = conn.execute(
+                """
+                SELECT law_name, pcode, article_no, text, source_url,
+                       contract_types_json, topics_json, cached_at
+                FROM statute_articles
+                ORDER BY law_name, article_no
+                """
+            ).fetchall()
+        return [_row_to_article(row) for row in rows if row is not None]
+
     def upsert(self, article: StatuteArticle) -> None:
         self.upsert_many([article])
 

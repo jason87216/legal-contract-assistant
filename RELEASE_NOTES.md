@@ -19,6 +19,14 @@
 .\start-gui.ps1
 ```
 
+若要不開命令列視窗啟動，可雙擊：
+
+```text
+start-gui.vbs
+```
+
+需要除錯時，請改用 `start-gui.ps1` 以便查看 log。
+
 腳本會：
 
 - 建立本機 `.venv`。
@@ -34,6 +42,8 @@
 - GUI 不會明文回顯 API key，只顯示是否已設定與末四碼遮罩。
 - 若未勾選「使用 API 模型產生報告」，系統會使用本地 dry-run 模式，不呼叫外部 API。
 - 使用 OpenAI、OpenRouter 或其他遠端模型時，合約內容會送到使用者設定的模型服務；正式使用前應自行確認資料保護與保密需求。
+- 模型供應商支援 OpenAI、OpenRouter、llama.cpp、Ollama、Anthropic、Gemini；Ollama 與 llama.cpp 走 OpenAI-compatible 介面，Anthropic/Gemini 第一版為非串流文字輸出。
+- 一般模式固定請求 `8192` output tokens；長合約模式會改用工具內的 provider 高輸出上限。免費模型仍可能被供應商平台限制；若模型因 `length`、`max_tokens` 或 `MAX_TOKENS` 停止，GUI 會顯示停止原因與截斷警告。
 
 ## 已知限制
 
@@ -50,7 +60,9 @@ release zip 應包含：
 - `src/`
 - `frontend/dist/`
 - `requirements.txt`
+- `START_HERE.zh-TW.md`
 - `start-gui.ps1`
+- `start-gui.vbs`
 - `README.md`
 - `RELEASE_NOTES.md`
 - `USER_GUIDE.zh-TW.md`
@@ -61,5 +73,10 @@ release zip 不應包含：
 - `.venv`
 - `node_modules`
 - `.cache`
+- `tests/`
+- `requirements-dev.txt`
+- `pytest.ini`
+- `tw_contract_review_testpack_v1.zip`
+- `contracts/` 測試資料夾
 - `__pycache__`
 - `*.pyc`

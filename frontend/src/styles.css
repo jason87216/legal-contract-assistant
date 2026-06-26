@@ -106,6 +106,14 @@ textarea {
   font-size: 1.1rem;
 }
 
+.version-label {
+  margin: 0 0 0.8rem;
+  color: var(--accent-dark);
+  font-family: "Noto Sans TC", "Aptos Display", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
 .eyebrow {
   margin: 0;
   color: var(--accent-dark);
@@ -182,6 +190,16 @@ textarea {
   padding: 0.45rem 0.75rem;
   color: var(--accent-dark);
   background: #f0d8bd;
+  font-weight: 700;
+}
+
+.warning-box {
+  margin: 0 0 1rem;
+  border: 1px solid rgba(189, 75, 43, 0.45);
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  color: var(--accent-dark);
+  background: #ffe0c2;
   font-weight: 700;
 }
 

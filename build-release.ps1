@@ -41,14 +41,14 @@ function Copy-FilteredTree {
 }
 
 Copy-FilteredTree -Source (Join-Path $ProjectRoot "src") -Destination (Join-Path $ReleaseDir "src")
-Copy-FilteredTree -Source (Join-Path $ProjectRoot "tests") -Destination (Join-Path $ReleaseDir "tests")
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "frontend\dist") -Destination (Join-Path $ReleaseDir "frontend") -Recurse
+Copy-Item -LiteralPath (Join-Path $ProjectRoot "START_HERE.zh-TW.md") -Destination $ReleaseDir
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "README.md") -Destination $ReleaseDir
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "RELEASE_NOTES.md") -Destination $ReleaseDir
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "USER_GUIDE.zh-TW.md") -Destination $ReleaseDir
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "requirements.txt") -Destination $ReleaseDir
-Copy-Item -LiteralPath (Join-Path $ProjectRoot "requirements-dev.txt") -Destination $ReleaseDir
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "start-gui.ps1") -Destination $ReleaseDir
+Copy-Item -LiteralPath (Join-Path $ProjectRoot "start-gui.vbs") -Destination $ReleaseDir
 
 $ZipPath = Join-Path $DistRoot "$ReleaseName.zip"
 Compress-Archive -Path (Join-Path $ReleaseDir "*") -DestinationPath $ZipPath -Force

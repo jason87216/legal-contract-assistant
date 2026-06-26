@@ -131,10 +131,14 @@ def test_llm_prompts_include_grounding_constraints() -> None:
 
     assert "不得推翻結構化資料中已抽出的事實" in REPORT_SYSTEM_PROMPT
     assert "合約已明確約定" in REPORT_SYSTEM_PROMPT
-    assert "法條只能使用輸入中的 related_articles" in REPORT_SYSTEM_PROMPT
+    assert "工具查詢" in REPORT_SYSTEM_PROMPT
     assert "不得推翻結構化資料中已抽出的事實" in user_prompt
     assert "合約未約定" in user_prompt
     assert "related_articles" in user_prompt
+    assert "審查立場" in user_prompt
+    assert "合約簡介" in user_prompt
+    assert "逐項修改建議" in user_prompt
+    assert "甲方明確修改範例或乙方維護權益建議" in user_prompt
 
 
 def test_report_generation_accepts_replaceable_llm_provider(tmp_path) -> None:

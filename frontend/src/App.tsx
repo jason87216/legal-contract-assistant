@@ -1,7 +1,8 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
-type ProviderId = "openai" | "openrouter" | "llama_cpp";
+type ProviderId = "openai" | "openrouter" | "llama_cpp" | "ollama" | "anthropic" | "gemini";
 type ContractType = "auto" | "sale" | "labor" | "lease";
+type ReviewPerspective = "neutral" | "party_a" | "party_b";
 
 type ProviderState = {
   provider: ProviderId;
@@ -10,6 +11,12 @@ type ProviderState = {
   api_key_mask: string | null;
   base_url: string;
   model: string;
+  models: string[];
+};
+
+type HealthResponse = {
+  status: string;
+  version: string;
 };
 
 type ReviewResponse = {
@@ -18,6 +25,16 @@ type ReviewResponse = {
   contract_type_label: string;
   risk_level: string;
   risk_themes: string[];
+  generation: {
+    provider: string;
+    model: string;
+    used_llm: boolean;
+    long_contract: boolean;
+    max_output_tokens: number;
+    stop_reason: string | null;
+    warning: string | null;
+    status: "dry_run" | "completed" | "warning";
+  };
   related_articles: Array<{
     citation: string;
     source_url: string;
@@ -25,16 +42,16 @@ type ReviewResponse = {
 };
 
 const CONTRACT_TYPES: Array<{ value: ContractType; label: string }> = [
-  { value: "auto", label: "自動判斷" },
+  { value: "auto", label: "不指定模式" },
   { value: "sale", label: "買賣合約" },
   { value: "labor", label: "勞動合約" },
   { value: "lease", label: "租賃合約" },
 ];
 
-const PROVIDERS: Array<{ value: ProviderId; label: string }> = [
-  { value: "openai", label: "OpenAI" },
-  { value: "openrouter", label: "OpenRouter" },
-  { value: "llama_cpp", label: "llama.cpp" },
+const REVIEW_PERSPECTIVES: Array<{ value: ReviewPerspective; label: string }> = [
+  { value: "neutral", label: "中立審查" },
+  { value: "party_a", label: "甲方立場" },
+  { value: "party_b", label: "乙方立場" },
 ];
 
 function App() {
@@ -43,17 +60,21 @@ function App() {
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
   const [model, setModel] = useState("");
+  const [longContract, setLongContract] = useState(false);
   const [contractType, setContractType] = useState<ContractType>("auto");
+  const [reviewPerspective, setReviewPerspective] = useState<ReviewPerspective>("neutral");
   const [contractText, setContractText] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [useLlm, setUseLlm] = useState(false);
   const [result, setResult] = useState<ReviewResponse | null>(null);
   const [status, setStatus] = useState("尚未審查");
   const [loading, setLoading] = useState(false);
+  const [appVersion, setAppVersion] = useState("");
 
   const currentProvider = providers.find((item) => item.provider === selectedProvider);
 
   useEffect(() => {
+    void refreshHealth();
     void refreshSettings();
   }, []);
 
@@ -65,10 +86,23 @@ function App() {
     }
   }, [currentProvider?.provider]);
 
+  async function refreshHealth() {
+    const response = await fetch("/api/health");
+    const data = (await response.json()) as HealthResponse;
+    setAppVersion(data.version || "");
+  }
+
   async function refreshSettings() {
     const response = await fetch("/api/settings");
     const data = await response.json();
-    setProviders(data.providers);
+    const normalizedProviders = (data.providers ?? []).map((item: Partial<ProviderState>) => ({
+      ...item,
+      models: item.models ?? (item.model ? [item.model] : []),
+    })) as ProviderState[];
+    setProviders(normalizedProviders);
+    if (normalizedProviders.length > 0 && !normalizedProviders.some((item) => item.provider === selectedProvider)) {
+      setSelectedProvider(normalizedProviders[0].provider);
+    }
   }
 
   async function saveProvider(event: FormEvent) {
@@ -113,9 +147,11 @@ function App() {
     const formData = new FormData();
     formData.set("text", contractText);
     formData.set("contract_type", contractType);
+    formData.set("review_perspective", reviewPerspective);
     formData.set("provider", selectedProvider);
     formData.set("model", model);
     formData.set("base_url", baseUrl);
+    formData.set("long_contract", String(longContract));
     formData.set("use_llm", String(useLlm));
     if (selectedFile) {
       formData.set("file", selectedFile);
@@ -131,8 +167,29 @@ function App() {
       setStatus(data.detail || "審查失敗");
       return;
     }
-    setResult(data);
+    setResult(normalizeReviewResponse(data));
     setStatus("審查完成");
+  }
+
+  function normalizeReviewResponse(data: Partial<ReviewResponse>): ReviewResponse {
+    return {
+      markdown: data.markdown ?? "",
+      contract_type: data.contract_type ?? contractType,
+      contract_type_label: data.contract_type_label ?? contractType,
+      risk_level: data.risk_level ?? "unknown",
+      risk_themes: data.risk_themes ?? [],
+      related_articles: data.related_articles ?? [],
+      generation: data.generation ?? {
+        provider: selectedProvider,
+        model: model || "unknown",
+        used_llm: false,
+        long_contract: longContract,
+        max_output_tokens: 8192,
+        stop_reason: "missing_generation_status",
+        warning: "後端未回傳 generation 狀態；請關閉目前的 start-gui.ps1 視窗後重新啟動，確保載入新版後端。",
+        status: "warning",
+      },
+    };
   }
 
   function onFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -161,6 +218,7 @@ function App() {
       <section className="hero">
         <p className="eyebrow">Local Taiwan Contract Review Agent</p>
         <h1>台灣合約審查 Agent</h1>
+        {appVersion ? <p className="version-label">版本 {appVersion}</p> : null}
         <p>
           以本地 SQLite 法條與規則為基礎，可選擇 API 模型產生 Markdown
           審查報告。API key 僅保存於本機 .env。
@@ -176,8 +234,8 @@ function App() {
               value={selectedProvider}
               onChange={(event) => setSelectedProvider(event.target.value as ProviderId)}
             >
-              {PROVIDERS.map((provider) => (
-                <option key={provider.value} value={provider.value}>
+              {providers.map((provider) => (
+                <option key={provider.provider} value={provider.provider}>
                   {provider.label}
                 </option>
               ))}
@@ -201,8 +259,25 @@ function App() {
             <input value={baseUrl} onChange={(event) => setBaseUrl(event.target.value)} />
           </label>
           <label>
-            模型名稱
-            <input value={model} onChange={(event) => setModel(event.target.value)} />
+            常用模型
+            <select value={model} onChange={(event) => setModel(event.target.value)}>
+              {(currentProvider?.models ?? []).map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+              {model && !(currentProvider?.models ?? []).includes(model) ? (
+                <option value={model}>{model}</option>
+              ) : null}
+            </select>
+          </label>
+          <label>
+            自訂模型名稱
+            <input
+              value={model}
+              placeholder="可手動輸入供應商支援的新模型名"
+              onChange={(event) => setModel(event.target.value)}
+            />
           </label>
           <div className="button-row">
             <button type="submit">保存設定</button>
@@ -228,6 +303,19 @@ function App() {
             </select>
           </label>
           <label>
+            審查立場
+            <select
+              value={reviewPerspective}
+              onChange={(event) => setReviewPerspective(event.target.value as ReviewPerspective)}
+            >
+              {REVIEW_PERSPECTIVES.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
             TXT 上傳
             <input type="file" accept=".txt,text/plain" onChange={onFileChange} />
           </label>
@@ -238,6 +326,14 @@ function App() {
               onChange={(event) => setUseLlm(event.target.checked)}
             />
             使用 API 模型產生報告；未勾選時使用本地 dry-run 報告。
+          </label>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={longContract}
+              onChange={(event) => setLongContract(event.target.checked)}
+            />
+            長合約模式：使用此供應商的高輸出上限；免費模型仍可能因平台限制被截斷。
           </label>
           <label>
             合約文字
@@ -275,6 +371,9 @@ function App() {
               <span>{result.risk_level}</span>
               <span>{result.related_articles.length} 個法條引用</span>
             </div>
+            {result.generation.warning ? (
+              <p className="warning-box">{result.generation.warning}</p>
+            ) : null}
             <pre className="markdown-preview">{result.markdown}</pre>
           </>
         ) : (

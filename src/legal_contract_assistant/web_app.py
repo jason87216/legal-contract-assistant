@@ -11,28 +11,75 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from .contract_review import CONTRACT_TYPE_LABELS, ContractReviewService
-from .llm import ModelConfig, NoopLLMProvider, OpenAICompatibleLLMProvider
+from . import __version__
+from .contract_review import CONTRACT_TYPE_LABELS, REVIEW_PERSPECTIVE_LABELS, ContractReviewService
+from .llm import (
+    AnthropicLLMProvider,
+    GeminiLLMProvider,
+    ModelConfig,
+    NoopLLMProvider,
+    OpenAICompatibleLLMProvider,
+)
+from .statute_tools import StatuteRetrievalTool
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_ENV_PATH = PROJECT_ROOT / ".env"
 DEFAULT_STATIC_DIR = PROJECT_ROOT / "frontend" / "dist"
+DEFAULT_MAX_OUTPUT_TOKENS = 8192
+LONG_CONTRACT_MAX_OUTPUT_TOKENS = 32768
 
-PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
+PROVIDER_DEFAULTS: dict[str, dict[str, Any]] = {
     "openai": {
         "label": "OpenAI",
+        "kind": "openai_compatible",
         "base_url": "https://api.openai.com/v1",
         "model": "gpt-4.1-mini",
+        "models": ["gpt-4.1-mini", "gpt-4.1", "gpt-4o-mini"],
+        "max_output_tokens": LONG_CONTRACT_MAX_OUTPUT_TOKENS,
     },
     "openrouter": {
         "label": "OpenRouter",
+        "kind": "openai_compatible",
         "base_url": "https://openrouter.ai/api/v1",
         "model": "openai/gpt-4.1-mini",
+        "models": [
+            "openai/gpt-4.1-mini",
+            "anthropic/claude-3.5-sonnet",
+            "google/gemini-2.5-flash",
+        ],
+        "max_output_tokens": LONG_CONTRACT_MAX_OUTPUT_TOKENS,
     },
     "llama_cpp": {
         "label": "llama.cpp",
+        "kind": "openai_compatible",
         "base_url": "http://127.0.0.1:18080/v1",
         "model": "local-chat",
+        "models": ["local-chat"],
+        "max_output_tokens": LONG_CONTRACT_MAX_OUTPUT_TOKENS,
+    },
+    "ollama": {
+        "label": "Ollama",
+        "kind": "openai_compatible",
+        "base_url": "http://localhost:11434/v1",
+        "model": "qwen3:8b",
+        "models": ["qwen3:8b", "llama3.1:8b", "gpt-oss:20b"],
+        "max_output_tokens": LONG_CONTRACT_MAX_OUTPUT_TOKENS,
+    },
+    "anthropic": {
+        "label": "Anthropic",
+        "kind": "anthropic",
+        "base_url": "https://api.anthropic.com",
+        "model": "claude-3-5-sonnet-latest",
+        "models": ["claude-3-5-sonnet-latest", "claude-3-5-haiku-latest"],
+        "max_output_tokens": LONG_CONTRACT_MAX_OUTPUT_TOKENS,
+    },
+    "gemini": {
+        "label": "Gemini",
+        "kind": "gemini",
+        "base_url": "https://generativelanguage.googleapis.com/v1beta",
+        "model": "gemini-2.5-flash",
+        "models": ["gemini-2.5-flash", "gemini-2.5-pro"],
+        "max_output_tokens": LONG_CONTRACT_MAX_OUTPUT_TOKENS,
     },
 }
 
@@ -56,7 +103,7 @@ def create_app(
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
-        return {"status": "ok"}
+        return {"status": "ok", "version": __version__}
 
     @app.get("/api/settings")
     def get_settings() -> dict[str, Any]:
@@ -95,6 +142,8 @@ def create_app(
         provider: Annotated[str, Form()] = "noop",
         model: Annotated[str, Form()] = "",
         base_url: Annotated[str, Form()] = "",
+        long_contract: Annotated[bool, Form()] = False,
+        review_perspective: Annotated[str, Form()] = "neutral",
         use_llm: Annotated[bool, Form()] = False,
         file: UploadFile | None = File(default=None),
     ) -> dict[str, Any]:
@@ -115,32 +164,65 @@ def create_app(
             "lease",
         }:
             raise HTTPException(status_code=400, detail="Unsupported contract type")
+        if review_perspective not in REVIEW_PERSPECTIVE_LABELS:
+            raise HTTPException(status_code=400, detail="Unsupported review perspective")
 
         service = ContractReviewService()
         service.initialize()
-        context = service.build_context(contract_text, contract_type=selected_contract_type)
+        context = service.build_context(
+            contract_text,
+            contract_type=selected_contract_type,
+            review_perspective=review_perspective,
+        )
+        statute_tools = StatuteRetrievalTool(service.statute_lookup)
 
         model_config = _model_config_for_request(
             app.state.env_path,
             provider=provider,
             model=model,
             base_url=base_url,
+            long_contract=long_contract,
             use_llm=use_llm,
         )
         context = replace(context, model_config=model_config)
-        report_writer = _provider_for_request(app.state.env_path, model_config, use_llm)
+        report_writer = _provider_for_request(
+            app.state.env_path,
+            model_config,
+            use_llm,
+            tool_runner=statute_tools,
+        )
 
         try:
             markdown = report_writer.generate_report(context)
         except RuntimeError as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
+        generation_warning = getattr(report_writer, "last_generation_warning", None)
+        stop_reason = getattr(report_writer, "last_stop_reason", None)
+        tool_call_count = getattr(report_writer, "last_tool_call_count", 0)
+        used_llm = use_llm and not isinstance(report_writer, NoopLLMProvider)
+
         return {
             "markdown": markdown,
             "contract_type": context.contract_type,
             "contract_type_label": context.contract_type_label,
+            "review_perspective": context.review_perspective,
+            "review_perspective_label": context.review_perspective_label,
             "risk_level": context.risk_level,
             "risk_themes": list(context.risk_themes),
+            "generation": {
+                "provider": model_config.provider,
+                "model": model_config.model,
+                "used_llm": used_llm,
+                "long_contract": long_contract,
+                "max_output_tokens": model_config.max_output_tokens,
+                "stop_reason": stop_reason,
+                "warning": generation_warning,
+                "status": "warning" if generation_warning else "completed" if used_llm else "dry_run",
+                "tool_call_count": tool_call_count,
+            },
+            "keywords": list(context.extracted_keywords),
+            "candidate_articles": list(context.candidate_articles),
             "related_articles": [
                 {
                     "law_name": article.law_name,
@@ -182,12 +264,19 @@ def _model_config_for_request(
     provider: str,
     model: str,
     base_url: str,
+    long_contract: bool,
     use_llm: bool,
 ) -> ModelConfig:
+    max_output_tokens = _max_output_tokens_for_request(
+        provider=provider,
+        long_contract=long_contract,
+        use_llm=use_llm,
+    )
     if not use_llm or provider == "noop":
         return ModelConfig(
             provider="noop",
             model=model.strip() or "rule-based-report-writer",
+            max_output_tokens=max_output_tokens,
             base_url=None,
         )
 
@@ -197,25 +286,49 @@ def _model_config_for_request(
     return ModelConfig(
         provider=provider,
         model=model.strip() or values.get(_env_key(provider, "MODEL")) or defaults["model"],
+        max_output_tokens=max_output_tokens,
         base_url=base_url.strip()
         or values.get(_env_key(provider, "BASE_URL"))
         or defaults["base_url"],
     )
 
 
+def _max_output_tokens_for_request(
+    *,
+    provider: str,
+    long_contract: bool,
+    use_llm: bool,
+) -> int:
+    if not long_contract:
+        return DEFAULT_MAX_OUTPUT_TOKENS
+    if not use_llm or provider == "noop":
+        return DEFAULT_MAX_OUTPUT_TOKENS
+    provider = _normalize_provider(provider)
+    return int(PROVIDER_DEFAULTS[provider]["max_output_tokens"])
+
+
 def _provider_for_request(
-    env_path: Path, model_config: ModelConfig, use_llm: bool
-) -> NoopLLMProvider | OpenAICompatibleLLMProvider:
+    env_path: Path,
+    model_config: ModelConfig,
+    use_llm: bool,
+    tool_runner: StatuteRetrievalTool | None = None,
+):
     if not use_llm or model_config.provider == "noop":
         return NoopLLMProvider(model_config=model_config)
 
     values = _read_env(env_path)
     api_key = values.get(_env_key(model_config.provider, "API_KEY"), "")
-    if not api_key and model_config.provider == "llama_cpp":
-        api_key = "sk-no-key-required"
+    if not api_key and model_config.provider in {"llama_cpp", "ollama"}:
+        api_key = "ollama" if model_config.provider == "ollama" else "sk-no-key-required"
     if not api_key:
         return NoopLLMProvider(model_config=model_config)
-    return OpenAICompatibleLLMProvider(model_config, api_key=api_key)
+
+    kind = PROVIDER_DEFAULTS[model_config.provider]["kind"]
+    if kind == "anthropic":
+        return AnthropicLLMProvider(model_config, api_key=api_key, tool_runner=tool_runner)
+    if kind == "gemini":
+        return GeminiLLMProvider(model_config, api_key=api_key, tool_runner=tool_runner)
+    return OpenAICompatibleLLMProvider(model_config, api_key=api_key, tool_runner=tool_runner)
 
 
 def _provider_states(values: dict[str, str]) -> list[dict[str, Any]]:
@@ -233,6 +346,9 @@ def _provider_state(provider: str, values: dict[str, str]) -> dict[str, Any]:
         "api_key_mask": _mask_secret(api_key),
         "base_url": values.get(_env_key(provider, "BASE_URL"), defaults["base_url"]),
         "model": values.get(_env_key(provider, "MODEL"), defaults["model"]),
+        "models": defaults["models"],
+        "default_max_output_tokens": DEFAULT_MAX_OUTPUT_TOKENS,
+        "long_contract_max_output_tokens": defaults["max_output_tokens"],
     }
 
 
