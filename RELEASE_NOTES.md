@@ -2,7 +2,7 @@
 
 ## Legal Contract Assistant GUI MVP
 
-這是台灣合約審查 Agent 的本機 GUI 技術預覽版。使用者解壓 zip 後，可用 PowerShell 啟動本機網頁介面，選擇合約模式、貼上或上傳 `.txt` 合約，並產生 Markdown 審查報告。
+這是台灣合約審查 Agent 的本機 GUI 技術預覽版。使用者解壓 zip 後，可用 PowerShell 啟動本機網頁介面，選擇合約模式、貼上合約文字或上傳 TXT／PDF／DOCX，並產生 Markdown 審查報告。
 
 ## 支援環境
 
@@ -47,8 +47,8 @@ start-gui.vbs
 
 ## 已知限制
 
-- 第一版只支援貼上純文字與 `.txt` 上傳。
-- 尚未支援 PDF、DOCX、掃描件或 OCR。
+- 可貼上純文字或上傳 TXT、含文字層的 PDF、DOCX（最多 8 MB）。
+- 尚未支援掃描件、圖片 OCR 與舊版 `.doc`。
 - 報告僅為合約風險初步檢查，不構成正式法律意見。
 - 法條與審查規則來自本地 seed/cache，正式使用前仍應回官方來源核對最新版本。
 - GUI 目前以本機單人使用為目標，尚未設計多人帳號、權限或伺服器部署。
