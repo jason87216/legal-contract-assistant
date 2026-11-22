@@ -124,7 +124,7 @@ GUI、CLI、MCP server 與模型 native tool calling 共用法條搜尋、候選
 python -m scripts.evaluate --out-dir reports
 ```
 
-會輸出 `reports/evaluation.md`（適合履歷呈現的指標表）與 `reports/evaluation.json`（各案例細節）。GitHub Actions 會在 CI 中執行並提供 `offline-evaluation` artifact 下載。**這不是 LLM 回答準確率，也不代表法律審查正確率。** `citation_relevance` 是法條映射命中的代理指標，並非人工法律相關性評分；每筆只有一個預期風險主題，不能宣稱完整多標籤 Recall。
+已完成首輪評估：[90 筆案例結果與解讀限制](reports/evaluation.md)。分類、風險等級、單一風險主題及固定報告結構在既有測試集均為 90/90；法條映射代理指標為 60/60。**因為這批資料已被用於既有規則測試，100% 不代表獨立測試的真實法律審查準確率。**\n\n執行會重新輸出 `reports/evaluation.md`（評估指標表）與 `reports/evaluation.json`（各案例細節）；GitHub Actions 會在 CI 中產生 `offline-evaluation` artifact 供下載。**這不是 LLM 回答準確率，也不代表法律審查正確率。** `citation_relevance` 是法條映射命中的代理指標，並非人工法律相關性評分；每筆只有一個預期風險主題，不能宣稱完整多標籤 Recall。
 
 ## 體驗與深入閱讀
 
