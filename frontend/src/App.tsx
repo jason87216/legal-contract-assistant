@@ -316,8 +316,8 @@ function App() {
             </select>
           </label>
           <label>
-            TXT 上傳
-            <input type="file" accept=".txt,text/plain" onChange={onFileChange} />
+            合約檔案上傳（TXT／PDF／DOCX，最多 8 MB）
+            <input type="file" accept=".txt,.pdf,.docx,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={onFileChange} />
           </label>
           <label className="checkbox">
             <input
@@ -340,7 +340,7 @@ function App() {
             <textarea
               value={contractText}
               onChange={(event) => setContractText(event.target.value)}
-              placeholder="貼上合約全文，或上傳 .txt 檔。"
+              placeholder="貼上合約全文，或上傳 TXT／PDF／DOCX（掃描 PDF 暫不支援）。"
             />
           </label>
           <button type="submit" disabled={loading}>
