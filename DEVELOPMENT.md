@@ -108,7 +108,13 @@ MCP server 與 GUI／CLI 共用相同法條工具，不維護第二份法律資�
 - 合約分類與風險規則；
 - SQLite 法條 cache 與來源連結；
 - Provider payload、截斷警告與 native tool calling；
-- FastAPI settings、dry-run、立場與 TXT upload；
+- FastAPI settings、dry-run、立場與 TXT／PDF／DOCX upload；
+
+額外執行離線標註評估：
+
+    python -m scripts.evaluate --out-dir reports
+
+評估報告寫入 `reports/evaluation.md` 和 `reports/evaluation.json`，不需要 API key；結果代表規則及 dry-run 模板，不能當成 LLM 的法律準確率。CI 在 PR 與 push 時執行 Python 測試、離線評估和前端 build，並將報告存為 artifact。
 
 不要在 README 保存會快速過時的 passed 數字；以當次 pytest 結果為準。
 
