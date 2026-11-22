@@ -1,0 +1,58 @@
+name: CI - Legal Contract Assistant
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Check Python syntax
+        run: python -m compileall -q src scripts tests
+      - name: Run Python tests
+        run: python -m pytest -q
+      - name: Evaluate labelled 90-case offline pack
+        run: python -m scripts.evaluate --out-dir reports
+      - name: Upload evaluation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-evaluation
+          path: |
+            reports/evaluation.md
+            reports/evaluation.json
+          retention-days: 30
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Typecheck and build
+        run: npm run build
