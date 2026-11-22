@@ -139,24 +139,24 @@ def to_markdown(results: dict[str, Any]) -> str:
     for name, metric in results["metrics"].items():
         percent = f"{metric['rate'] * 100:.1f}%" if metric["rate"] is not None else "不適用"
         lines.append(
-            f"| \`{name}\` | {metric['passed']}/{metric['total']} | {percent} | {metric['description']} |"
+            f"| `{name}` | {metric['passed']}/{metric['total']} | {percent} | {metric['description']} |"
         )
     lines.extend([
         "",
         "## 解讀限制",
         "",
-        "- 每筆案例只有一個預期風險主題，因此 \`risk_theme_recall\` 是單一標籤命中率，並非完整多標籤召回率。",
-        "- \`citation_relevance\` 僅檢查規則內的法條映射命中，不是由律師人工評分的引用正確率。",
-        "- \`citation_presence\` 只是有無引用；不能推論引用完整、最新或法律上適當。",
-        "- \`manual_review_flag\` 與 \`report_structure\` 評估固定報告模板的涵蓋情況，不是 AI 文筆品質。",
-        "- 每次調整規則後都使用相同 90 案例，會有過度適應風險；正式評估需另外準備未見過的案例。",
+        "- 每筆案例只有一個預期風險主題，因此 `risk_theme_recall` 是單一標籤命中率，並非完整多標籤召回率。",
+        "- `citation_relevance` 僅檢查規則內的法條映射命中，不是由律師人工評分的引用正確率。",
+        "- `citation_presence` 只是有無引用；不能推論引用完整、最新或法律上適當。",
+        "- `manual_review_flag` 與 `report_structure` 評估固定報告模板的涵蓋情況，不是 AI 文筆品質。",
+        "- 這 90 筆資料已被既有規則測試使用；本評估可能與規則設計相互對齊，**不能視為獨立、未見過的測試資料**。未來需另外保留未參與調整的案例。",
         "",
         "## 未通過案例（每項最多列 20 筆）",
         "",
     ])
     for name, metric in results["metrics"].items():
         failures = metric["failed_case_ids"]
-        lines.append(f"- \`{name}\`：{', '.join(failures[:20]) if failures else '無'}" + (" …" if len(failures) > 20 else ""))
+        lines.append(f"- `{name}`：{', '.join(failures[:20]) if failures else '無'}" + (" …" if len(failures) > 20 else ""))
     lines.append("")
     return "\n".join(lines)
 
