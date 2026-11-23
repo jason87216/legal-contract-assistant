@@ -85,11 +85,24 @@ Dry-run 使用本機規則與法條資料，適合離線測試與面試展示。
 
 法條工具：
 
-- search_statutes
-- retrieve_candidate_articles
-- lookup_article
+- search_statutes：`scope` 為 `curated`（38 條精選法條）或 `all`（全部匯入條文）。報告的候選檢索使用 `curated`；MCP 與模型工具呼叫預設 `all`
+- retrieve_candidate_articles：從合約文字擷取法律用語，檢索精選法條
+- lookup_article：精確條號查詢，涵蓋全部匯入條文
+- statute_source_info：資料來源、授權、資料日期與各法律條數
 
 主審查 API 的預設模式為 standard。
+
+### 官方法條資料
+
+`src/legal_contract_assistant/data/official_statutes.json` 由法務部全國法規資料庫開放資料 API（`https://law.moj.gov.tw/api/Ch/Law/JSON`，回傳全部中文法律的 JSON 壓縮檔）產生，納入版本控制，執行時不需連網。官方 API 沒有逐條查詢或搜尋端點，因此整包下載後只保留下列法律。官網每週更新，重新匯入：
+
+    python -m scripts.import_official_statutes
+
+或先手動下載 `ChLaw.json.zip` 再匯入：
+
+    python -m scripts.import_official_statutes --zip ChLaw.json.zip
+
+匯入範圍定義在 `scripts/import_official_statutes.py` 的 `LAWS`。快取初始化時，資料日期與已載入版本不同才會重新寫入。精選法條（`contract_statutes_seed.json`）保留合約類型與主題標註，條文以官方資料為準。審查規則的 `legal_basis` 可引用匯入範圍內的任何條文。
 
 ## MCP server
 
@@ -97,7 +110,7 @@ Dry-run 使用本機規則與法條資料，適合離線測試與面試展示。
 
     python -m src.legal_contract_assistant.mcp_server
 
-MCP server 與 GUI／CLI 共用相同法條工具，不維護第二份法律資料邏輯。
+MCP server 與 GUI／CLI 共用相同法條工具，不維護第二份法律資料邏輯。提供 lookup_article、search_statutes、retrieve_candidate_articles 與 statute_source_info。
 
 ## 自動測試
 

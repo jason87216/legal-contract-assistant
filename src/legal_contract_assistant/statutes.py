@@ -17,6 +17,7 @@ class StatuteArticle:
     contract_types: tuple[str, ...] = field(default_factory=tuple)
     topics: tuple[str, ...] = field(default_factory=tuple)
     cached_at: str | None = None
+    curated: bool = True
 
     @property
     def citation(self) -> str:

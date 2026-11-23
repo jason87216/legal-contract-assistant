@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from contextlib import closing
+from functools import lru_cache
 from datetime import UTC, datetime
 from importlib import resources
 from pathlib import Path
@@ -13,7 +14,8 @@ from typing import Iterable
 from .review_rules import ReviewRule, load_seed_review_rules
 from .statutes import StatuteArticle
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
+OFFICIAL_VERSION_KEY = "official_statutes_version"
 
 
 def default_cache_path() -> Path:
@@ -25,7 +27,16 @@ def normalize_article_no(article_no: str) -> str:
 
 
 class ContractStatuteCache:
-    """Small local cache for statutes that are often used in contract review."""
+    """Local statute store.
+
+    Two kinds of rows share one table:
+    - curated (38 articles): annotated with contract types and topics; the
+      report's statute retrieval uses only these.
+    - official: every article of the laws in official_statutes.json, imported
+      from the National Regulation Database open data; used for exact lookups,
+      rule citations, MCP and model tool searches.
+    Curated rows take their text from the official data when it has the article.
+    """
 
     def __init__(self, db_path: Path | str | None = None) -> None:
         self.db_path = Path(db_path) if db_path is not None else default_cache_path()
@@ -71,20 +82,68 @@ class ContractStatuteCache:
                     """
                 )
                 _ensure_column(conn, "statute_articles", "contract_types_json", "TEXT NOT NULL DEFAULT '[]'")
+                _ensure_column(conn, "statute_articles", "curated", "INTEGER NOT NULL DEFAULT 1")
                 conn.execute(
                     "INSERT OR REPLACE INTO metadata (key, value) VALUES (?, ?)",
                     ("schema_version", str(SCHEMA_VERSION)),
                 )
         if seed:
+            source, official = load_official_articles()
+            if self.metadata(OFFICIAL_VERSION_KEY) != source["data_updated"]:
+                self.upsert_many(official)
+                self.set_metadata(OFFICIAL_VERSION_KEY, source["data_updated"])
+            # Curated rows go last so their annotations and flag win.
             self.upsert_many(load_seed_articles())
             self.upsert_review_rules(load_seed_review_rules())
+
+    def metadata(self, key: str) -> str | None:
+        with closing(self._connect()) as conn:
+            row = conn.execute("SELECT value FROM metadata WHERE key = ?", (key,)).fetchone()
+        return row["value"] if row else None
+
+    def set_metadata(self, key: str, value: str) -> None:
+        with closing(self._connect()) as conn:
+            with conn:
+                conn.execute(
+                    "INSERT OR REPLACE INTO metadata (key, value) VALUES (?, ?)", (key, value)
+                )
+
+    def source_info(self) -> dict:
+        """Where the statute text comes from, and how much of it is stored."""
+        source, _ = load_official_articles()
+        with closing(self._connect()) as conn:
+            rows = conn.execute(
+                """
+                SELECT law_name, pcode, COUNT(*) AS articles, SUM(curated) AS curated
+                FROM statute_articles
+                GROUP BY law_name, pcode
+                ORDER BY law_name
+                """
+            ).fetchall()
+        amended = {
+            law["law_name"]: law["last_amended"] for law in official_statutes_data()["laws"]
+        }
+        return {
+            **source,
+            "loaded_version": self.metadata(OFFICIAL_VERSION_KEY),
+            "laws": [
+                {
+                    "law_name": row["law_name"],
+                    "pcode": row["pcode"],
+                    "articles": row["articles"],
+                    "curated_articles": row["curated"],
+                    "last_amended": amended.get(row["law_name"]),
+                }
+                for row in rows
+            ],
+        }
 
     def get(self, law_name: str, article_no: str) -> StatuteArticle | None:
         with closing(self._connect()) as conn:
             row = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at
+                       contract_types_json, topics_json, cached_at, curated
                 FROM statute_articles
                 WHERE law_name = ? AND article_no = ?
                 """,
@@ -98,9 +157,9 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at
+                       contract_types_json, topics_json, cached_at, curated
                 FROM statute_articles
-                WHERE topics_json LIKE ? OR text LIKE ?
+                WHERE curated = 1 AND (topics_json LIKE ? OR text LIKE ?)
                 ORDER BY law_name, article_no
                 """,
                 (pattern, pattern),
@@ -113,7 +172,7 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at
+                       contract_types_json, topics_json, cached_at, curated
                 FROM statute_articles
                 WHERE contract_types_json LIKE ?
                 ORDER BY law_name, article_no
@@ -131,7 +190,7 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at
+                       contract_types_json, topics_json, cached_at, curated
                 FROM statute_articles
                 WHERE contract_types_json LIKE ? AND topics_json LIKE ?
                 ORDER BY law_name, article_no
@@ -140,13 +199,15 @@ class ContractStatuteCache:
             ).fetchall()
         return [_row_to_article(row) for row in rows if row is not None]
 
-    def list_articles(self) -> list[StatuteArticle]:
+    def list_articles(self, *, curated_only: bool = False) -> list[StatuteArticle]:
+        where = "WHERE curated = 1" if curated_only else ""
         with closing(self._connect()) as conn:
             rows = conn.execute(
-                """
+                f"""
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at
+                       contract_types_json, topics_json, cached_at, curated
                 FROM statute_articles
+                {where}
                 ORDER BY law_name, article_no
                 """
             ).fetchall()
@@ -235,6 +296,7 @@ class ContractStatuteCache:
                 json.dumps(list(article.contract_types), ensure_ascii=False),
                 json.dumps(list(article.topics), ensure_ascii=False),
                 article.cached_at or now,
+                int(article.curated),
             )
             for article in articles
         ]
@@ -247,16 +309,17 @@ class ContractStatuteCache:
                     """
                     INSERT INTO statute_articles (
                         law_name, pcode, article_no, text, source_url,
-                        contract_types_json, topics_json, cached_at
+                        contract_types_json, topics_json, cached_at, curated
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(law_name, article_no) DO UPDATE SET
                         pcode = excluded.pcode,
                         text = excluded.text,
                         source_url = excluded.source_url,
                         contract_types_json = excluded.contract_types_json,
                         topics_json = excluded.topics_json,
-                        cached_at = excluded.cached_at
+                        cached_at = excluded.cached_at,
+                        curated = excluded.curated
                     """,
                     rows,
                 )
@@ -267,15 +330,53 @@ class ContractStatuteCache:
         return conn
 
 
+@lru_cache
+def official_statutes_data() -> dict:
+    path = resources.files(f"{__package__}.data").joinpath("official_statutes.json")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def article_url(pcode: str, article_no: str) -> str:
+    return f"https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode={pcode}&flno={article_no}"
+
+
+def load_official_articles() -> tuple[dict, list[StatuteArticle]]:
+    """Every article in official_statutes.json (scripts/import_official_statutes.py)."""
+    data = official_statutes_data()
+    articles = []
+    for law in data["laws"]:
+        for item in law["articles"]:
+            article_no = normalize_article_no(item["article_no"])
+            articles.append(
+                StatuteArticle(
+                    law_name=law["law_name"],
+                    pcode=law["pcode"],
+                    article_no=article_no,
+                    text=item["text"],
+                    source_url=article_url(law["pcode"], article_no),
+                    cached_at=data["source"]["imported_at"],
+                    curated=False,
+                )
+            )
+    return data["source"], articles
+
+
 def load_seed_articles() -> list[StatuteArticle]:
+    """Curated articles; their text comes from the official data when it has the article."""
     seed_path = resources.files(f"{__package__}.data").joinpath("contract_statutes_seed.json")
     raw_articles = json.loads(seed_path.read_text(encoding="utf-8"))
+    official = {
+        (article.law_name, article.article_no): article.text
+        for article in load_official_articles()[1]
+    }
     return [
         StatuteArticle(
             law_name=item["law_name"],
             pcode=item["pcode"],
             article_no=normalize_article_no(item["article_no"]),
-            text=item["text"],
+            text=official.get(
+                (item["law_name"], normalize_article_no(item["article_no"])), item["text"]
+            ),
             source_url=item["source_url"],
             contract_types=tuple(item.get("contract_types", [])),
             topics=tuple(item.get("topics", [])),
@@ -297,6 +398,7 @@ def _row_to_article(row: sqlite3.Row | None) -> StatuteArticle | None:
         contract_types=tuple(json.loads(row["contract_types_json"])),
         topics=tuple(json.loads(row["topics_json"])),
         cached_at=row["cached_at"],
+        curated=bool(row["curated"]),
     )
 
 
