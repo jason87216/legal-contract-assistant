@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from importlib import resources
 from typing import Any
 
 from .statute_lookup import StatuteLookupService
@@ -131,26 +132,72 @@ class StatuteRetrievalTool:
 
 
 def extract_contract_keywords(contract_text: str, limit: int = 18) -> list[str]:
-    normalized = contract_text.strip()
-    raw_terms = _extract_terms(normalized)
-    seen: set[str] = set()
-    keywords: list[str] = []
-    for term in raw_terms:
-        if term in seen:
-            continue
-        seen.add(term)
-        keywords.append(term)
-        if len(keywords) >= limit:
-            break
-    return keywords
+    """Return legal terms in order of first appearance.
+
+    Chinese contracts have no spaces, so splitting on punctuation yields whole
+    clauses such as \u300c\u79df\u8cc3\u623f\u5c4b\u4f4d\u65bc\u9ad8\u96c4\u5e02\u20268\u6a13\u300d that never appear in a statute.
+    Contract keywords therefore keep only known legal terms from Chinese text
+    (names, addresses and clause numbers are dropped) plus non-Chinese words.
+    """
+    return _extract_terms(contract_text.strip(), keep_short_chinese=False)[:limit]
 
 
-def _extract_terms(text: str) -> list[str]:
+def _load_legal_terms() -> tuple[str, ...]:
+    seed_path = resources.files(f"{__package__}.data").joinpath("contract_terms_seed.json")
+    groups = json.loads(seed_path.read_text(encoding="utf-8"))
+    terms = {
+        term
+        for name, items in groups.items()
+        if not name.startswith("_")
+        for term in items
+    }
+    # Longest first, so a term found at the same position as a shorter one
+    # (\u5b9a\u578b\u5316\u5951\u7d04 / \u5b9a\u578b\u5316) is listed first.
+    return tuple(sorted(terms, key=lambda term: (-len(term), term)))
+
+
+LEGAL_TERMS = _load_legal_terms()
+_CHINESE = re.compile(r"[\u4e00-\u9fff]")
+
+
+def _legal_terms_in(token: str) -> list[str]:
+    found = [
+        (match.start(), index, term)
+        for index, term in enumerate(LEGAL_TERMS)
+        for match in re.finditer(re.escape(term), token)
+    ]
+    return [term for _, _, term in sorted(found)]
+
+
+def _extract_terms(text: str, *, keep_short_chinese: bool = True) -> list[str]:
+    """Split text into search terms, without duplicates.
+
+    Words without Chinese characters are kept as they are (English words, topic
+    codes, article numbers such as 245-1). Chinese runs are split into the
+    legal terms they contain. A short Chinese query word (up to four
+    characters) is also kept as typed, so a tool query like \u300c\u62bc\u91d1 \u8fd4\u9084\u300d still
+    searches \u8fd4\u9084; contract text turns this off because its short tokens are
+    mostly names and clause numbers.
+    """
     terms: list[str] = []
+    seen: set[str] = set()
+
+    def add(term: str) -> None:
+        if term not in seen:
+            seen.add(term)
+            terms.append(term)
+
     for token in re.findall(r"[\w\u4e00-\u9fff-]{2,}", text):
         cleaned = token.strip("_-")
-        if len(cleaned) >= 2 and not cleaned.isdigit():
-            terms.append(cleaned)
+        if len(cleaned) < 2 or cleaned.isdigit():
+            continue
+        if not _CHINESE.search(cleaned):
+            add(cleaned)
+            continue
+        if keep_short_chinese and len(cleaned) <= 4:
+            add(cleaned)
+        for term in _legal_terms_in(cleaned):
+            add(term)
     return terms
 
 

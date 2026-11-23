@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING
 
 from .review_rules import DEFAULT_REVIEW_RULES
@@ -61,6 +61,22 @@ REQUIRED_KEYWORDS = {
     },
 }
 
+TOPIC_LABELS = {
+    "penalty": "違約金與賠償",
+    "termination": "終止與解除",
+    "standard_terms": "定型化條款",
+    "warranty": "瑕疵與保固",
+    "working_hours": "工時與加班",
+    "wage": "薪資",
+    "repair": "修繕",
+    "rent": "租金與押金",
+}
+
+CONFIDENCE_LABELS = {
+    "high": "高（已指定合約類型）",
+    "low": "低（未指定合約類型，未比對必要條款）",
+}
+
 TOPIC_KEYWORDS = {
     "penalty": ("違約金", "賠償"),
     "termination": ("終止", "解除", "離職", "資遣"),
@@ -81,6 +97,24 @@ RISK_THEME_CITATIONS = risk_theme_citations(DEFAULT_REVIEW_RULES)
 
 
 @dataclass(frozen=True)
+class RiskFinding:
+    """One matched review rule: the clause that triggered it and its own legal basis."""
+
+    rule_id: str
+    theme: str
+    level: str
+    clause_excerpt: str
+    articles: tuple[StatuteArticle, ...]
+    suggestion: str
+
+    @property
+    def citations(self) -> str:
+        if not self.articles:
+            return "本地快取未命中規則所列法條，需人工補查"
+        return "、".join(article.citation for article in self.articles)
+
+
+@dataclass(frozen=True)
 class ReviewContext:
     contract_text: str
     contract_type: str
@@ -97,10 +131,20 @@ class ReviewContext:
     extracted_keywords: tuple[str, ...] = ()
     candidate_articles: tuple[dict, ...] = ()
     review_perspective: str = "neutral"
+    risk_findings: tuple[RiskFinding, ...] = ()
 
     @property
     def contract_type_label(self) -> str:
         return CONTRACT_TYPE_LABELS.get(self.contract_type, self.contract_type)
+
+    @property
+    def confidence_label(self) -> str:
+        return CONFIDENCE_LABELS.get(self.confidence, self.confidence)
+
+    @property
+    def focus_topic_labels(self) -> tuple[str, ...]:
+        """Chinese names for focus_topics; the codes stay for statute topic search."""
+        return tuple(TOPIC_LABELS.get(topic, topic) for topic in self.focus_topics)
 
     @property
     def review_perspective_label(self) -> str:
@@ -139,6 +183,7 @@ class ContractReviewService:
             normalized, detected_type, missing_items, review_rules
         )
         risk_themes = detect_risk_themes(normalized, review_rules)
+        risk_findings = detect_risk_findings(normalized, review_rules, self.statute_lookup)
         articles = collect_related_articles(
             self.statute_lookup,
             detected_type,
@@ -166,6 +211,7 @@ class ContractReviewService:
             extracted_keywords=tuple(candidate_result.get("keywords", [])),
             candidate_articles=tuple(candidate_result.get("articles", [])),
             review_perspective=review_perspective,
+            risk_findings=tuple(risk_findings),
         )
 
     def generate_markdown_report(
@@ -184,23 +230,7 @@ class ContractReviewService:
             review_perspective=review_perspective,
         )
         if model_config is not None:
-            context = ReviewContext(
-                contract_text=context.contract_text,
-                contract_type=context.contract_type,
-                confidence=context.confidence,
-                related_articles=context.related_articles,
-                missing_items=context.missing_items,
-                focus_topics=context.focus_topics,
-                risk_level=context.risk_level,
-                risk_reasons=context.risk_reasons,
-                risk_themes=context.risk_themes,
-                prompt=context.prompt,
-                model_config=model_config,
-                contract_mode=context.contract_mode,
-                extracted_keywords=context.extracted_keywords,
-                candidate_articles=context.candidate_articles,
-                review_perspective=context.review_perspective,
-            )
+            context = replace(context, model_config=model_config)
         provider = llm_provider or NoopLLMProvider(model_config=context.model_config)
         return provider.generate_report(context)
 
@@ -269,6 +299,58 @@ def detect_risk_themes(
     if themes:
         return themes
     return ["無明顯高風險；仍應人工複核"]
+
+
+def detect_risk_findings(
+    contract_text: str,
+    rules: list[ReviewRule],
+    statute_lookup: StatuteLookupService,
+) -> list[RiskFinding]:
+    """Pair every matched rule with the clause that triggered it and its own articles.
+
+    Order follows risk_themes (rule order), so the two lists line up. Articles
+    come only from the rule's legal_basis, never from another rule's position.
+    """
+    clause = extract_review_clause(strip_frontmatter(contract_text))
+    findings: list[RiskFinding] = []
+    for rule in rules:
+        match = re.search(rule.pattern, clause)
+        if match is None:
+            continue
+        articles = []
+        for law_name, article_no in rule.legal_basis:
+            result = statute_lookup.lookup(law_name, article_no, allow_live_query=False)
+            if result.article is not None:
+                articles.append(result.article)
+        findings.append(
+            RiskFinding(
+                rule_id=rule.rule_id,
+                theme=rule.risk_theme,
+                level=rule.risk_level,
+                clause_excerpt=clause_excerpt(clause, match.start(), match.end()),
+                articles=tuple(articles),
+                suggestion=rule.suggestion,
+            )
+        )
+    return findings
+
+
+_SENTENCE_BREAKS = "。；;\n"
+
+
+def clause_excerpt(text: str, start: int, end: int, max_length: int = 120) -> str:
+    """Return the sentence around a match; long sentences are trimmed around it."""
+    left = max(text.rfind(mark, 0, start) for mark in _SENTENCE_BREAKS) + 1
+    right_candidates = [text.find(mark, end) for mark in _SENTENCE_BREAKS]
+    right = min((index for index in right_candidates if index != -1), default=len(text))
+    sentence = text[left : right + 1].strip()
+    if len(sentence) <= max_length:
+        return sentence
+    offset = start - left - (len(text[left:start]) - len(text[left:start].lstrip()))
+    half = max_length // 2
+    begin = max(0, offset - half)
+    excerpt = sentence[begin : begin + max_length]
+    return ("…" if begin > 0 else "") + excerpt + ("…" if begin + max_length < len(sentence) else "")
 
 
 def strip_frontmatter(contract_text: str) -> str:

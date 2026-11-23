@@ -10,7 +10,7 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 if TYPE_CHECKING:
-    from .contract_review import ReviewContext
+    from .contract_review import ReviewContext, RiskFinding
     from .statute_tools import StatuteRetrievalTool
 
 
@@ -84,7 +84,7 @@ class NoopLLMProvider:
         if not missing_items:
             missing_items = "- 暫未以關鍵字發現明顯缺漏；仍需人工逐條確認。"
 
-        focus_topics = "\n".join(f"- {topic}" for topic in context.focus_topics)
+        focus_topics = "\n".join(f"- {topic}" for topic in context.focus_topic_labels)
         if not focus_topics:
             focus_topics = "- 需人工確認"
 
@@ -102,7 +102,7 @@ class NoopLLMProvider:
 - 合約類型：{context.contract_type_label}
 - 審查立場：{context.review_perspective_label}
 - 整體風險等級：{context.risk_level}
-- 審查信心：{context.confidence}
+- 審查信心：{context.confidence_label}
 - 審查方式：本地 SQLite 法條快取 + 規則式初步判斷
 - 模型設定：{context.model_config.label}（dry-run，不呼叫外部 API）
 
@@ -152,25 +152,44 @@ def _contract_intro(context: "ReviewContext") -> str:
 
 
 def _detailed_suggestions(context: "ReviewContext") -> str:
-    themes = context.risk_themes or ("需人工確認",)
-    suggestions = []
-    for index, theme in enumerate(themes, start=1):
-        citation = (
-            context.related_articles[index - 1].citation
-            if index - 1 < len(context.related_articles)
-            else "本地快取與工具查詢未命中精確法條，需人工補查"
+    """One entry per matched rule: clause, the rule's own articles, the rule's suggestion."""
+    findings = getattr(context, "risk_findings", ())
+    if not findings:
+        return "\n".join(
+            [
+                "1. 問題：未命中風險規則；仍應人工複核",
+                "   - 合約狀態：需人工確認",
+                "   - 修改方向：補明確義務、期限、通知方式、違約效果與例外條件，避免單方解釋。",
+            ]
         )
-        suggestions.append(
+    entries = []
+    for index, finding in enumerate(findings, start=1):
+        entries.append(
             "\n".join(
                 [
-                    f"{index}. 問題：{theme}",
-                    "   - 合約狀態：需人工確認",
-                    f"   - 相關法條：{citation}",
-                    "   - 修改方向：補明確義務、期限、通知方式、違約效果與例外條件，避免單方解釋。",
+                    f"{index}. 問題：{finding.theme}（{finding.level}）",
+                    "   - 合約狀態：合約已明確約定，條款內容需檢討",
+                    f"   - 觸發條款：「{finding.clause_excerpt}」",
+                    f"   - 對應法條：{finding.citations}",
+                    f"   - 修改建議：{finding.suggestion or '需人工確認'}",
                 ]
             )
         )
-    return "\n".join(suggestions)
+    return "\n".join(entries)
+
+
+def _finding_stance(finding: "RiskFinding", perspective: str) -> str:
+    """Per-risk advice for the chosen side, built from the rule's own basis and suggestion."""
+    suggestion = finding.suggestion or "需人工確認修改方向"
+    if perspective == "party_a":
+        return (
+            f"- {finding.theme}：若要保留此約定，應先確認是否符合{finding.citations}；"
+            f"建議調整為：{suggestion}"
+        )
+    return (
+        f"- {finding.theme}：談判時要求修改或刪除，可援引{finding.citations}；"
+        f"可提出的修改方向：{suggestion}"
+    )
 
 
 def _perspective_section_title(context: "ReviewContext") -> str:
@@ -182,6 +201,17 @@ def _perspective_section_title(context: "ReviewContext") -> str:
 
 
 def _perspective_section(context: "ReviewContext") -> str:
+    findings = getattr(context, "risk_findings", ())
+    general = _general_perspective_advice(context)
+    if context.review_perspective in ("party_a", "party_b") and findings:
+        stances = "\n".join(
+            _finding_stance(finding, context.review_perspective) for finding in findings
+        )
+        return f"逐項：\n{stances}\n\n通用：\n{general}"
+    return general
+
+
+def _general_perspective_advice(context: "ReviewContext") -> str:
     if context.review_perspective == "party_a":
         return "\n".join(
             [
@@ -610,9 +640,19 @@ def _build_user_prompt(context: "ReviewContext") -> str:
         review_perspective,
     )
     missing_items = "\n".join(f"- {item}" for item in context.missing_items)
-    focus_topics = "\n".join(f"- {topic}" for topic in context.focus_topics)
+    focus_topics = "\n".join(
+        f"- {label}"
+        for label in getattr(context, "focus_topic_labels", context.focus_topics)
+    )
     risk_reasons = "\n".join(f"- {reason}" for reason in context.risk_reasons)
     risk_themes = "\n".join(f"- {theme}" for theme in context.risk_themes)
+    risk_findings = "\n".join(
+        f"- {finding.theme}（{finding.level}）\n"
+        f"  觸發條款：「{finding.clause_excerpt}」\n"
+        f"  對應法條：{finding.citations}\n"
+        f"  規則建議：{finding.suggestion}"
+        for finding in getattr(context, "risk_findings", ())
+    )
 
     return f"""請根據以下結構化資料產生 Markdown 合約審查報告。
 
@@ -621,11 +661,12 @@ def _build_user_prompt(context: "ReviewContext") -> str:
 - 每個風險都要標示狀態：「合約已明確約定」、「合約未約定」或「需人工確認」。
 - 法條只能使用下方 related_articles、candidate_articles 或工具查詢結果；不得自由補充未提供的法條、判決或函釋。
 - 若工具查詢仍未命中精確法條，只能寫「本地快取與工具查詢未命中精確法條，需人工補查」，不得宣稱沒有相關法條。
+- 每個命中的風險，引用法條以下方「風險與法條對應」中該風險自己的對應法條為主，不得把其他風險的法條配給它。
 
 合約類型：{context.contract_type_label}
 審查立場：{review_perspective_label} ({review_perspective})
 整體風險等級：{context.risk_level}
-審查信心：{context.confidence}
+審查信心：{getattr(context, "confidence_label", context.confidence)}
 
 相關法條（related_articles）：
 {laws or "- 無"}
@@ -641,6 +682,9 @@ def _build_user_prompt(context: "ReviewContext") -> str:
 
 命中風險主題：
 {risk_themes or "- 無"}
+
+風險與法條對應（每個風險觸發的條款、依據法條與規則建議）：
+{risk_findings or "- 無"}
 
 合約文字：
 candidate_articles:

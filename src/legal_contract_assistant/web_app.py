@@ -210,6 +210,24 @@ def create_app(
             "review_perspective_label": context.review_perspective_label,
             "risk_level": context.risk_level,
             "risk_themes": list(context.risk_themes),
+            "risk_findings": [
+                {
+                    "rule_id": finding.rule_id,
+                    "theme": finding.theme,
+                    "level": finding.level,
+                    "clause_excerpt": finding.clause_excerpt,
+                    "suggestion": finding.suggestion,
+                    "articles": [
+                        {
+                            "citation": article.citation,
+                            "text": article.text,
+                            "source_url": article.source_url,
+                        }
+                        for article in finding.articles
+                    ],
+                }
+                for finding in context.risk_findings
+            ],
             "generation": {
                 "provider": model_config.provider,
                 "model": model_config.model,
