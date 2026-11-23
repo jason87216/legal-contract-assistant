@@ -171,6 +171,7 @@ def _detailed_suggestions(context: "ReviewContext") -> str:
                     "   - 合約狀態：合約已明確約定，條款內容需檢討",
                     f"   - 觸發條款：「{finding.clause_excerpt}」",
                     f"   - 對應法條：{finding.citations}",
+                    *([f"   - 適用說明：{finding.basis_note}"] if finding.basis_note else []),
                     f"   - 修改建議：{finding.suggestion or '需人工確認'}",
                 ]
             )
@@ -650,7 +651,8 @@ def _build_user_prompt(context: "ReviewContext") -> str:
         f"- {finding.theme}（{finding.level}）\n"
         f"  觸發條款：「{finding.clause_excerpt}」\n"
         f"  對應法條：{finding.citations}\n"
-        f"  規則建議：{finding.suggestion}"
+        + (f"  適用說明：{finding.basis_note}\n" if finding.basis_note else "")
+        + f"  規則建議：{finding.suggestion}"
         for finding in getattr(context, "risk_findings", ())
     )
 
@@ -662,6 +664,7 @@ def _build_user_prompt(context: "ReviewContext") -> str:
 - 法條只能使用下方 related_articles、candidate_articles 或工具查詢結果；不得自由補充未提供的法條、判決或函釋。
 - 若工具查詢仍未命中精確法條，只能寫「本地快取與工具查詢未命中精確法條，需人工補查」，不得宣稱沒有相關法條。
 - 每個命中的風險，引用法條以下方「風險與法條對應」中該風險自己的對應法條為主，不得把其他風險的法條配給它。
+- 有「適用說明」的風險，須依說明判斷各法條的適用條件，不得超出說明推論。
 
 合約類型：{context.contract_type_label}
 審查立場：{review_perspective_label} ({review_perspective})

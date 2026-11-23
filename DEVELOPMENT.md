@@ -94,15 +94,15 @@ Dry-run 使用本機規則與法條資料，適合離線測試與面試展示。
 
 ### 官方法條資料
 
-`src/legal_contract_assistant/data/official_statutes.json` 由法務部全國法規資料庫開放資料 API（`https://law.moj.gov.tw/api/Ch/Law/JSON`，回傳全部中文法律的 JSON 壓縮檔）產生，納入版本控制，執行時不需連網。官方 API 沒有逐條查詢或搜尋端點，因此整包下載後只保留下列法律。官網每週更新，重新匯入：
+`src/legal_contract_assistant/data/official_statutes.json` 由法務部全國法規資料庫開放資料 API（`https://law.moj.gov.tw/api/Ch/Law/JSON` 與 `/api/Ch/Order/JSON`，分別回傳全部中文法律與命令的 JSON 壓縮檔）產生，納入版本控制，執行時不需連網。官方 API 沒有逐條查詢或搜尋端點，因此整包下載後只保留下列法律。官網每週更新，重新匯入：
 
     python -m scripts.import_official_statutes
 
-或先手動下載 `ChLaw.json.zip` 再匯入：
+或先手動下載兩個壓縮檔再匯入：
 
-    python -m scripts.import_official_statutes --zip ChLaw.json.zip
+    python -m scripts.import_official_statutes --law-zip ChLaw.json.zip --order-zip ChOrder.json.zip
 
-匯入範圍定義在 `scripts/import_official_statutes.py` 的 `LAWS`。快取初始化時，資料日期與已載入版本不同才會重新寫入。精選法條（`contract_statutes_seed.json`）保留合約類型與主題標註，條文以官方資料為準。審查規則的 `legal_basis` 可引用匯入範圍內的任何條文。
+匯入範圍定義在 `scripts/import_official_statutes.py` 的 `LAWS`（法律）與 `ORDERS`（命令）。資料檔每次重建都會更新 `imported_at`，快取初始化時與已載入版本不同才會重新寫入。精選法條（`contract_statutes_seed.json`）保留合約類型與主題標註，條文以官方資料為準。審查規則的 `legal_basis` 可引用匯入範圍內的任何條文。
 
 ## MCP server
 

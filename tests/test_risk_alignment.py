@@ -85,3 +85,46 @@ def test_clause_excerpt_trims_long_sentences_around_the_match() -> None:
     assert "不得解除契約" in excerpt
     assert excerpt.startswith("…") and excerpt.endswith("…")
     assert len(excerpt) == 42
+
+
+def test_every_rule_citation_resolves_to_an_official_article(tmp_path) -> None:
+    service = _service(tmp_path)
+
+    unresolved = [
+        (rule.rule_id, law_name, article_no)
+        for rule in service.statute_lookup.cache.list_review_rules()
+        for law_name, article_no in rule.legal_basis
+        if service.statute_lookup.lookup(law_name, article_no, allow_live_query=False).article
+        is None
+    ]
+
+    assert unresolved == []
+
+
+NONCOMPETE = (
+    "第八條【特殊約定】\n"
+    "乙方離職後三年內不得於臺灣地區從事與甲方相同或類似之工作，甲方無須另給補償。"
+)
+
+
+def test_noncompete_cites_specific_articles_with_basis_note(tmp_path) -> None:
+    service = _service(tmp_path)
+    context = service.build_context(NONCOMPETE, contract_type="labor")
+    report = service.generate_markdown_report(NONCOMPETE, contract_type="labor")
+
+    finding = next(f for f in context.risk_findings if f.rule_id == "labor_high_noncompete")
+    assert [article.citation for article in finding.articles] == [
+        "勞動基準法 第 9-1 條",
+        "勞動基準法施行細則 第 7-1 條",
+        "勞動基準法施行細則 第 7-2 條",
+        "勞動基準法施行細則 第 7-3 條",
+    ]
+    assert "勞動基準法 第 1 條" not in finding.citations
+    assert f"   - 適用說明：{finding.basis_note}" in report
+    assert "期間最長二年" in finding.basis_note
+
+
+def test_rules_without_basis_note_show_no_note_line(tmp_path) -> None:
+    report = _service(tmp_path).generate_markdown_report(CONTRACT, contract_type="lease")
+
+    assert "適用說明" not in report

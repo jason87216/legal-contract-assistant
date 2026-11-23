@@ -83,15 +83,17 @@ class ContractStatuteCache:
                 )
                 _ensure_column(conn, "statute_articles", "contract_types_json", "TEXT NOT NULL DEFAULT '[]'")
                 _ensure_column(conn, "statute_articles", "curated", "INTEGER NOT NULL DEFAULT 1")
+                _ensure_column(conn, "review_rules", "basis_note", "TEXT NOT NULL DEFAULT ''")
                 conn.execute(
                     "INSERT OR REPLACE INTO metadata (key, value) VALUES (?, ?)",
                     ("schema_version", str(SCHEMA_VERSION)),
                 )
         if seed:
             source, official = load_official_articles()
-            if self.metadata(OFFICIAL_VERSION_KEY) != source["data_updated"]:
+            # imported_at changes with every rebuilt data file, including scope changes.
+            if self.metadata(OFFICIAL_VERSION_KEY) != source["imported_at"]:
                 self.upsert_many(official)
-                self.set_metadata(OFFICIAL_VERSION_KEY, source["data_updated"])
+                self.set_metadata(OFFICIAL_VERSION_KEY, source["imported_at"])
             # Curated rows go last so their annotations and flag win.
             self.upsert_many(load_seed_articles())
             self.upsert_review_rules(load_seed_review_rules())
@@ -120,9 +122,7 @@ class ContractStatuteCache:
                 ORDER BY law_name
                 """
             ).fetchall()
-        amended = {
-            law["law_name"]: law["last_amended"] for law in official_statutes_data()["laws"]
-        }
+        laws = {law["law_name"]: law for law in official_statutes_data()["laws"]}
         return {
             **source,
             "loaded_version": self.metadata(OFFICIAL_VERSION_KEY),
@@ -132,7 +132,8 @@ class ContractStatuteCache:
                     "pcode": row["pcode"],
                     "articles": row["articles"],
                     "curated_articles": row["curated"],
-                    "last_amended": amended.get(row["law_name"]),
+                    "level": laws.get(row["law_name"], {}).get("level"),
+                    "last_amended": laws.get(row["law_name"], {}).get("last_amended"),
                 }
                 for row in rows
             ],
@@ -221,7 +222,7 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT rule_id, risk_theme, risk_level, pattern,
-                       legal_basis_json, suggestion, source_note
+                       legal_basis_json, suggestion, source_note, basis_note
                 FROM review_rules
                 ORDER BY rule_id
                 """
@@ -238,6 +239,7 @@ class ContractStatuteCache:
                 ),
                 suggestion=row["suggestion"],
                 source_note=row["source_note"],
+                basis_note=row["basis_note"],
             )
             for row in rows
         ]
@@ -258,6 +260,7 @@ class ContractStatuteCache:
                 ),
                 rule.suggestion,
                 rule.source_note,
+                rule.basis_note,
             )
             for rule in rules
         ]
@@ -270,16 +273,17 @@ class ContractStatuteCache:
                     """
                     INSERT INTO review_rules (
                         rule_id, risk_theme, risk_level, pattern,
-                        legal_basis_json, suggestion, source_note
+                        legal_basis_json, suggestion, source_note, basis_note
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(rule_id) DO UPDATE SET
                         risk_theme = excluded.risk_theme,
                         risk_level = excluded.risk_level,
                         pattern = excluded.pattern,
                         legal_basis_json = excluded.legal_basis_json,
                         suggestion = excluded.suggestion,
-                        source_note = excluded.source_note
+                        source_note = excluded.source_note,
+                        basis_note = excluded.basis_note
                     """,
                     rows,
                 )
