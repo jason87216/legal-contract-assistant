@@ -12,6 +12,9 @@ from .statute_lookup import StatuteLookupService
 from .statutes import StatuteArticle
 
 
+SEARCH_SCOPES = ("curated", "all")
+
+
 @dataclass(frozen=True)
 class RetrievedArticle:
     article: StatuteArticle
@@ -27,6 +30,7 @@ class RetrievedArticle:
             "source_url": self.article.source_url,
             "contract_types": list(self.article.contract_types),
             "topics": list(self.article.topics),
+            "curated": self.article.curated,
             "score": self.score,
             "match_reason": self.match_reason,
         }
@@ -71,12 +75,21 @@ class StatuteRetrievalTool:
         query: str,
         contract_mode: str | None = None,
         limit: int = 8,
+        scope: str = "curated",
     ) -> list[dict[str, Any]]:
+        """Rank articles by query terms.
+
+        scope "curated" searches the 38 annotated articles (used by the report's
+        candidate retrieval); "all" also searches every imported official article.
+        """
+        if scope not in SEARCH_SCOPES:
+            raise ValueError(f"scope must be one of {SEARCH_SCOPES}")
         terms = _extract_terms(query)
         if not terms and contract_mode:
             terms = [contract_mode]
         ranked: list[RetrievedArticle] = []
-        for article in self.lookup_service.cache.list_articles():
+        articles = self.lookup_service.cache.list_articles(curated_only=scope == "curated")
+        for article in articles:
             score, reasons = _score_article(article, terms, contract_mode)
             if score > 0:
                 ranked.append(
@@ -112,13 +125,19 @@ class StatuteRetrievalTool:
                 article_no=str(arguments.get("article_no", "")),
             )
         if name == "search_statutes":
+            scope = str(arguments.get("scope") or "all")
+            if scope not in SEARCH_SCOPES:
+                return {"error": f"scope must be one of {SEARCH_SCOPES}"}
             return {
                 "articles": self.search_statutes(
                     query=str(arguments.get("query", "")),
                     contract_mode=_optional_str(arguments.get("contract_mode")),
                     limit=int(arguments.get("limit", 8) or 8),
+                    scope=scope,
                 )
             }
+        if name == "statute_source_info":
+            return self.source_info()
         if name == "retrieve_candidate_articles":
             return self.retrieve_candidate_articles(
                 contract_text=str(arguments.get("contract_text", "")),
@@ -126,6 +145,10 @@ class StatuteRetrievalTool:
                 limit=int(arguments.get("limit", 12) or 12),
             )
         return {"error": f"Unsupported tool: {name}"}
+
+    def source_info(self) -> dict[str, Any]:
+        """Data source, license, data date and article counts per law."""
+        return self.lookup_service.cache.source_info()
 
     def call_tool_json(self, name: str, arguments: dict[str, Any]) -> str:
         return json.dumps(self.call_tool(name, arguments), ensure_ascii=False)
