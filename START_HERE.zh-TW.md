@@ -35,7 +35,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ## 3. 第一次測試
 
 1. 合約模式選 `租賃合約`、`買賣合約`、`勞動合約`，或選 `自動判斷`。
-2. 貼上合約文字，或上傳 `.txt` 檔。
+2. 貼上合約文字，或上傳 `.txt`、含文字層的 `.pdf`、`.docx` 檔（檔案最多 8 MB）。
 3. 先不要勾選「使用 API 模型產生報告」。
 4. 按「產生審查報告」。
 

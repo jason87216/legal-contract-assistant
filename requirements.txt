@@ -1,3 +1,5 @@
 fastapi[standard-no-fastapi-cloud-cli]
 mcp[cli]>=1.27,<2
 python-dotenv
+pypdf>=5,<7
+python-docx>=1.2,<2

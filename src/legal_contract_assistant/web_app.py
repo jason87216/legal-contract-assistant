@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from . import __version__
 from .contract_review import CONTRACT_TYPE_LABELS, REVIEW_PERSPECTIVE_LABELS, ContractReviewService
+from .document_parser import DocumentParseError, MAX_UPLOAD_BYTES, extract_contract_text
 from .llm import (
     AnthropicLLMProvider,
     GeminiLLMProvider,
@@ -149,10 +150,13 @@ def create_app(
     ) -> dict[str, Any]:
         contract_text = text.strip()
         if file is not None and file.filename:
-            if not file.filename.lower().endswith(".txt"):
-                raise HTTPException(status_code=400, detail="Only .txt upload is supported")
-            raw = await file.read()
-            contract_text = raw.decode("utf-8-sig").strip()
+            try:
+                raw = await file.read(MAX_UPLOAD_BYTES + 1)
+                contract_text = extract_contract_text(file.filename, raw)
+            except DocumentParseError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+            finally:
+                await file.close()
 
         if not contract_text:
             raise HTTPException(status_code=400, detail="Contract text is required")

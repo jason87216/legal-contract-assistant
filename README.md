@@ -2,7 +2,7 @@
 
 > 以本機法條、審查規則與可替換的 AI 模型，產生可追溯的合約風險報告。
 
-Legal Contract Assistant 是一個面向台灣買賣、勞動與租賃合約的初步審查工具。使用者可貼上文字或上傳 TXT，選擇審查立場，再以純本機 dry-run 或外部／本機模型產生 Markdown 報告。
+Legal Contract Assistant 是一個面向台灣買賣、勞動與租賃合約的初步審查工具。使用者可貼上文字或上傳 TXT、可擷取文字的 PDF、DOCX（上限 8 MB），選擇審查立場，再以純本機 dry-run 或外部／本機模型產生 Markdown 報告。
 
 報告會整理風險主題、缺漏事項、修改建議、相關法條與來源網址。模型只能使用系統提供或工具查得的法條證據；正式使用仍應由合格法律專業人員確認。
 
@@ -67,7 +67,7 @@ GUI、CLI、MCP server 與模型 native tool calling 共用法條搜尋、候選
 
 - 買賣、勞動、租賃或不指定合約類型；
 - 中立、甲方或乙方審查立場；
-- 貼上文字或上傳 TXT；
+- 貼上文字或上傳 TXT、PDF、DOCX（8 MB 上限；PDF 必須含可選取文字，不含 OCR）；
 - 長合約截斷警告與明確停止原因。
 
 ### 可追溯檢索
@@ -116,6 +116,16 @@ GUI、CLI、MCP server 與模型 native tool calling 共用法條搜尋、候選
 - 模型 native tool calls 使用後端法條工具；
 - API key 遮罩與純本機 dry-run。
 
+## 90 筆標註案例離線評估
+
+使用內附標註資料包，測量合約分類、規則風險、主題命中、法條映射與 dry-run 報告結構：
+
+```bash
+python -m scripts.evaluate --out-dir reports
+```
+
+已完成首輪評估：[90 筆案例結果與解讀限制](reports/evaluation.md)。分類、風險等級、單一風險主題及固定報告結構在既有測試集均為 90/90；法條映射代理指標為 60/60。**因為這批資料已被用於既有規則測試，100% 不代表獨立測試的真實法律審查準確率。**\n\n執行會重新輸出 `reports/evaluation.md`（評估指標表）與 `reports/evaluation.json`（各案例細節）；GitHub Actions 會在 CI 中產生 `offline-evaluation` artifact 供下載。**這不是 LLM 回答準確率，也不代表法律審查正確率。** `citation_relevance` 是法條映射命中的代理指標，並非人工法律相關性評分；每筆只有一個預期風險主題，不能宣稱完整多標籤 Recall。
+
 ## 體驗與深入閱讀
 
 - [一般使用者快速開始](START_HERE.zh-TW.md)
@@ -127,7 +137,7 @@ GUI、CLI、MCP server 與模型 native tool calling 共用法條搜尋、候選
 
 - 使用遠端模型時，合約文字可能送往所選 provider；敏感合約應優先使用 dry-run 或受控本機模型。
 - .env、API key 與本機資料庫不應提交。
-- 目前輸入以文字與 TXT 為主，不包含 PDF、DOCX 或 OCR。
+- 支援 TXT、含文字層的 PDF 與 DOCX；掃描 PDF、圖片與舊版 .doc 不支援，需先 OCR 或轉換。
 - 本機快取與模型輸出都不能取代最新官方法規確認與專業法律意見。
 
 ## 授權條款
