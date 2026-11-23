@@ -221,6 +221,7 @@ def create_app(
                     "level": finding.level,
                     "clause_excerpt": finding.clause_excerpt,
                     "suggestion": finding.suggestion,
+                    "basis_note": finding.basis_note,
                     "articles": [
                         {
                             "citation": article.citation,

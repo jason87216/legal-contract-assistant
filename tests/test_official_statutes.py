@@ -80,6 +80,20 @@ def test_lookup_finds_articles_outside_the_curated_set(tmp_path) -> None:
     assert article["source_url"].endswith("pcode=N0030001&flno=9-1")
 
 
+def test_regulations_and_added_laws_are_imported(tmp_path) -> None:
+    tool = _tool(tmp_path)
+
+    for law_name, article_no in [
+        ("勞動基準法施行細則", "7-3"),
+        ("就業保險法", "5"),
+        ("勞工職業災害保險及保護法", "6"),
+        ("營業秘密法", "2"),
+        ("著作權法", "21"),
+        ("專利法", "9"),
+    ]:
+        assert tool.lookup_article(law_name, article_no)["found"], (law_name, article_no)
+
+
 def test_curated_articles_use_current_official_text(tmp_path) -> None:
     article = _tool(tmp_path).lookup_article("民法", "435")["article"]
 
@@ -115,11 +129,12 @@ def test_source_info_reports_license_date_and_counts(tmp_path) -> None:
     info = tool.source_info()
 
     assert info["download_url"] == "https://law.moj.gov.tw/api/Ch/Law/JSON"
-    assert info["loaded_version"] == info["data_updated"]
+    assert info["loaded_version"] == info["imported_at"]
     laws = {law["law_name"]: law for law in info["laws"]}
     assert laws["民法"]["articles"] >= 1400
     assert laws["民法"]["curated_articles"] > 0
     assert laws["土地法"]["articles"] > 0
+    assert laws["勞動基準法施行細則"]["level"] == "命令"
 
 
 def test_mcp_server_exposes_source_info_tool(tmp_path, monkeypatch) -> None:

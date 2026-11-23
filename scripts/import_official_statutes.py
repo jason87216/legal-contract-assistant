@@ -1,17 +1,17 @@
 """Build data/official_statutes.json from the National Regulation Database open data API.
 
-Source: 法務部全國法規資料庫開放資料 API, Chinese laws in JSON
-(https://law.moj.gov.tw/api/Ch/Law/JSON, documented at
+Source: 法務部全國法規資料庫開放資料 API, Chinese laws and regulations in JSON
+(https://law.moj.gov.tw/api/Ch/Law/JSON and /api/Ch/Order/JSON, documented at
 https://law.moj.gov.tw/api/swagger/docs/v1). The site updates its content weekly.
 The same data is listed on data.gov.tw (https://data.gov.tw/dataset/18289) under
 the Open Government Data License, version 1.0.
 
-    python -m scripts.import_official_statutes                       # download and rebuild
-    python -m scripts.import_official_statutes --zip ChLaw.json.zip  # use a downloaded file
+    python -m scripts.import_official_statutes          # download both bundles and rebuild
+    python -m scripts.import_official_statutes --law-zip ChLaw.json.zip --order-zip ChOrder.json.zip
 
-Only the laws listed in LAWS are kept. Repealed laws are skipped. Article
-numbers are stored as in the database ("245-1"); text keeps one line per
-paragraph.
+Only the laws in LAWS and regulations in ORDERS are kept. Repealed ones are
+skipped. Article numbers are stored as in the database ("245-1"); text keeps
+one line per paragraph.
 """
 
 from __future__ import annotations
@@ -26,10 +26,11 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 DOWNLOAD_URL = "https://law.moj.gov.tw/api/Ch/Law/JSON"
+ORDER_DOWNLOAD_URL = "https://law.moj.gov.tw/api/Ch/Order/JSON"
 API_DOCS_URL = "https://law.moj.gov.tw/api/swagger/docs/v1"
 DATASET_URL = "https://data.gov.tw/dataset/18289"
 LICENSE = "政府資料開放授權條款－第1版"
-ATTRIBUTION = "資料來源：法務部全國法規資料庫開放資料（中文法律）"
+ATTRIBUTION = "資料來源：法務部全國法規資料庫開放資料（中文法律及命令）"
 OUTPUT = (
     Path(__file__).resolve().parents[1]
     / "src"
@@ -51,7 +52,15 @@ LAWS = (
     "勞資爭議處理法",
     "土地法",
     "租賃住宅市場發展及管理條例",
+    "就業保險法",
+    "勞工職業災害保險及保護法",
+    "營業秘密法",
+    "著作權法",
+    "專利法",
 )
+
+# Regulations (命令) come from the separate order bundle.
+ORDERS = ("勞動基準法施行細則",)
 
 _ARTICLE_NO = re.compile(r"^第(.+)條$")
 _PCODE = re.compile(r"pcode=([A-Z0-9]+)", re.IGNORECASE)
@@ -76,6 +85,16 @@ def _clean(text: str | None) -> str:
     return "\n".join(line.rstrip() for line in (text or "").replace("\r\n", "\n").split("\n")).strip()
 
 
+def parse_bundles(law_bundle: dict, order_bundle: dict) -> dict:
+    """Keep LAWS from the law bundle and ORDERS from the order bundle."""
+    laws = parse_laws(law_bundle, LAWS)
+    orders = parse_laws(order_bundle, ORDERS)
+    laws["source"]["order_download_url"] = ORDER_DOWNLOAD_URL
+    laws["source"]["order_data_updated"] = orders["source"]["data_updated"]
+    laws["laws"].extend(orders["laws"])
+    return laws
+
+
 def parse_laws(bundle: dict, wanted: tuple[str, ...] = LAWS) -> dict:
     found: dict[str, dict] = {}
     for law in bundle.get("Laws", []):
@@ -98,6 +117,7 @@ def parse_laws(bundle: dict, wanted: tuple[str, ...] = LAWS) -> dict:
             )
         found[name] = {
             "law_name": name,
+            "level": (law.get("LawLevel") or "").strip(),
             "pcode": pcode.group(1),
             "url": url,
             "last_amended": (law.get("LawModifiedDate") or "").strip(),
@@ -122,11 +142,13 @@ def parse_laws(bundle: dict, wanted: tuple[str, ...] = LAWS) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--zip", type=Path, help="use a downloaded ChLaw.json.zip")
+    parser.add_argument("--law-zip", type=Path, help="use a downloaded ChLaw.json.zip")
+    parser.add_argument("--order-zip", type=Path, help="use a downloaded ChOrder.json.zip")
     parser.add_argument("--out", type=Path, default=OUTPUT)
     args = parser.parse_args()
-    archive = args.zip.read_bytes() if args.zip else download()
-    data = parse_laws(read_bundle(archive))
+    law_archive = args.law_zip.read_bytes() if args.law_zip else download(DOWNLOAD_URL)
+    order_archive = args.order_zip.read_bytes() if args.order_zip else download(ORDER_DOWNLOAD_URL)
+    data = parse_bundles(read_bundle(law_archive), read_bundle(order_archive))
     args.out.write_text(
         json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8"
     )

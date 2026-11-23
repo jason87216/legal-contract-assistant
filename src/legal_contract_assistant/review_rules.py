@@ -16,6 +16,8 @@ class ReviewRule:
     legal_basis: tuple[tuple[str, str], ...]
     suggestion: str
     source_note: str
+    # When and how the legal basis applies, e.g. which article fits which situation.
+    basis_note: str = ""
 
 
 def load_seed_review_rules() -> list[ReviewRule]:
@@ -35,6 +37,7 @@ def load_seed_review_rules() -> list[ReviewRule]:
             ),
             suggestion=item.get("suggestion", ""),
             source_note=item.get("source_note", ""),
+            basis_note=item.get("basis_note", ""),
         )
         for item in raw_rules
     ]

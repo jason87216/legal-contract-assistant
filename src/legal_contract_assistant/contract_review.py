@@ -106,6 +106,7 @@ class RiskFinding:
     clause_excerpt: str
     articles: tuple[StatuteArticle, ...]
     suggestion: str
+    basis_note: str = ""
 
     @property
     def citations(self) -> str:
@@ -330,6 +331,7 @@ def detect_risk_findings(
                 clause_excerpt=clause_excerpt(clause, match.start(), match.end()),
                 articles=tuple(articles),
                 suggestion=rule.suggestion,
+                basis_note=rule.basis_note,
             )
         )
     return findings
