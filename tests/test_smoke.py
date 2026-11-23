@@ -159,3 +159,27 @@ def test_report_generation_accepts_replaceable_llm_provider(tmp_path) -> None:
     )
 
     assert report == "fake report: sale"
+
+
+def test_dry_run_report_uses_chinese_labels(tmp_path) -> None:
+    from src.legal_contract_assistant.contract_review import ContractReviewService
+    from src.legal_contract_assistant.statute_cache import ContractStatuteCache
+    from src.legal_contract_assistant.statute_lookup import StatuteLookupService
+
+    service = ContractReviewService(StatuteLookupService(ContractStatuteCache(tmp_path / "c.db")))
+    service.initialize()
+
+    report = service.generate_markdown_report(
+        "承租人應按月支付租金，押金二個月。房屋修繕由出租人負擔。任一方得提前終止，違約金一個月租金。",
+        contract_type="lease",
+    )
+
+    assert "- 審查信心：高（已指定合約類型）" in report
+    for label in ("違約金與賠償", "終止與解除", "修繕", "租金與押金"):
+        assert f"- {label}\n" in report
+    for code in ("penalty", "termination", "repair", "rent", "high"):
+        assert f"- {code}\n" not in report
+    assert "審查信心：high" not in report
+
+    auto_report = service.generate_markdown_report("押金二個月", contract_type=None)
+    assert "- 審查信心：低（未指定合約類型，未比對必要條款）" in auto_report
