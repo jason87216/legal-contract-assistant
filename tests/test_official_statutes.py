@@ -71,13 +71,13 @@ def test_importer_reads_the_api_zip() -> None:
 
 
 def test_lookup_finds_articles_outside_the_curated_set(tmp_path) -> None:
-    result = _tool(tmp_path).lookup_article("勞動基準法", "9-1")
+    result = _tool(tmp_path).lookup_article("民法", "1")
 
     assert result["found"] is True
     article = result["article"]
-    assert article["text"].startswith("未符合下列規定者，雇主不得與勞工為離職後競業禁止之約定")
+    assert article["text"].startswith("民事，法律所未規定者，依習慣")
     assert article["curated"] is False
-    assert article["source_url"].endswith("pcode=N0030001&flno=9-1")
+    assert article["source_url"].endswith("pcode=B0000001&flno=1")
 
 
 def test_regulations_and_added_laws_are_imported(tmp_path) -> None:

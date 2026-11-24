@@ -1,0 +1,48 @@
+{
+  "_note": "Candidate-retrieval scope per contract type. Every article of the listed laws inside the listed ranges becomes a curated candidate for that type; \"all\": true takes the whole law; ranges are inclusive and an end without a suffix also covers its -1, -2 ... articles (\"397\" covers 397-1). \"common\" applies to every type. Statutes cited by review rules are added automatically from the rule_id prefix, so they are not repeated here. Draft scope: needs legal review.",
+  "_types": {
+    "sale": "買賣",
+    "lease": "租賃",
+    "labor": "勞動",
+    "work": "承攬",
+    "mandate": "委任",
+    "loan": "借貸"
+  },
+  "common": [
+    {"law_name": "民法", "ranges": [
+      ["71", "74"],
+      ["86", "93"],
+      ["125", "128"],
+      ["148", "148"],
+      ["153", "166"],
+      ["199", "241"],
+      ["245", "270"]
+    ], "_why": "法律行為無效與撤銷、意思表示瑕疵、消滅時效、誠信原則、契約成立、債之標的（含利息 203～206）、損害賠償、給付與遲延、定型化條款 247-1、定金與違約金、解除與終止、雙務契約"},
+    {"law_name": "消費者保護法", "ranges": [["11", "17"]], "_why": "定型化契約"},
+    {"law_name": "民事訴訟法", "ranges": [["24", "24"]], "_why": "合意管轄"}
+  ],
+  "sale": [
+    {"law_name": "民法", "ranges": [["345", "397"]], "_why": "買賣"},
+    {"law_name": "消費者保護法", "ranges": [["18", "19"]], "_why": "通訊交易與訪問交易"}
+  ],
+  "lease": [
+    {"law_name": "民法", "ranges": [["421", "463"]], "_why": "租賃"},
+    {"law_name": "土地法", "ranges": [["94", "100"]], "_why": "房屋租用"},
+    {"law_name": "租賃住宅市場發展及管理條例", "all": true, "_why": "住宅租賃"}
+  ],
+  "labor": [
+    {"law_name": "民法", "ranges": [["482", "489"]], "_why": "僱傭"},
+    {"law_name": "勞動基準法", "all": true, "_why": "勞動條件全部"},
+    {"law_name": "勞動基準法施行細則", "all": true, "_why": "施行細則全部"}
+  ],
+  "work": [
+    {"law_name": "民法", "ranges": [["490", "514"]], "_why": "承攬"},
+    {"law_name": "著作權法", "ranges": [["11", "12"]], "_why": "受雇與出資完成著作的權利歸屬（軟體、設計外包）"}
+  ],
+  "mandate": [
+    {"law_name": "民法", "ranges": [["528", "552"]], "_why": "委任"}
+  ],
+  "loan": [
+    {"law_name": "民法", "ranges": [["464", "481"], ["739", "756"]], "_why": "借貸、保證與人事保證"}
+  ]
+}
