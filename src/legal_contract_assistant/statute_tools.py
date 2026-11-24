@@ -79,8 +79,8 @@ class StatuteRetrievalTool:
     ) -> list[dict[str, Any]]:
         """Rank articles by query terms.
 
-        scope "curated" searches the 38 annotated articles (used by the report's
-        candidate retrieval); "all" also searches every imported official article.
+        scope "curated" searches the contract-type candidate ranges used by the
+        report; "all" also searches every imported official article.
         """
         if scope not in SEARCH_SCOPES:
             raise ValueError(f"scope must be one of {SEARCH_SCOPES}")
@@ -90,7 +90,7 @@ class StatuteRetrievalTool:
         ranked: list[RetrievedArticle] = []
         articles = self.lookup_service.cache.list_articles(curated_only=scope == "curated")
         for article in articles:
-            score, reasons = _score_article(article, terms, contract_mode)
+            score, reasons = _score_article(article, terms, contract_mode, query)
             if score > 0:
                 ranked.append(
                     RetrievedArticle(
@@ -228,6 +228,7 @@ def _score_article(
     article: StatuteArticle,
     terms: list[str],
     contract_mode: str | None,
+    query: str,
 ) -> tuple[int, list[str]]:
     score = 0
     reasons: list[str] = []
@@ -236,20 +237,20 @@ def _score_article(
         score += 6
         reasons.append(f"contract_mode:{mode}")
 
-    haystacks = {
-        "law_name": article.law_name,
-        "article_no": article.article_no,
-        "topics": " ".join(article.topics),
-        "text": article.text,
-    }
+    # 只有查詢明確提及完整法規名稱才加分，避免「租賃」替整部條例灌分。
+    if article.law_name in query:
+        score += 12
+        reasons.append(f"law_name:{article.law_name}")
+
+    topics = " ".join(article.topics)
     for term in terms:
-        if term in haystacks["law_name"] or term == haystacks["article_no"]:
+        if term == article.article_no:
             score += 12
-            reasons.append(f"law_or_article:{term}")
-        if term in haystacks["topics"]:
+            reasons.append(f"article_no:{term}")
+        if term in topics:
             score += 8
             reasons.append(f"topic:{term}")
-        if term in haystacks["text"]:
+        if term in article.text:
             score += 4
             reasons.append(f"text:{term}")
     return score, reasons
