@@ -125,7 +125,19 @@ GUI、CLI、MCP server 與模型 native tool calling 共用法條搜尋、候選
 python -m scripts.evaluate --out-dir reports
 ```
 
-已完成首輪評估：[90 筆案例結果與解讀限制](reports/evaluation.md)。分類、風險等級、單一風險主題及固定報告結構在既有測試集均為 90/90；法條映射代理指標為 60/60。**因為這批資料已被用於既有規則測試，100% 不代表獨立測試的真實法律審查準確率。**\n\n執行會重新輸出 `reports/evaluation.md`（評估指標表）與 `reports/evaluation.json`（各案例細節）；GitHub Actions 會在 CI 中產生 `offline-evaluation` artifact 供下載。**這不是 LLM 回答準確率，也不代表法律審查正確率。** `citation_relevance` 是法條映射命中的代理指標，並非人工法律相關性評分；每筆只有一個預期風險主題，不能宣稱完整多標籤 Recall。
+已完成首輪評估：[90 筆案例結果與解讀限制](reports/evaluation.md)。分類、風險等級、單一風險主題及固定報告結構在既有測試集均為 90/90；法條映射代理指標為 60/60。**因為這批資料已被用於既有規則測試，100% 不代表獨立測試的真實法律審查準確率。**
+
+執行會重新輸出 `reports/evaluation.md`（評估指標表）與 `reports/evaluation.json`（各案例細節）；GitHub Actions 會在 CI 中產生 `offline-evaluation` artifact 供下載。**這不是 LLM 回答準確率，也不代表法律審查正確率。** `citation_relevance` 是法條映射命中的代理指標，並非人工法律相關性評分；每筆只有一個預期風險主題，不能宣稱完整多標籤 Recall。
+
+### 候選法條檢索評測
+
+比較報告「候選法條」的不同檢索做法：查詢用整份合約或只用被規則命中的條款，搜尋範圍是 38 條精選法條或全部匯入法條。標準答案是預期風險主題所屬規則引用的法條，指標為前 5、前 12 名命中率（R@5、R@12）與平均倒數排名（MRR）：
+
+```bash
+python -m scripts.evaluate_retrieval --out-dir reports
+```
+
+輸出 `reports/retrieval_evaluation.md` 與 `reports/retrieval_evaluation.json`。測試包同時用於撰寫規則與詞表，數字只用來比較做法，不代表準確率。
 
 ## 體驗與深入閱讀
 
