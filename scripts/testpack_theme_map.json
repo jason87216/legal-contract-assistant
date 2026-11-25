@@ -55,7 +55,8 @@
    "lease_high_repair_request_barred"
   ],
   "修繕責任不明": [
-   "lease_medium_missing_repair_terms"
+   "lease_medium_missing_repair_terms",
+   "lease_medium_repair_by_later_agreement"
   ],
   "隱私與居住安寧風險": [
    "lease_high_landlord_entry_any_time"
@@ -73,14 +74,16 @@
    "lease_high_landlord_terminate_at_will"
   ],
   "水電管理費不明": [
-   "lease_medium_taxes_on_tenant"
+   "lease_medium_taxes_on_tenant",
+   "lease_medium_fees_set_by_landlord"
   ],
   "設備清單不足": [
    "lease_medium_no_inventory",
    "lease_medium_missing_inventory"
   ],
   "遺留物處理不明": [
-   "lease_medium_left_property_disposal"
+   "lease_medium_left_property_disposal",
+   "lease_medium_left_property_by_later_agreement"
   ],
   "工作內容不明": [
    "labor_medium_unlimited_duties"

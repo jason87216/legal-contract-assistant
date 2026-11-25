@@ -367,5 +367,151 @@
   "item": "是否確有健保投保",
   "why": "全民健康保險法不在官方條文庫，需由 LLM 以工具查詢。",
   "related_articles": []
+ },
+ {
+  "contract_type": "work",
+  "item": "工作內容與交付成果是否足以特定（規格、數量、交付物清單）",
+  "why": "描述方式差異大，需讀懂上下文。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "490"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "492"
+   }
+  ]
+ },
+ {
+  "contract_type": "work",
+  "item": "報酬的計算方式、分期付款與驗收是否連動",
+  "why": "付款節點寫法多樣。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "505"
+   }
+  ]
+ },
+ {
+  "contract_type": "work",
+  "item": "材料由誰供給、材料瑕疵與定作人指示不當的責任分配",
+  "why": "需看雙方分工。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "496"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "509"
+   }
+  ]
+ },
+ {
+  "contract_type": "work",
+  "item": "是否實際上屬於僱傭（受指揮監督、按時計酬），而以承攬名義規避勞動法",
+  "why": "從屬性要看實際安排。",
+  "related_articles": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "2"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "482"
+   }
+  ]
+ },
+ {
+  "contract_type": "mandate",
+  "item": "報酬是按時、按件或按成果計算，以及何時可以請求",
+  "why": "計酬方式寫法多樣。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "547"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "548"
+   }
+  ]
+ },
+ {
+  "contract_type": "mandate",
+  "item": "受任人的注意義務程度（有償應負善良管理人注意）與責任上限是否相當",
+  "why": "需判斷是否有償與責任限制是否合理。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "535"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "544"
+   }
+  ]
+ },
+ {
+  "contract_type": "mandate",
+  "item": "是否實際上屬於承攬（以完成一定成果為目的）或僱傭",
+  "why": "契約定性影響適用條文。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "528"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "529"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "490"
+   }
+  ]
+ },
+ {
+  "contract_type": "loan",
+  "item": "手續費、服務費、帳管費等名目是否實質上是利息，與利息、違約金合計的實質利率是否超過週年百分之十六",
+  "why": "費用是否屬利息、是否過高，需換算金額與期間，字面無法判斷。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "205"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "206"
+   }
+  ]
+ },
+ {
+  "contract_type": "loan",
+  "item": "借款是否實際交付、交付金額與契約記載是否一致",
+  "why": "需對照撥款證明。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "474"
+   }
+  ]
+ },
+ {
+  "contract_type": "loan",
+  "item": "擔保安排（保證人、本票、抵押）的範圍與期間是否明確",
+  "why": "擔保方式與範圍寫法多樣。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "739"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "740"
+   }
+  ]
  }
 ]

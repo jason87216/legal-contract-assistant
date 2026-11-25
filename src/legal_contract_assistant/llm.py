@@ -9,6 +9,8 @@ from urllib.parse import quote
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+from .statute_cache import contract_type_labels
+
 if TYPE_CHECKING:
     from .contract_review import ReviewContext, RiskFinding
     from .statute_tools import StatuteRetrievalTool
@@ -736,7 +738,7 @@ def _tool_parameter_schema() -> dict[str, dict[str, Any]]:
                 "query": {"type": "string"},
                 "contract_mode": {
                     "type": "string",
-                    "enum": ["sale", "labor", "lease", "unknown"],
+                    "enum": [*contract_type_labels(), "unknown"],
                 },
                 "limit": {"type": "integer", "minimum": 1, "maximum": 30},
             },
@@ -749,7 +751,7 @@ def _tool_parameter_schema() -> dict[str, dict[str, Any]]:
                 "contract_text": {"type": "string"},
                 "contract_mode": {
                     "type": "string",
-                    "enum": ["sale", "labor", "lease", "unknown"],
+                    "enum": [*contract_type_labels(), "unknown"],
                 },
                 "limit": {"type": "integer", "minimum": 1, "maximum": 30},
             },

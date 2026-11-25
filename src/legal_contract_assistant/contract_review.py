@@ -12,6 +12,7 @@ from .review_rules import RuleHit
 from .review_rules import load_llm_checklist
 from .review_rules import risk_theme_citations
 from .review_rules import triggered_rules
+from .statute_cache import contract_type_labels
 from .statute_lookup import StatuteLookupService
 from .statute_tools import StatuteRetrievalTool
 from .statutes import StatuteArticle
@@ -19,12 +20,9 @@ from .statutes import StatuteArticle
 if TYPE_CHECKING:
     from .llm import LLMProvider, ModelConfig
 
-CONTRACT_TYPE_LABELS = {
-    "sale": "買賣",
-    "labor": "勞動",
-    "lease": "租賃",
-    "unknown": "無法判斷",
-}
+# Contract types come from contract_scope_seed.json, the one place they are listed.
+CONTRACT_TYPE_LABELS = {**contract_type_labels(), "unknown": "無法判斷"}
+CONTRACT_TYPES = tuple(contract_type_labels())
 
 REVIEW_PERSPECTIVE_LABELS = {
     "neutral": "中立審查",
@@ -36,7 +34,24 @@ CONTRACT_TYPE_KEYWORDS = {
     "labor": ("雇主", "勞工", "薪資", "工資", "加班", "工作時間", "職務", "離職"),
     "lease": ("出租人", "承租人", "租金", "押金", "租賃", "房屋", "修繕", "租期"),
     "sale": ("買方", "賣方", "價金", "標的物", "交付", "驗收", "瑕疵", "保固"),
+    # Distinctive party names and terms only: 報酬, 驗收 and 承攬 also appear in
+    # other types (承攬 shows up in labor contracts that disguise employment).
+    "work": ("承攬人", "定作人", "承攬契約", "完工", "工程款", "工作物", "委託製作"),
+    "mandate": ("委任人", "受任人", "委任契約", "委任事務", "顧問費", "代辦"),
+    "loan": ("借款人", "貸與人", "借用人", "出借人", "借款", "借貸", "本金", "清償"),
 }
+
+# Party names decide the type when shared words tie: a 承攬 contract also says
+# 交付, 驗收 and 保固. Each party name found counts PARTY_WEIGHT keywords.
+CONTRACT_TYPE_PARTIES = {
+    "labor": ("雇主", "勞工", "僱用人", "受僱人"),
+    "lease": ("出租人", "承租人"),
+    "sale": ("買方", "賣方", "出賣人", "買受人"),
+    "work": ("承攬人", "定作人"),
+    "mandate": ("委任人", "受任人"),
+    "loan": ("借款人", "貸與人", "借用人", "出借人"),
+}
+PARTY_WEIGHT = 3
 
 REQUIRED_KEYWORDS = {
     "sale": {
@@ -59,6 +74,25 @@ REQUIRED_KEYWORDS = {
         "押金": ("押金", "保證金"),
         "修繕責任": ("修繕", "維修"),
         "租期或終止": ("租期", "終止", "期限"),
+    },
+    "work": {
+        "工作內容或成果": ("工作內容", "工作項目", "成果", "規格", "工程"),
+        "報酬": ("報酬", "價金", "工程款", "費用"),
+        "完成期限": ("完成", "完工", "交付", "期限"),
+        "驗收或瑕疵": ("驗收", "瑕疵", "保固", "修補"),
+        "終止或解除": ("終止", "解除"),
+    },
+    "mandate": {
+        "委任事務": ("委任事務", "委任範圍", "服務內容", "處理事項", "委任事項"),
+        "報酬": ("報酬", "顧問費", "服務費", "費用"),
+        "報告": ("報告", "回報", "進度"),
+        "終止": ("終止", "解除"),
+    },
+    "loan": {
+        "借款金額": ("借款金額", "本金", "借款新臺幣", "借款"),
+        "利息": ("利息", "利率", "年息", "無息"),
+        "清償期限": ("清償", "還款", "償還", "返還"),
+        "遲延或違約": ("遲延", "違約", "逾期"),
     },
 }
 
@@ -243,6 +277,8 @@ def classify_contract_type(contract_text: str) -> str:
     contract_text = strip_frontmatter(contract_text)
     scores = {
         contract_type: sum(1 for keyword in keywords if keyword in contract_text)
+        + PARTY_WEIGHT
+        * sum(1 for party in CONTRACT_TYPE_PARTIES[contract_type] if party in contract_text)
         for contract_type, keywords in CONTRACT_TYPE_KEYWORDS.items()
     }
     best_type, best_score = max(scores.items(), key=lambda item: item[1])

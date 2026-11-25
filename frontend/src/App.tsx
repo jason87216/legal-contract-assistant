@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 type ProviderId = "openai" | "openrouter" | "llama_cpp" | "ollama" | "anthropic" | "gemini";
-type ContractType = "auto" | "sale" | "labor" | "lease";
+type ContractType = "auto" | "sale" | "labor" | "lease" | "work" | "mandate" | "loan";
 type ReviewPerspective = "neutral" | "party_a" | "party_b";
 
 type ProviderState = {
@@ -46,6 +46,9 @@ const CONTRACT_TYPES: Array<{ value: ContractType; label: string }> = [
   { value: "sale", label: "買賣合約" },
   { value: "labor", label: "勞動合約" },
   { value: "lease", label: "租賃合約" },
+  { value: "work", label: "承攬合約" },
+  { value: "mandate", label: "委任合約" },
+  { value: "loan", label: "借貸合約" },
 ];
 
 const REVIEW_PERSPECTIVES: Array<{ value: ReviewPerspective; label: string }> = [

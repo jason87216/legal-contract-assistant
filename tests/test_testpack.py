@@ -92,8 +92,8 @@ def test_low_risk_cases_trigger_no_rule(evaluation) -> None:
 def test_rule_recall_and_citations_do_not_regress(evaluation) -> None:
     # Floors at the rewrite's first measurement; raise them when rules improve.
     metrics = evaluation["metrics"]
-    assert metrics["risk_theme_recall"]["passed"] >= 77
-    assert metrics["citation_relevance"]["passed"] >= 48
+    assert metrics["risk_theme_recall"]["passed"] >= 80
+    assert metrics["citation_relevance"]["passed"] >= 50
     assert metrics["citation_presence"]["rate"] == 1
 
 
