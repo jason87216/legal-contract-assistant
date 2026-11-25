@@ -22,6 +22,8 @@ from scripts.evaluate import NO_HIGH_RISK_THEME, ROOT, THEME_MAP, load_cases
 from src.legal_contract_assistant.contract_review import classify_contract_type
 from src.legal_contract_assistant.review_rules import DEFAULT_REVIEW_RULES, ReviewRule
 from src.legal_contract_assistant.statute_tools import (
+    CLAUSE_SPLIT,
+    RETRIEVAL_METHODS,
     StatuteRetrievalTool,
     extract_contract_keywords,
 )
@@ -36,7 +38,6 @@ VARIANT_DESCRIPTIONS = {
     "clause_curated": "只用被規則命中的條款，搜精選法條",
     "clause_all": "只用被規則命中的條款，搜全部匯入法條",
 }
-CLAUSE_SPLIT = re.compile(r"\n(?=第[一二三四五六七八九十百零〇\d]+條)|\n\s*\n")
 
 
 def citation_key(law_name: str, article_no: str) -> str:
@@ -70,22 +71,35 @@ def retrieve(
     query_kind: str,
     scope: str,
     rules: list[ReviewRule],
+    method: str = "keyword",
 ) -> list[str]:
-    if query_kind == "full":
-        query = " ".join(extract_contract_keywords(text))
-        articles = tool.search_statutes(query, contract_mode=contract_mode, limit=LIMIT, scope=scope)
-        return [citation_key(a["law_name"], a["article_no"]) for a in articles]
-
-    best: dict[str, int] = {}
-    for clause in rule_hit_clauses(text, rules):
-        query = " ".join(extract_contract_keywords(clause))
-        if not query:
-            continue
-        for article in tool.search_statutes(query, contract_mode=contract_mode, limit=LIMIT, scope=scope):
+    queries = [text] if query_kind == "full" else rule_hit_clauses(text, rules)
+    best: dict[str, float] = {}
+    for query in queries:
+        if method == "keyword":
+            query = " ".join(extract_contract_keywords(query))
+            if not query and query_kind == "clause":
+                continue
+        result = tool.call_tool("search_statutes", {
+            "query": query,
+            "contract_mode": contract_mode,
+            "limit": LIMIT,
+            "scope": scope,
+            "method": method,
+        })
+        if "warning" in result:
+            raise VectorEvaluationUnavailable(result["warning"])
+        for article in result["articles"]:
             key = citation_key(article["law_name"], article["article_no"])
-            best[key] = max(best.get(key, 0), article["score"])
-    ranked = sorted(best.items(), key=lambda item: (-item[1], item[0]))
-    return [key for key, _ in ranked[:LIMIT]]
+            best[key] = max(best.get(key, float("-inf")), article["score"])
+    if query_kind == "full":
+        return list(best)
+    ranked = sorted(best, key=lambda key: (-best[key], key))
+    return ranked[:LIMIT]
+
+
+class VectorEvaluationUnavailable(RuntimeError):
+    pass
 
 
 def first_hit_rank(ranked: list[str], expected: set[str]) -> int | None:
@@ -107,6 +121,12 @@ def evaluate_retrieval(
         for article in tool.lookup_service.cache.list_articles(curated_only=True)
     }
 
+    skipped_methods: dict[str, str] = {}
+    variants = {
+        (base if method == "keyword" else f"{method}_{base}"): (method, description)
+        for method in RETRIEVAL_METHODS
+        for base, description in VARIANT_DESCRIPTIONS.items()
+    }
     rows: list[dict[str, Any]] = []
     for case in cases:
         theme = case["expected_risk_themes"]
@@ -122,18 +142,34 @@ def evaluate_retrieval(
             "expected_in_curated": bool(expected & curated),
             "ranks": {},
         }
-        for query_kind in QUERY_KINDS:
-            for scope in SCOPES:
-                ranked = retrieve(tool, text, None if mode == "unknown" else mode, query_kind, scope, rules)
-                row["ranks"][f"{query_kind}_{scope}"] = first_hit_rank(ranked, expected)
+        for method in RETRIEVAL_METHODS:
+            if method in skipped_methods:
+                continue
+            try:
+                for query_kind in QUERY_KINDS:
+                    for scope in SCOPES:
+                        ranked = retrieve(
+                            tool, text, None if mode == "unknown" else mode,
+                            query_kind, scope, rules, method,
+                        )
+                        base = f"{query_kind}_{scope}"
+                        variant = base if method == "keyword" else f"{method}_{base}"
+                        row["ranks"][variant] = first_hit_rank(ranked, expected)
+            except VectorEvaluationUnavailable as exc:
+                skipped_methods[method] = str(exc)
         rows.append(row)
 
     total = len(rows)
     metrics: dict[str, dict[str, Any]] = {}
-    for variant in VARIANT_DESCRIPTIONS:
+    for variant, (method, description) in variants.items():
+        if method in skipped_methods:
+            for row in rows:
+                row["ranks"].pop(variant, None)
+            continue
         ranks = [row["ranks"][variant] for row in rows]
         metrics[variant] = {
-            "description": VARIANT_DESCRIPTIONS[variant],
+            "description": description,
+            "method": method,
             **{
                 f"recall_at_{k}": _ratio(sum(1 for r in ranks if r is not None and r <= k), total)
                 for k in K_VALUES
@@ -147,6 +183,7 @@ def evaluate_retrieval(
         "limit": LIMIT,
         "expected_in_curated": _ratio(sum(row["expected_in_curated"] for row in rows), total),
         "metrics": metrics,
+        "skipped_methods": skipped_methods,
         "cases": rows,
     }
 
@@ -174,6 +211,8 @@ def to_markdown(results: dict[str, Any]) -> str:
             f"| {variant} | {metric['description']} | "
             f"{metric['recall_at_5']['rate']:.2f} | {metric['recall_at_12']['rate']:.2f} | {metric['mrr']:.3f} |"
         )
+    for method, reason in results.get("skipped_methods", {}).items():
+        lines.extend(("", f"- {method}: {reason}"))
     misses = [row for row in results["cases"] if not row["ranks"]["full_curated"]]
     if misses:
         lines += ["", "## 目前做法未找到的案例", "", "| 案例 | 風險主題 | 標準答案 | 在精選內 |", "| --- | --- | --- | --- |"]

@@ -1,5 +1,7 @@
 """Regression checks for the offline retrieval evaluator."""
 
+import sys
+
 from scripts.evaluate import ROOT, load_cases
 from scripts.evaluate_retrieval import (
     VARIANT_DESCRIPTIONS,
@@ -23,13 +25,15 @@ def test_rule_hit_clauses_use_rule_regex_patterns() -> None:
     assert clauses == ["第二條【交付】\n甲方於備貨完成後盡速交付。"]
 
 
-def test_evaluation_reports_every_variant_with_denominators() -> None:
+def test_evaluation_reports_every_variant_with_denominators(monkeypatch) -> None:
+    monkeypatch.setitem(sys.modules, "sentence_transformers", None)
     cases = load_cases(ROOT / "tw_contract_review_testpack_v1.zip")
     results = evaluate_retrieval(cases)
 
     assert results["evaluation_mode"] == "offline_retrieval_only"
     assert results["case_count"] + results["skipped_cases"] == 90
     assert set(results["metrics"]) == set(VARIANT_DESCRIPTIONS)
+    assert set(results["skipped_methods"]) == {"vector", "hybrid"}
     for metric in results["metrics"].values():
         assert metric["recall_at_5"]["passed"] <= metric["recall_at_12"]["passed"] <= results["case_count"]
         assert 0 <= metric["mrr"] <= 1
