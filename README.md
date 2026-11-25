@@ -130,6 +130,10 @@ python -m scripts.evaluate --out-dir reports
 
 執行會重新輸出 `reports/evaluation.md`（評估指標表）與 `reports/evaluation.json`（各案例細節）；GitHub Actions 會在 CI 中產生 `offline-evaluation` artifact 供下載。**這不是 LLM 回答準確率，也不代表法律審查正確率。** `citation_relevance` 是法條映射命中的代理指標，並非人工法律相關性評分；每筆只有一個預期風險主題，不能宣稱完整多標籤 Recall。
 
+### 其他評測
+
+規則的產生案例回歸檢查（`scripts.evaluate_generated`）、LLM 有無規則的對照（`scripts.evaluate_llm`）與完整清單，見[評測計畫與執行說明](docs/EVALUATION_PLAN.md)。
+
 ### 候選法條檢索評測
 
 比較報告「候選法條」的不同檢索做法：查詢用整份合約或只用被規則命中的條款，搜尋範圍是精選法條（候選範圍）或全部匯入法條。標準答案是預期風險主題所屬規則引用的法條，指標為前 5、前 12 名命中率（R@5、R@12）與平均倒數排名（MRR）：
@@ -146,6 +150,7 @@ python -m scripts.evaluate_retrieval --out-dir reports
 - [繁體中文操作手冊](USER_GUIDE.zh-TW.md)
 - [本機開發、Provider 與測試說明](DEVELOPMENT.md)
 - [架構概覽](docs/overview.md)
+- [評測計畫與執行說明](docs/EVALUATION_PLAN.md)：規則、檢索、LLM 各項評測的指令、資料與解讀限制
 
 ## 安全與限制
 
