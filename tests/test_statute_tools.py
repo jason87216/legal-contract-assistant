@@ -97,7 +97,7 @@ def test_lease_contract_candidates_have_distinct_scores(tmp_path) -> None:
 
     scores = [article["score"] for article in result["articles"]]
     assert len(set(scores)) > 1
-    assert "repair" in result["articles"][0]["topics"]
+    assert "修繕" in result["articles"][0]["topics"]
 
 
 def _articles_tool(articles: list[StatuteArticle]) -> StatuteRetrievalTool:
@@ -113,6 +113,7 @@ def _article(law_name: str, text: str, article_no: str = "1") -> StatuteArticle:
         text=text,
         source_url="https://example.invalid/",
         contract_types=("lease",),
+        primary_types=("lease",),
     )
 
 

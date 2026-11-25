@@ -1,0 +1,175 @@
+{
+ "_note": "Testpack v1 labels use the old rule themes. Each old theme maps to the new rules that cover it; themes in _not_rule_checked went to the LLM checklist or were dropped, so rule recall is not measured for them.",
+ "themes": {
+  "交付期限不明": [
+   "sale_medium_missing_delivery_date",
+   "sale_medium_vague_delivery_time"
+  ],
+  "交付義務過度不確定": [
+   "sale_medium_missing_delivery_date",
+   "sale_medium_vague_delivery_time",
+   "sale_high_seller_may_postpone_delivery"
+  ],
+  "違約責任不對等": [
+   "sale_high_seller_may_postpone_delivery"
+  ],
+  "驗收期間過短": [
+   "sale_medium_acceptance_period_short"
+  ],
+  "付款早於驗收": [
+   "sale_medium_full_payment_before_delivery"
+  ],
+  "完全排除瑕疵責任": [
+   "sale_high_warranty_excluded"
+  ],
+  "單方變更標的": [
+   "sale_high_substitute_goods"
+  ],
+  "風險移轉過早": [
+   "sale_high_early_risk_transfer"
+  ],
+  "保固責任排除": [
+   "sale_medium_buyer_bears_repairs"
+  ],
+  "解除權受不當限制": [
+   "sale_high_buyer_rescission_barred"
+  ],
+  "中古標的揭露不足": [
+   "sale_high_condition_not_disclosed"
+  ],
+  "押金不得任意沒收": [
+   "lease_high_deposit_forfeit"
+  ],
+  "用途限制不明且重罰": [
+   "lease_high_deposit_forfeit",
+   "shared_high_terms_by_later_notice"
+  ],
+  "押金返還不明": [
+   "lease_medium_deposit_landlord_discretion",
+   "lease_medium_missing_deposit_return"
+  ],
+  "修繕責任過度轉嫁": [
+   "lease_high_repairs_all_on_tenant"
+  ],
+  "修繕請求權受限制": [
+   "lease_high_repair_request_barred"
+  ],
+  "修繕責任不明": [
+   "lease_medium_missing_repair_terms"
+  ],
+  "隱私與居住安寧風險": [
+   "lease_high_landlord_entry_any_time"
+  ],
+  "入屋檢查界線不明": [
+   "lease_medium_landlord_entry_discretion"
+  ],
+  "單方調整租金": [
+   "lease_high_landlord_rent_adjustment"
+  ],
+  "終止權過度限制": [
+   "lease_high_tenant_termination_barred"
+  ],
+  "單方解約條款": [
+   "lease_high_landlord_terminate_at_will"
+  ],
+  "水電管理費不明": [
+   "lease_medium_taxes_on_tenant"
+  ],
+  "設備清單不足": [
+   "lease_medium_no_inventory",
+   "lease_medium_missing_inventory"
+  ],
+  "遺留物處理不明": [
+   "lease_medium_left_property_disposal"
+  ],
+  "工作內容不明": [
+   "labor_medium_unlimited_duties"
+  ],
+  "調動條款不明": [
+   "labor_medium_broad_transfer"
+  ],
+  "獎金計算不明": [
+   "labor_medium_bonus_revocable"
+  ],
+  "加班認定爭議": [
+   "labor_medium_overtime_preapproval_only"
+  ],
+  "保密範圍過廣": [
+   "labor_medium_confidentiality_overbroad"
+  ],
+  "最低服務年限疑慮": [
+   "labor_medium_minimum_service"
+  ],
+  "工時紀錄不明": [
+   "labor_medium_attendance_by_supervisor",
+   "labor_high_no_attendance"
+  ],
+  "休假程序不明": [
+   "labor_medium_annual_leave_by_employer",
+   "labor_medium_rules_by_later_notice"
+  ],
+  "智慧財產權歸屬過寬": [
+   "labor_medium_ip_beyond_duty"
+  ],
+  "加班費概括包入薪資": [
+   "labor_high_overtime_included_in_wage"
+  ],
+  "離職違約金過高": [
+   "labor_high_resignation_penalty"
+  ],
+  "競業禁止過寬且無補償": [
+   "labor_high_noncompete_unlawful",
+   "labor_high_noncompete_missing_compensation"
+  ],
+  "社會保險風險": [
+   "labor_high_no_social_insurance"
+  ],
+  "試用期無薪或任意解僱": [
+   "labor_high_unpaid_probation",
+   "labor_medium_dismissal_at_will"
+  ],
+  "任意扣薪": [
+   "labor_high_wage_deduction"
+  ],
+  "責任制濫用": [
+   "labor_high_exempt_hours_claim"
+  ],
+  "勞動契約偽裝承攬": [
+   "labor_high_disguised_contracting"
+  ],
+  "違約責任過重": [
+   "labor_medium_guarantor_joint_liability",
+   "shared_high_penalty"
+  ],
+  "權利行使受限制": [
+   "labor_high_complaint_barred"
+  ],
+  "退換貨程序不明": [
+   "shared_high_terms_by_later_notice"
+  ],
+  "預先放棄審閱期": [
+   "shared_high_review_period_waived"
+  ],
+  "付款證明不足": [
+   "shared_medium_no_receipt"
+  ],
+  "違約金可能過高": [
+   "shared_high_penalty"
+  ],
+  "提前終止罰則偏重": [
+   "shared_high_penalty"
+  ]
+ },
+ "_not_rule_checked": [
+  "保固條款不明",
+  "價金稅費不明",
+  "所有權移轉不明",
+  "標的規格不明",
+  "片面沒收已付款",
+  "租賃範圍不明",
+  "管轄條款不利",
+  "續租條件不明",
+  "試用期條款不明",
+  "轉租約定不明"
+ ]
+}

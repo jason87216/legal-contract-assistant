@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from contextlib import closing
+from dataclasses import dataclass, field
 from functools import lru_cache
 from datetime import UTC, datetime
 from importlib import resources
@@ -14,7 +15,7 @@ from typing import Iterable
 from .review_rules import ReviewRule, load_seed_review_rules
 from .statutes import StatuteArticle
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 6
 OFFICIAL_VERSION_KEY = "official_statutes_version"
 
 
@@ -85,7 +86,10 @@ class ContractStatuteCache:
                 )
                 _ensure_column(conn, "statute_articles", "contract_types_json", "TEXT NOT NULL DEFAULT '[]'")
                 _ensure_column(conn, "statute_articles", "curated", "INTEGER NOT NULL DEFAULT 1")
+                _ensure_column(conn, "statute_articles", "primary_types_json", "TEXT NOT NULL DEFAULT '[]'")
                 _ensure_column(conn, "review_rules", "basis_note", "TEXT NOT NULL DEFAULT ''")
+                _ensure_column(conn, "review_rules", "kind", "TEXT NOT NULL DEFAULT 'match'")
+                _ensure_column(conn, "review_rules", "requires", "TEXT NOT NULL DEFAULT ''")
                 conn.execute(
                     "INSERT OR REPLACE INTO metadata (key, value) VALUES (?, ?)",
                     ("schema_version", str(SCHEMA_VERSION)),
@@ -99,7 +103,7 @@ class ContractStatuteCache:
             rules = load_seed_review_rules()
             # Curated rows go last so their annotations and flag win.
             self.replace_curated(load_curated_articles(rules))
-            self.upsert_review_rules(rules)
+            self.replace_review_rules(rules)
 
     def metadata(self, key: str) -> str | None:
         with closing(self._connect()) as conn:
@@ -147,7 +151,7 @@ class ContractStatuteCache:
             row = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at, curated
+                       contract_types_json, topics_json, cached_at, curated, primary_types_json
                 FROM statute_articles
                 WHERE law_name = ? AND article_no = ?
                 """,
@@ -161,7 +165,7 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at, curated
+                       contract_types_json, topics_json, cached_at, curated, primary_types_json
                 FROM statute_articles
                 WHERE curated = 1 AND (topics_json LIKE ? OR text LIKE ?)
                 ORDER BY law_name, article_no
@@ -176,7 +180,7 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at, curated
+                       contract_types_json, topics_json, cached_at, curated, primary_types_json
                 FROM statute_articles
                 WHERE contract_types_json LIKE ?
                 ORDER BY law_name, article_no
@@ -194,7 +198,7 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at, curated
+                       contract_types_json, topics_json, cached_at, curated, primary_types_json
                 FROM statute_articles
                 WHERE contract_types_json LIKE ? AND topics_json LIKE ?
                 ORDER BY law_name, article_no
@@ -209,7 +213,7 @@ class ContractStatuteCache:
             rows = conn.execute(
                 f"""
                 SELECT law_name, pcode, article_no, text, source_url,
-                       contract_types_json, topics_json, cached_at, curated
+                       contract_types_json, topics_json, cached_at, curated, primary_types_json
                 FROM statute_articles
                 {where}
                 ORDER BY law_name, article_no
@@ -225,7 +229,8 @@ class ContractStatuteCache:
             rows = conn.execute(
                 """
                 SELECT rule_id, risk_theme, risk_level, pattern,
-                       legal_basis_json, suggestion, source_note, basis_note
+                       legal_basis_json, suggestion, source_note, basis_note,
+                       kind, requires
                 FROM review_rules
                 ORDER BY rule_id
                 """
@@ -243,53 +248,23 @@ class ContractStatuteCache:
                 suggestion=row["suggestion"],
                 source_note=row["source_note"],
                 basis_note=row["basis_note"],
+                kind=row["kind"],
+                requires=row["requires"],
             )
             for row in rows
         ]
 
     def upsert_review_rules(self, rules: Iterable[ReviewRule]) -> None:
-        rows = [
-            (
-                rule.rule_id,
-                rule.risk_theme,
-                rule.risk_level,
-                rule.pattern,
-                json.dumps(
-                    [
-                        {"law_name": law_name, "article_no": article_no}
-                        for law_name, article_no in rule.legal_basis
-                    ],
-                    ensure_ascii=False,
-                ),
-                rule.suggestion,
-                rule.source_note,
-                rule.basis_note,
-            )
-            for rule in rules
-        ]
-        if not rows:
-            return
-
         with closing(self._connect()) as conn:
             with conn:
-                conn.executemany(
-                    """
-                    INSERT INTO review_rules (
-                        rule_id, risk_theme, risk_level, pattern,
-                        legal_basis_json, suggestion, source_note, basis_note
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT(rule_id) DO UPDATE SET
-                        risk_theme = excluded.risk_theme,
-                        risk_level = excluded.risk_level,
-                        pattern = excluded.pattern,
-                        legal_basis_json = excluded.legal_basis_json,
-                        suggestion = excluded.suggestion,
-                        source_note = excluded.source_note,
-                        basis_note = excluded.basis_note
-                    """,
-                    rows,
-                )
+                _upsert_rules(conn, rules)
+
+    def replace_review_rules(self, rules: Iterable[ReviewRule]) -> None:
+        """Make the stored rules exactly these; rules removed from the seed are deleted."""
+        with closing(self._connect()) as conn:
+            with conn:
+                conn.execute("DELETE FROM review_rules")
+                _upsert_rules(conn, rules)
 
     def replace_curated(self, articles: Iterable[StatuteArticle]) -> None:
         """Make exactly these articles curated; rows dropped from the scope lose the flag."""
@@ -298,7 +273,8 @@ class ContractStatuteCache:
                 conn.execute(
                     """
                     UPDATE statute_articles
-                    SET curated = 0, contract_types_json = '[]', topics_json = '[]'
+                    SET curated = 0, contract_types_json = '[]', topics_json = '[]',
+                        primary_types_json = '[]'
                     WHERE curated = 1
                     """
                 )
@@ -315,6 +291,54 @@ class ContractStatuteCache:
         return conn
 
 
+def _upsert_rules(conn: sqlite3.Connection, rules: Iterable[ReviewRule]) -> None:
+    rows = [
+        (
+            rule.rule_id,
+            rule.risk_theme,
+            rule.risk_level,
+            rule.pattern,
+            json.dumps(
+                [
+                    {"law_name": law_name, "article_no": article_no}
+                    for law_name, article_no in rule.legal_basis
+                ],
+                ensure_ascii=False,
+            ),
+            rule.suggestion,
+            rule.source_note,
+            rule.basis_note,
+            rule.kind,
+            rule.requires,
+        )
+        for rule in rules
+    ]
+    if not rows:
+        return
+
+    conn.executemany(
+        """
+        INSERT INTO review_rules (
+            rule_id, risk_theme, risk_level, pattern,
+            legal_basis_json, suggestion, source_note, basis_note,
+            kind, requires
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(rule_id) DO UPDATE SET
+            risk_theme = excluded.risk_theme,
+            risk_level = excluded.risk_level,
+            pattern = excluded.pattern,
+            legal_basis_json = excluded.legal_basis_json,
+            suggestion = excluded.suggestion,
+            source_note = excluded.source_note,
+            basis_note = excluded.basis_note,
+            kind = excluded.kind,
+            requires = excluded.requires
+        """,
+        rows,
+    )
+
+
 def _upsert_articles(conn: sqlite3.Connection, articles: Iterable[StatuteArticle]) -> None:
     now = datetime.now(UTC).isoformat(timespec="seconds")
     rows = [
@@ -328,6 +352,7 @@ def _upsert_articles(conn: sqlite3.Connection, articles: Iterable[StatuteArticle
             json.dumps(list(article.topics), ensure_ascii=False),
             article.cached_at or now,
             int(article.curated),
+            json.dumps(list(article.primary_types), ensure_ascii=False),
         )
         for article in articles
     ]
@@ -337,9 +362,9 @@ def _upsert_articles(conn: sqlite3.Connection, articles: Iterable[StatuteArticle
         """
         INSERT INTO statute_articles (
             law_name, pcode, article_no, text, source_url,
-            contract_types_json, topics_json, cached_at, curated
+            contract_types_json, topics_json, cached_at, curated, primary_types_json
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(law_name, article_no) DO UPDATE SET
             pcode = excluded.pcode,
             text = excluded.text,
@@ -347,7 +372,8 @@ def _upsert_articles(conn: sqlite3.Connection, articles: Iterable[StatuteArticle
             contract_types_json = excluded.contract_types_json,
             topics_json = excluded.topics_json,
             cached_at = excluded.cached_at,
-            curated = excluded.curated
+            curated = excluded.curated,
+            primary_types_json = excluded.primary_types_json
         """,
         rows,
     )
@@ -435,17 +461,37 @@ def article_in_range(article_no: str, start: str, end: str) -> bool:
     return article_sort_key(start) <= key <= end_key
 
 
-def scope_contract_types(rules: Iterable[ReviewRule] = ()) -> dict[tuple[str, str], set[str]]:
-    """(law_name, article_no) -> contract types whose candidate scope includes it.
+@dataclass
+class ScopeEntry:
+    """Where one article sits in the candidate scope."""
 
-    Sources: the ranges in contract_scope_seed.json ("common" applies to every
-    type) and the statutes cited by review rules, typed by the rule_id prefix
-    (a prefix that is not a contract type, such as "shared", means every type).
+    types: set[str] = field(default_factory=set)
+    primary_types: set[str] = field(default_factory=set)
+    topics: list[str] = field(default_factory=list)
+
+
+def _entry_covers(entry: dict, article_no: str) -> bool:
+    if entry.get("all"):
+        return True
+    inside = any(article_in_range(article_no, start, end) for start, end in entry["ranges"])
+    return inside and not any(
+        article_in_range(article_no, start, end) for start, end in entry.get("except", ())
+    )
+
+
+def contract_scope(rules: Iterable[ReviewRule] = ()) -> dict[tuple[str, str], ScopeEntry]:
+    """(law_name, article_no) -> contract types, primary types and topics.
+
+    Sources: the entries in contract_scope_seed.json ("common" applies to every
+    type and is secondary) and the statutes cited by review rules, typed by the
+    rule_id prefix (a prefix that is not a contract type, such as "shared", means
+    every type). Rule citations join the scope but never set a tier, so the
+    retrieval evaluation, whose answers are those citations, is not rigged.
     """
     data = contract_scope_data()
     all_types = set(data["_types"])
     official = {law["law_name"]: law for law in official_statutes_data()["laws"]}
-    scope: dict[tuple[str, str], set[str]] = {}
+    scope: dict[tuple[str, str], ScopeEntry] = {}
 
     for group, entries in data.items():
         if group.startswith("_"):
@@ -455,29 +501,38 @@ def scope_contract_types(rules: Iterable[ReviewRule] = ()) -> dict[tuple[str, st
             law = official.get(entry["law_name"])
             if law is None:
                 raise ValueError(f"scope law not imported: {entry['law_name']}")
+            tier = "secondary" if group == "common" else entry["tier"]
+            if tier not in ("primary", "secondary"):
+                raise ValueError(f"unknown tier {tier!r} in {group}: {entry['law_name']}")
             for item in law["articles"]:
                 article_no = normalize_article_no(item["article_no"])
-                if entry.get("all") or any(
-                    article_in_range(article_no, start, end) for start, end in entry["ranges"]
-                ):
-                    scope.setdefault((law["law_name"], article_no), set()).update(types)
+                if not _entry_covers(entry, article_no):
+                    continue
+                info = scope.setdefault((law["law_name"], article_no), ScopeEntry())
+                info.types.update(types)
+                if tier == "primary":
+                    info.primary_types.update(types)
+                info.topics.extend(t for t in entry.get("topics", ()) if t not in info.topics)
 
     for rule in rules:
         prefix = rule.rule_id.split("_", 1)[0]
         types = {prefix} if prefix in all_types else all_types
         for law_name, article_no in rule.legal_basis:
-            scope.setdefault((law_name, normalize_article_no(article_no)), set()).update(types)
+            key = (law_name, normalize_article_no(article_no))
+            scope.setdefault(key, ScopeEntry()).types.update(types)
     return scope
 
 
 def load_curated_articles(rules: Iterable[ReviewRule] = ()) -> list[StatuteArticle]:
-    """Every curated article: scope ranges, rule citations and annotated seed articles.
+    """Every curated article: scope entries, rule citations and annotated seed articles.
 
-    Seed articles keep their topics; contract types are the union of the seed
-    annotation and the scope. Articles missing from the official data are skipped,
-    except seed articles, which carry their own text.
+    Topics are the seed annotation (English codes, used by focus-topic search)
+    followed by the scope topics (Chinese, matched by contract terms); contract
+    types are the union of the seed annotation and the scope. Articles missing
+    from the official data are skipped, except seed articles, which carry their
+    own text.
     """
-    scope = scope_contract_types(rules)
+    scope = contract_scope(rules)
     official = {(a.law_name, a.article_no): a for a in load_official_articles()[1]}
     seeds = {(a.law_name, a.article_no): a for a in load_seed_articles()}
 
@@ -487,7 +542,10 @@ def load_curated_articles(rules: Iterable[ReviewRule] = ()) -> list[StatuteArtic
         if base is None:
             continue
         seed = seeds.get(key)
-        types = set(scope.get(key, ())) | set(seed.contract_types if seed else ())
+        info = scope.get(key, ScopeEntry())
+        types = info.types | set(seed.contract_types if seed else ())
+        topics = list(seed.topics if seed else ())
+        topics += [topic for topic in info.topics if topic not in topics]
         curated.append(
             StatuteArticle(
                 law_name=base.law_name,
@@ -496,9 +554,10 @@ def load_curated_articles(rules: Iterable[ReviewRule] = ()) -> list[StatuteArtic
                 text=base.text,
                 source_url=base.source_url,
                 contract_types=tuple(sorted(types)),
-                topics=seed.topics if seed else (),
+                topics=tuple(topics),
                 cached_at=base.cached_at,
                 curated=True,
+                primary_types=tuple(sorted(info.primary_types)),
             )
         )
     return curated
@@ -517,6 +576,7 @@ def _row_to_article(row: sqlite3.Row | None) -> StatuteArticle | None:
         topics=tuple(json.loads(row["topics_json"])),
         cached_at=row["cached_at"],
         curated=bool(row["curated"]),
+        primary_types=tuple(json.loads(row["primary_types_json"])),
     )
 
 

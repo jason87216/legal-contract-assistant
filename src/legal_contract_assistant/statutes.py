@@ -18,6 +18,9 @@ class StatuteArticle:
     topics: tuple[str, ...] = field(default_factory=tuple)
     cached_at: str | None = None
     curated: bool = True
+    # Contract types for which this article is a primary candidate; it is
+    # secondary for the other types in contract_types.
+    primary_types: tuple[str, ...] = field(default_factory=tuple)
 
     @property
     def citation(self) -> str:

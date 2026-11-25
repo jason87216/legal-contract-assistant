@@ -8,9 +8,10 @@ from typing import TYPE_CHECKING
 
 from .review_rules import DEFAULT_REVIEW_RULES
 from .review_rules import ReviewRule
-from .review_rules import risk_level_patterns
+from .review_rules import RuleHit
+from .review_rules import load_llm_checklist
 from .review_rules import risk_theme_citations
-from .review_rules import risk_theme_patterns
+from .review_rules import triggered_rules
 from .statute_lookup import StatuteLookupService
 from .statute_tools import StatuteRetrievalTool
 from .statutes import StatuteArticle
@@ -90,9 +91,6 @@ TOPIC_KEYWORDS = {
 
 # Public rule constants are derived from seed data so tests and callers keep the
 # same import surface while review rules can also be stored in SQLite.
-HIGH_RISK_PATTERNS = risk_level_patterns(DEFAULT_REVIEW_RULES, "高風險")
-MEDIUM_RISK_PATTERNS = risk_level_patterns(DEFAULT_REVIEW_RULES, "中風險")
-RISK_THEME_PATTERNS = risk_theme_patterns(DEFAULT_REVIEW_RULES)
 RISK_THEME_CITATIONS = risk_theme_citations(DEFAULT_REVIEW_RULES)
 
 
@@ -133,6 +131,8 @@ class ReviewContext:
     candidate_articles: tuple[dict, ...] = ()
     review_perspective: str = "neutral"
     risk_findings: tuple[RiskFinding, ...] = ()
+    # Items the rules cannot judge from wording; the model checks them.
+    llm_checklist: tuple[str, ...] = ()
 
     @property
     def contract_type_label(self) -> str:
@@ -183,8 +183,10 @@ class ContractReviewService:
         risk_level, risk_reasons = estimate_risk_level(
             normalized, detected_type, missing_items, review_rules
         )
-        risk_themes = detect_risk_themes(normalized, review_rules)
-        risk_findings = detect_risk_findings(normalized, review_rules, self.statute_lookup)
+        risk_themes = detect_risk_themes(normalized, review_rules, detected_type)
+        risk_findings = detect_risk_findings(
+            normalized, review_rules, self.statute_lookup, detected_type
+        )
         articles = collect_related_articles(
             self.statute_lookup,
             detected_type,
@@ -213,6 +215,7 @@ class ContractReviewService:
             candidate_articles=tuple(candidate_result.get("articles", [])),
             review_perspective=review_perspective,
             risk_findings=tuple(risk_findings),
+            llm_checklist=load_llm_checklist(detected_type),
         )
 
     def generate_markdown_report(
@@ -265,25 +268,26 @@ def detect_missing_items(contract_text: str, contract_type: str) -> list[str]:
     ]
 
 
+def _rule_hits(
+    contract_text: str, rules: list[ReviewRule] | None, contract_type: str | None
+) -> list[RuleHit]:
+    """Rules triggered by the whole contract (frontmatter removed)."""
+    return triggered_rules(
+        strip_frontmatter(contract_text), rules or DEFAULT_REVIEW_RULES, contract_type
+    )
+
+
 def estimate_risk_level(
     contract_text: str,
     contract_type: str,
     missing_items: list[str],
     rules: list[ReviewRule] | None = None,
 ) -> tuple[str, list[str]]:
-    del contract_type
-    cleaned = extract_review_clause(strip_frontmatter(contract_text))
-    high_patterns = risk_level_patterns(rules, "高風險") if rules else HIGH_RISK_PATTERNS
-    medium_patterns = (
-        risk_level_patterns(rules, "中風險") if rules else MEDIUM_RISK_PATTERNS
-    )
-    high_reasons = _matching_reasons(cleaned, high_patterns)
-    if high_reasons:
-        return "高風險", high_reasons
-
-    medium_reasons = _matching_reasons(cleaned, medium_patterns)
-    if medium_reasons:
-        return "中風險", medium_reasons
+    hits = _rule_hits(contract_text, rules, contract_type)
+    for level in ("高風險", "中風險"):
+        reasons = [hit.rule.risk_theme for hit in hits if hit.rule.risk_level == level]
+        if reasons:
+            return level, reasons
 
     if len(missing_items) >= 3:
         return "中風險", ["多個必要條款未以關鍵字明確呈現"]
@@ -292,43 +296,49 @@ def estimate_risk_level(
 
 
 def detect_risk_themes(
-    contract_text: str, rules: list[ReviewRule] | None = None
+    contract_text: str,
+    rules: list[ReviewRule] | None = None,
+    contract_type: str | None = None,
 ) -> list[str]:
-    clause = extract_review_clause(strip_frontmatter(contract_text))
-    patterns = risk_theme_patterns(rules) if rules else RISK_THEME_PATTERNS
-    themes = _matching_reasons(clause, patterns)
-    if themes:
-        return themes
-    return ["無明顯高風險；仍應人工複核"]
+    themes = [hit.rule.risk_theme for hit in _rule_hits(contract_text, rules, contract_type)]
+    return themes or ["無明顯高風險；仍應人工複核"]
+
+
+MISSING_EXCERPT = "（合約中未見相關約定）"
 
 
 def detect_risk_findings(
     contract_text: str,
     rules: list[ReviewRule],
     statute_lookup: StatuteLookupService,
+    contract_type: str | None = None,
 ) -> list[RiskFinding]:
-    """Pair every matched rule with the clause that triggered it and its own articles.
+    """Pair every triggered rule with the clause that triggered it and its own articles.
 
     Order follows risk_themes (rule order), so the two lists line up. Articles
     come only from the rule's legal_basis, never from another rule's position.
+    A "missing" rule has no clause; its excerpt says so.
     """
-    clause = extract_review_clause(strip_frontmatter(contract_text))
+    text = strip_frontmatter(contract_text)
     findings: list[RiskFinding] = []
-    for rule in rules:
-        match = re.search(rule.pattern, clause)
-        if match is None:
-            continue
+    for hit in _rule_hits(contract_text, rules, contract_type):
+        rule = hit.rule
         articles = []
         for law_name, article_no in rule.legal_basis:
             result = statute_lookup.lookup(law_name, article_no, allow_live_query=False)
             if result.article is not None:
                 articles.append(result.article)
+        excerpt = (
+            clause_excerpt(text, hit.match.start(), hit.match.end())
+            if hit.match is not None
+            else MISSING_EXCERPT
+        )
         findings.append(
             RiskFinding(
                 rule_id=rule.rule_id,
                 theme=rule.risk_theme,
                 level=rule.risk_level,
-                clause_excerpt=clause_excerpt(clause, match.start(), match.end()),
+                clause_excerpt=excerpt,
                 articles=tuple(articles),
                 suggestion=rule.suggestion,
                 basis_note=rule.basis_note,
@@ -357,15 +367,6 @@ def clause_excerpt(text: str, start: int, end: int, max_length: int = 120) -> st
 
 def strip_frontmatter(contract_text: str) -> str:
     return re.sub(r"\A---\r?\n.*?\r?\n---\r?\n", "", contract_text, flags=re.S)
-
-
-def extract_review_clause(contract_text: str) -> str:
-    match = re.search(r"第[七八]條【特殊約定】\s*(.*)", contract_text, flags=re.S)
-    return match.group(1).strip() if match else contract_text
-
-
-def _matching_reasons(text: str, patterns: tuple[tuple[str, str], ...]) -> list[str]:
-    return [reason for reason, pattern in patterns if re.search(pattern, text)]
 
 
 def collect_related_articles(

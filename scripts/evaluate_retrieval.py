@@ -18,7 +18,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from scripts.evaluate import NO_HIGH_RISK_THEME, ROOT, load_cases
+from scripts.evaluate import NO_HIGH_RISK_THEME, ROOT, THEME_MAP, load_cases
 from src.legal_contract_assistant.contract_review import classify_contract_type
 from src.legal_contract_assistant.review_rules import DEFAULT_REVIEW_RULES, ReviewRule
 from src.legal_contract_assistant.statute_tools import (
@@ -44,17 +44,23 @@ def citation_key(law_name: str, article_no: str) -> str:
 
 
 def expected_citations_by_theme(rules: list[ReviewRule]) -> dict[str, set[str]]:
+    """Testpack theme -> statutes cited by the rules covering it (testpack_theme_map.json)."""
+    by_id = {rule.rule_id: rule for rule in rules}
     table: dict[str, set[str]] = {}
-    for rule in rules:
-        for law_name, article_no in rule.legal_basis:
-            table.setdefault(rule.risk_theme, set()).add(citation_key(law_name, article_no))
+    for theme, rule_ids in THEME_MAP["themes"].items():
+        for rule_id in rule_ids:
+            if rule_id not in by_id:
+                continue
+            for law_name, article_no in by_id[rule_id].legal_basis:
+                table.setdefault(theme, set()).add(citation_key(law_name, article_no))
     return table
 
 
 def rule_hit_clauses(text: str, rules: list[ReviewRule]) -> list[str]:
-    """Clauses matched by any review rule. Uses the rules, never the case label."""
+    """Clauses matched by any "match" rule. Uses the rules, never the case label."""
     clauses = [clause.strip() for clause in CLAUSE_SPLIT.split(text) if clause.strip()]
-    return [clause for clause in clauses if any(re.search(rule.pattern, clause) for rule in rules)]
+    patterns = [rule.pattern for rule in rules if rule.kind == "match"]
+    return [clause for clause in clauses if any(re.search(p, clause) for p in patterns)]
 
 
 def retrieve(

@@ -30,6 +30,7 @@ class RetrievedArticle:
             "source_url": self.article.source_url,
             "contract_types": list(self.article.contract_types),
             "topics": list(self.article.topics),
+            "primary_types": list(self.article.primary_types),
             "curated": self.article.curated,
             "score": self.score,
             "match_reason": self.match_reason,
@@ -224,6 +225,12 @@ def _extract_terms(text: str, *, keep_short_chinese: bool = True) -> list[str]:
     return terms
 
 
+# A primary article defines the contract type (民法 租賃 for a lease); a
+# secondary one is general contract law or a rare variant (耕作地).
+PRIMARY_TYPE_SCORE = 6
+SECONDARY_TYPE_SCORE = 2
+
+
 def _score_article(
     article: StatuteArticle,
     terms: list[str],
@@ -233,8 +240,11 @@ def _score_article(
     score = 0
     reasons: list[str] = []
     mode = (contract_mode or "").strip()
-    if mode and mode in article.contract_types:
-        score += 6
+    if mode and mode in article.primary_types:
+        score += PRIMARY_TYPE_SCORE
+        reasons.append(f"contract_mode:{mode}:primary")
+    elif mode and mode in article.contract_types:
+        score += SECONDARY_TYPE_SCORE
         reasons.append(f"contract_mode:{mode}")
 
     # 只有查詢明確提及完整法規名稱才加分，避免「租賃」替整部條例灌分。

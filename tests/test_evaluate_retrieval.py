@@ -17,10 +17,10 @@ def test_first_hit_rank_is_one_based_and_none_when_missing() -> None:
 
 
 def test_rule_hit_clauses_use_rule_regex_patterns() -> None:
-    rule = next(rule for rule in DEFAULT_REVIEW_RULES if rule.pattern == "備貨完成後盡速")
-    text = f"第一條【標的】\n商用咖啡機一組。\n\n第二條【交付】\n甲方於{rule.pattern}交付。"
+    rule = next(r for r in DEFAULT_REVIEW_RULES if r.rule_id == "sale_medium_vague_delivery_time")
+    text = "第一條【標的】\n商用咖啡機一組。\n\n第二條【交付】\n甲方於備貨完成後盡速交付。"
     clauses = rule_hit_clauses(text, [rule])
-    assert clauses == [f"第二條【交付】\n甲方於{rule.pattern}交付。"]
+    assert clauses == ["第二條【交付】\n甲方於備貨完成後盡速交付。"]
 
 
 def test_evaluation_reports_every_variant_with_denominators() -> None:

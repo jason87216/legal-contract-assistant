@@ -14,11 +14,11 @@ from pathlib import Path
 from typing import Any
 
 from src.legal_contract_assistant.contract_review import (
-    RISK_THEME_CITATIONS,
     ContractReviewService,
     classify_contract_type,
 )
 from src.legal_contract_assistant.llm import NoopLLMProvider
+from src.legal_contract_assistant.review_rules import DEFAULT_REVIEW_RULES
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTPACK_ROOT = "tw_contract_review_testpack_v1"
@@ -26,8 +26,8 @@ CONTRACT_TYPES = {"買賣": "sale", "勞動": "labor", "租賃": "lease"}
 
 METRIC_DESCRIPTIONS = {
     "contract_type_accuracy": "分類器與標註類別一致（獨立分類器，非 Web auto 模式）",
-    "risk_level_accuracy": "實際建立的審查上下文風險等級符合標註",
-    "risk_theme_recall": "每筆案例的單一預期風險主題有被規則命中",
+    "risk_level_accuracy": "審查上下文風險等級符合標註（只計規則負責判斷的案例）",
+    "risk_theme_recall": "預期風險由對應的新規則命中；無風險案例須沒有規則命中",
     "citation_presence": "相關法條列表非空；不代表法律引用正確",
     "citation_relevance": "預期風險主題已定義的法條映射，至少命中一條（代理指標）",
     "manual_review_flag": "dry-run 報告包含人工覆核及免責提醒",
@@ -47,6 +47,21 @@ REQUIRED_REPORT_MARKERS = (
     "## 十一、免責聲明",
 )
 NO_HIGH_RISK_THEME = "無明顯高風險；仍應人工複核"
+THEME_MAP = json.loads(Path(__file__).with_name("testpack_theme_map.json").read_text(encoding="utf-8"))
+
+
+def expected_rule_ids(theme: str) -> list[str] | None:
+    """New rules covering a testpack theme; None when the rules do not check it.
+
+    The testpack labels use the old rule themes; themes that moved to the LLM
+    checklist or were dropped are not measured as rule recall.
+    """
+    return THEME_MAP["themes"].get(theme)
+
+
+def rule_citations(rule_ids: list[str]) -> set[tuple[str, str]]:
+    wanted = set(rule_ids)
+    return {basis for rule in DEFAULT_REVIEW_RULES if rule.rule_id in wanted for basis in rule.legal_basis}
 
 
 def load_cases(zip_path: Path) -> list[dict[str, Any]]:
@@ -74,19 +89,26 @@ def evaluate_cases(cases: list[dict[str, Any]], service: ContractReviewService |
         context = service.build_context(text, contract_type=label_type)
         report = writer.generate_report(context)
         actual_citations = {(article.law_name, article.article_no) for article in context.related_articles}
-        citation_gold = RISK_THEME_CITATIONS.get(expected_theme)
-        # This indicator is deliberately N/A for unlabelled legal relevance
-        # (e.g. the "no obvious high risk" sentinel theme).
-        citation_match = (
-            bool(actual_citations.intersection(citation_gold))
-            if citation_gold and expected_theme != NO_HIGH_RISK_THEME
-            else None
-        )
+        fired = {finding.rule_id for finding in context.risk_findings}
+        no_risk = expected_theme == NO_HIGH_RISK_THEME
+        expected_rules = expected_rule_ids(expected_theme)
+        rule_checked = no_risk or expected_rules is not None
+        # N/A for the "no obvious risk" sentinel and for themes left to the LLM.
+        citation_gold = rule_citations(expected_rules) if expected_rules else None
+        citation_match = bool(actual_citations & citation_gold) if citation_gold else None
+        if no_risk:
+            theme_hit: bool | None = not fired
+        elif expected_rules is not None:
+            theme_hit = bool(fired & set(expected_rules))
+        else:
+            theme_hit = None
 
         results: dict[str, bool | None] = {
             "contract_type_accuracy": classify_contract_type(text) == label_type,
-            "risk_level_accuracy": context.risk_level == case["expected_risk_level"],
-            "risk_theme_recall": expected_theme in context.risk_themes,
+            "risk_level_accuracy": (
+                context.risk_level == case["expected_risk_level"] if rule_checked else None
+            ),
+            "risk_theme_recall": theme_hit,
             "citation_presence": bool(context.related_articles),
             "citation_relevance": citation_match,
             "manual_review_flag": (
@@ -101,6 +123,7 @@ def evaluate_cases(cases: list[dict[str, Any]], service: ContractReviewService |
             "actual_risk_level": context.risk_level,
             "expected_theme": expected_theme,
             "actual_themes": list(context.risk_themes),
+            "rule_checked": rule_checked,
             "citation_count": len(context.related_articles),
             "checks": results,
         })
@@ -145,6 +168,8 @@ def to_markdown(results: dict[str, Any]) -> str:
         "",
         "## 解讀限制",
         "",
+        "- 測試包的標籤沿用舊規則的風險主題；`scripts/testpack_theme_map.json` 記錄每個舊主題由哪些新規則負責。"
+        + "改交 LLM 或刪除的主題（" + "、".join(THEME_MAP["_not_rule_checked"]) + "）不計入規則的風險等級與主題命中。",
         "- 每筆案例只有一個預期風險主題，因此 `risk_theme_recall` 是單一標籤命中率，並非完整多標籤召回率。",
         "- `citation_relevance` 僅檢查規則內的法條映射命中，不是由律師人工評分的引用正確率。",
         "- `citation_presence` 只是有無引用；不能推論引用完整、最新或法律上適當。",

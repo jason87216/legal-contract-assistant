@@ -146,3 +146,27 @@ def test_mcp_server_exposes_source_info_tool(tmp_path, monkeypatch) -> None:
 
     names = {tool.name for tool in asyncio.run(server.list_tools())}
     assert {"lookup_article", "search_statutes", "statute_source_info"} <= names
+
+
+def test_scope_tiers_and_exceptions(tmp_path) -> None:
+    tool = _tool(tmp_path)
+
+    def article(law_name: str, article_no: str) -> dict:
+        return tool.lookup_article(law_name, article_no)["article"]
+
+    repair = article("民法", "429")
+    assert repair["primary_types"] == ["lease"]
+    assert "修繕" in repair["topics"]
+    # Farmland leases stay in the lease pool, but only as secondary candidates.
+    farmland = article("民法", "457")
+    assert "lease" in farmland["contract_types"] and farmland["primary_types"] == []
+    # General contract law is secondary for every type.
+    penalty = article("民法", "250")
+    assert set(penalty["contract_types"]) >= {"sale", "lease", "work", "loan"}
+    assert penalty["primary_types"] == []
+    # "except" keeps travel out of 承攬 and personnel guarantees out of 借貸.
+    assert "work" not in article("民法", "514-1")["contract_types"]
+    assert article("民法", "514")["primary_types"] == ["work"]
+    personnel = article("民法", "756-1")
+    assert "loan" not in personnel["contract_types"] and "labor" in personnel["contract_types"]
+    assert article("民法", "739")["primary_types"] == ["loan"]
