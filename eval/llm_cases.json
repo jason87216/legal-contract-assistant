@@ -1,0 +1,23 @@
+{
+  "_note": "Fixed set for the LLM evaluation, phase 1: one normal, one medium-risk and one high-risk contract per contract type. testpack = tw_contract_review_testpack_v1.zip; generated = eval/generated_cases/*.jsonl (written by Antigravity, also used to tune the rules). Change this list only together with a note in docs/EVALUATION_PLAN.md, so results stay comparable.",
+  "cases": [
+    {"source": "testpack", "case_id": "sale_01", "contract_type": "sale", "expected_risk_level": "低風險"},
+    {"source": "testpack", "case_id": "sale_11", "contract_type": "sale", "expected_risk_level": "中風險"},
+    {"source": "testpack", "case_id": "sale_21", "contract_type": "sale", "expected_risk_level": "高風險"},
+    {"source": "testpack", "case_id": "lease_01", "contract_type": "lease", "expected_risk_level": "低風險"},
+    {"source": "testpack", "case_id": "lease_11", "contract_type": "lease", "expected_risk_level": "中風險"},
+    {"source": "testpack", "case_id": "lease_21", "contract_type": "lease", "expected_risk_level": "高風險"},
+    {"source": "testpack", "case_id": "labor_01", "contract_type": "labor", "expected_risk_level": "低風險"},
+    {"source": "testpack", "case_id": "labor_11", "contract_type": "labor", "expected_risk_level": "中風險"},
+    {"source": "testpack", "case_id": "labor_21", "contract_type": "labor", "expected_risk_level": "高風險"},
+    {"source": "generated", "case_id": "work_clean_1", "contract_type": "work", "expected_risk_level": "低風險"},
+    {"source": "generated", "case_id": "work_risk_work_medium_warranty_period_short_1", "contract_type": "work", "expected_risk_level": "中風險"},
+    {"source": "generated", "case_id": "work_risk_work_high_defect_liability_excluded_1", "contract_type": "work", "expected_risk_level": "高風險"},
+    {"source": "generated", "case_id": "mandate_clean_1", "contract_type": "mandate", "expected_risk_level": "低風險"},
+    {"source": "generated", "case_id": "mandate_risk_mandate_medium_termination_barred_1", "contract_type": "mandate", "expected_risk_level": "中風險"},
+    {"source": "generated", "case_id": "mandate_risk_mandate_high_full_fee_on_termination_1", "contract_type": "mandate", "expected_risk_level": "高風險"},
+    {"source": "generated", "case_id": "loan_clean_1", "contract_type": "loan", "expected_risk_level": "低風險"},
+    {"source": "generated", "case_id": "loan_risk_loan_medium_early_repayment_barred_1", "contract_type": "loan", "expected_risk_level": "中風險"},
+    {"source": "generated", "case_id": "loan_risk_loan_high_interest_deducted_upfront_1", "contract_type": "loan", "expected_risk_level": "高風險"}
+  ]
+}

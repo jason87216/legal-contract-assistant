@@ -109,7 +109,8 @@ def test_risky_contract_triggers_its_rules(service, kind: str) -> None:
 
     assert EXPECTED[kind] <= fired
     assert all(rule_id.split("_", 1)[0] in (kind, "shared") for rule_id in fired)
-    assert context.risk_level == "高風險"
+    high = sum(1 for f in context.risk_findings if f.level == "高風險")
+    assert context.risk_level == ("高風險" if high >= 3 else "中風險")
     for finding in context.risk_findings:
         assert finding.articles, finding.rule_id
 
@@ -121,3 +122,14 @@ def test_new_types_have_checklist_and_statute_candidates(service, kind: str) -> 
     assert context.llm_checklist
     assert context.candidate_articles
     assert any(kind in article["primary_types"] for article in context.candidate_articles)
+
+
+def test_high_risk_needs_three_high_risk_rules() -> None:
+    from src.legal_contract_assistant.contract_review import estimate_risk_level
+
+    one = "借款人遲延時應給付違約金新臺幣十萬元。"
+    three = one + "約定年息20%。出借人對本借款概不負責。"
+    assert estimate_risk_level(one, "loan", [])[0] == "中風險"
+    level, reasons = estimate_risk_level(three, "loan", [])
+    assert level == "高風險"
+    assert len(reasons) >= 3

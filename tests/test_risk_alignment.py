@@ -179,3 +179,17 @@ def test_penalty_clauses_are_high_risk_but_limits_on_them_are_not(tmp_path) -> N
     assert penalty("違約金如顯失公平得酌減。乙方遲延者每日按價金千分之一計付違約金。") == [
         "乙方遲延者每日按價金千分之一計付違約金。"
     ]
+
+
+def test_deposit_cap_reads_decimal_months(tmp_path) -> None:
+    service = _service(tmp_path)
+
+    def over_cap(text: str) -> bool:
+        context = service.build_context("出租人與承租人約定租金。" + text, contract_type="lease")
+        return any(f.rule_id == "lease_high_deposit_over_cap" for f in context.risk_findings)
+
+    assert not over_cap("押金為1.8個月租金。")
+    assert not over_cap("押金為2.5個月租金。")
+    assert over_cap("押金為3.5個月租金。")
+    assert over_cap("押金為三個月租金。")
+    assert over_cap("押金為12個月租金。")

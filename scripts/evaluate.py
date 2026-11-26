@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from src.legal_contract_assistant.contract_review import (
+    HIGH_RISK_MIN_RULES,
     ContractReviewService,
     classify_contract_type,
 )
@@ -57,6 +58,17 @@ def expected_rule_ids(theme: str) -> list[str] | None:
     checklist or were dropped are not measured as rule recall.
     """
     return THEME_MAP["themes"].get(theme)
+
+
+def expected_level(case: dict[str, Any]) -> str:
+    """The testpack level under the current grading.
+
+    The testpack labels one risk theme per case and calls a contract high risk
+    for a single high-risk term; a contract is now high risk only from
+    HIGH_RISK_MIN_RULES high-risk rules, so a labelled 高風險 case means 中風險.
+    """
+    level = case["expected_risk_level"]
+    return "中風險" if level == "高風險" and HIGH_RISK_MIN_RULES > 1 else level
 
 
 def rule_citations(rule_ids: list[str]) -> set[tuple[str, str]]:
@@ -106,7 +118,7 @@ def evaluate_cases(cases: list[dict[str, Any]], service: ContractReviewService |
         results: dict[str, bool | None] = {
             "contract_type_accuracy": classify_contract_type(text) == label_type,
             "risk_level_accuracy": (
-                context.risk_level == case["expected_risk_level"] if rule_checked else None
+                context.risk_level == expected_level(case) if rule_checked else None
             ),
             "risk_theme_recall": theme_hit,
             "citation_presence": bool(context.related_articles),
@@ -119,7 +131,7 @@ def evaluate_cases(cases: list[dict[str, Any]], service: ContractReviewService |
         outcomes.append({
             "case_id": case["case_id"],
             "contract_type": label_type,
-            "expected_risk_level": case["expected_risk_level"],
+            "expected_risk_level": expected_level(case),
             "actual_risk_level": context.risk_level,
             "expected_theme": expected_theme,
             "actual_themes": list(context.risk_themes),
