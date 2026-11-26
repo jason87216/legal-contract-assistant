@@ -3,22 +3,27 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from importlib import resources
 from typing import Any
 
+from .statute_cache import OFFICIAL_VERSION_KEY
 from .statute_lookup import StatuteLookupService
 from .statutes import StatuteArticle
+from .vector_index import DEFAULT_EMBED_MODEL, Embedder, SentenceTransformerEmbedder, VectorIndex
 
 
+RETRIEVAL_METHODS = ("keyword", "vector", "hybrid")
+CLAUSE_SPLIT = re.compile(r"\n(?=第[一二三四五六七八九十百零〇\d]+條)|\n\s*\n")
 SEARCH_SCOPES = ("curated", "all")
 
 
 @dataclass(frozen=True)
 class RetrievedArticle:
     article: StatuteArticle
-    score: int
+    score: int | float
     match_reason: str
 
     def to_dict(self) -> dict[str, Any]:
@@ -44,8 +49,12 @@ class StatuteRetrievalTool:
     bounded tools, and every returned citation keeps its source URL.
     """
 
-    def __init__(self, lookup_service: StatuteLookupService | None = None) -> None:
+    def __init__(
+        self, lookup_service: StatuteLookupService | None = None, *, embedder: Embedder | None = None
+    ) -> None:
         self.lookup_service = lookup_service or StatuteLookupService()
+        self._embedder = embedder
+        self._vector_index: VectorIndex | None = None
 
     def initialize(self) -> None:
         self.lookup_service.initialize()
@@ -77,46 +86,81 @@ class StatuteRetrievalTool:
         contract_mode: str | None = None,
         limit: int = 8,
         scope: str = "curated",
+        method: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Rank articles by query terms.
+        """Search statutes while preserving the list response used by existing callers."""
+        return self._search([query], query, contract_mode, limit, scope, method)["articles"]
 
-        scope "curated" searches the contract-type candidate ranges used by the
-        report; "all" also searches every imported official article.
-        """
+    def _search(
+        self,
+        queries: list[str],
+        keyword_query: str,
+        contract_mode: str | None,
+        limit: int,
+        scope: str,
+        method: str | None,
+    ) -> dict[str, Any]:
         if scope not in SEARCH_SCOPES:
             raise ValueError(f"scope must be one of {SEARCH_SCOPES}")
-        terms = _extract_terms(query)
-        if not terms and contract_mode:
-            terms = [contract_mode]
-        ranked: list[RetrievedArticle] = []
-        articles = self.lookup_service.cache.list_articles(curated_only=scope == "curated")
-        for article in articles:
-            score, reasons = _score_article(article, terms, contract_mode, query)
-            if score > 0:
-                ranked.append(
-                    RetrievedArticle(
-                        article=article,
-                        score=score,
-                        match_reason=", ".join(reasons),
-                    )
-                )
+        method = _retrieval_method(method)
+        cache = self.lookup_service.cache
+        limit = _safe_limit(limit)
+        warning = None
+        if method != "keyword":
+            try:
+                model_name = os.environ.get("LCA_EMBED_MODEL") or DEFAULT_EMBED_MODEL
+                if self._vector_index is None or self._vector_index.model_name != model_name:
+                    embedder = self._embedder or SentenceTransformerEmbedder(model_name)
+                    self._vector_index = VectorIndex(cache.db_path.parent, embedder, model_name)
+                articles = cache.list_articles()
+                self._vector_index.prepare(articles, cache.metadata(OFFICIAL_VERSION_KEY))
+                scores = self._vector_index.scores(queries) if queries else []
+            except Exception as exc:
+                warning = f"{method} retrieval unavailable ({type(exc).__name__}); using keyword."
+                method = "keyword"
+            else:
+                if scope == "curated":
+                    articles = [article for article in articles if article.curated]
+                best: dict[tuple[str, str], RetrievedArticle] = {}
+                for query, similarities in zip(queries, scores):
+                    for item in _rank_vector(articles, similarities, query, contract_mode, method)[:limit]:
+                        key = _article_key(item.article)
+                        if key not in best or item.score > best[key].score:
+                            best[key] = item
+                ranked = sorted(best.values(), key=lambda item: _vector_sort_key(item, contract_mode))
 
-        ranked.sort(key=lambda item: (-item.score, item.article.law_name, item.article.article_no))
-        return [item.to_dict() for item in ranked[: _safe_limit(limit)]]
+        if method == "keyword":
+            articles = cache.list_articles(curated_only=scope == "curated")
+            ranked = _rank_keyword(articles, keyword_query, contract_mode)
+
+        rows = [item.to_dict() for item in ranked[:limit]]
+        result: dict[str, Any] = {"articles": rows, "retrieval_method": method}
+        if warning:
+            result["warning"] = warning
+            for row in rows:
+                row.update(retrieval_method=method, warning=warning)
+        elif method != "keyword":
+            for row in rows:
+                row["retrieval_method"] = method
+        return result
 
     def retrieve_candidate_articles(
         self,
         contract_text: str,
         contract_mode: str | None = None,
         limit: int = 12,
+        method: str | None = None,
+        scope: str = "curated",
     ) -> dict[str, Any]:
         keywords = extract_contract_keywords(contract_text)
-        query = " ".join(keywords)
-        articles = self.search_statutes(query, contract_mode=contract_mode, limit=limit)
+        method = _retrieval_method(method)
+        queries = []
+        if method != "keyword":
+            queries = [clause.strip() for clause in CLAUSE_SPLIT.split(contract_text) if clause.strip()]
         return {
             "contract_mode": contract_mode or "unknown",
             "keywords": keywords,
-            "articles": articles,
+            **self._search(queries, " ".join(keywords), contract_mode, limit, scope, method),
         }
 
     def call_tool(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
@@ -129,14 +173,15 @@ class StatuteRetrievalTool:
             scope = str(arguments.get("scope") or "all")
             if scope not in SEARCH_SCOPES:
                 return {"error": f"scope must be one of {SEARCH_SCOPES}"}
-            return {
-                "articles": self.search_statutes(
-                    query=str(arguments.get("query", "")),
-                    contract_mode=_optional_str(arguments.get("contract_mode")),
-                    limit=int(arguments.get("limit", 8) or 8),
-                    scope=scope,
-                )
-            }
+            query = str(arguments.get("query", ""))
+            return self._search(
+                [query],
+                query,
+                _optional_str(arguments.get("contract_mode")),
+                int(arguments.get("limit", 8) or 8),
+                scope,
+                _optional_str(arguments.get("method")),
+            )
         if name == "statute_source_info":
             return self.source_info()
         if name == "retrieve_candidate_articles":
@@ -144,6 +189,7 @@ class StatuteRetrievalTool:
                 contract_text=str(arguments.get("contract_text", "")),
                 contract_mode=_optional_str(arguments.get("contract_mode")),
                 limit=int(arguments.get("limit", 12) or 12),
+                method=_optional_str(arguments.get("method")),
             )
         return {"error": f"Unsupported tool: {name}"}
 
@@ -153,6 +199,65 @@ class StatuteRetrievalTool:
 
     def call_tool_json(self, name: str, arguments: dict[str, Any]) -> str:
         return json.dumps(self.call_tool(name, arguments), ensure_ascii=False)
+
+
+def _retrieval_method(method: str | None) -> str:
+    method = method or os.environ.get("LCA_RETRIEVAL_METHOD") or "keyword"
+    if method not in RETRIEVAL_METHODS:
+        raise ValueError(f"method must be one of {RETRIEVAL_METHODS}")
+    return method
+
+
+def _article_key(article: StatuteArticle) -> tuple[str, str]:
+    return article.law_name, article.article_no
+
+
+def _rank_keyword(
+    articles: list[StatuteArticle], query: str, contract_mode: str | None
+) -> list[RetrievedArticle]:
+    terms = _extract_terms(query)
+    if not terms and contract_mode:
+        terms = [contract_mode]
+    ranked = []
+    for article in articles:
+        score, reasons = _score_article(article, terms, contract_mode, query)
+        if score > 0:
+            ranked.append(RetrievedArticle(article, score, ", ".join(reasons)))
+    return sorted(ranked, key=lambda item: (-item.score, _article_key(item.article)))
+
+
+def _vector_sort_key(item: RetrievedArticle, contract_mode: str | None) -> tuple:
+    mode = (contract_mode or "").strip()
+    tier = 2 if mode in item.article.primary_types else int(mode in item.article.contract_types)
+    return -item.score, -tier, _article_key(item.article)
+
+
+def _rank_vector(
+    articles: list[StatuteArticle],
+    similarities: dict[tuple[str, str], float],
+    query: str,
+    contract_mode: str | None,
+    method: str,
+) -> list[RetrievedArticle]:
+    ranked = [
+        RetrievedArticle(article, similarities[_article_key(article)], "vector_cosine")
+        for article in articles
+    ]
+    ranked.sort(key=lambda item: _vector_sort_key(item, contract_mode))
+    if method == "vector":
+        return ranked
+    keyword_ranks = {
+        _article_key(item.article): rank
+        for rank, item in enumerate(_rank_keyword(articles, query, contract_mode), 1)
+    }
+    fused = []
+    for rank, item in enumerate(ranked, 1):
+        keyword_rank = keyword_ranks.get(_article_key(item.article))
+        score = 1 / (60 + rank)
+        if keyword_rank is not None:
+            score += 1 / (60 + keyword_rank)
+        fused.append(RetrievedArticle(item.article, score, "hybrid_rrf"))
+    return sorted(fused, key=lambda item: _vector_sort_key(item, contract_mode))
 
 
 def extract_contract_keywords(contract_text: str, limit: int = 18) -> list[str]:
