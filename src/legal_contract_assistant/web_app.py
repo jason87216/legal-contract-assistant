@@ -12,7 +12,12 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import __version__
-from .contract_review import CONTRACT_TYPE_LABELS, REVIEW_PERSPECTIVE_LABELS, ContractReviewService
+from .contract_review import (
+    CONTRACT_TYPE_LABELS,
+    CONTRACT_TYPES,
+    REVIEW_PERSPECTIVE_LABELS,
+    ContractReviewService,
+)
 from .document_parser import DocumentParseError, MAX_UPLOAD_BYTES, extract_contract_text
 from .llm import (
     AnthropicLLMProvider,
@@ -162,11 +167,7 @@ def create_app(
             raise HTTPException(status_code=400, detail="Contract text is required")
 
         selected_contract_type = None if contract_type == "auto" else contract_type
-        if selected_contract_type is not None and selected_contract_type not in {
-            "sale",
-            "labor",
-            "lease",
-        }:
+        if selected_contract_type is not None and selected_contract_type not in CONTRACT_TYPES:
             raise HTTPException(status_code=400, detail="Unsupported contract type")
         if review_perspective not in REVIEW_PERSPECTIVE_LABELS:
             raise HTTPException(status_code=400, detail="Unsupported review perspective")

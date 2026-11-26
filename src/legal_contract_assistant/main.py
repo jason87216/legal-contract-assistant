@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .contract_review import ContractReviewService
+from .contract_review import CONTRACT_TYPES, ContractReviewService
 from .llm import ModelConfig, OpenAICompatibleLLMProvider
 from .statute_tools import StatuteRetrievalTool
 
@@ -57,7 +57,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate a Taiwan contract review report.")
     parser.add_argument(
         "--contract-type",
-        choices=("sale", "labor", "lease"),
+        choices=CONTRACT_TYPES,
         help="Optional user-selected contract mode. If omitted, no auto classification is used.",
     )
     parser.add_argument("--text", help="Contract text. If omitted, stdin or a sample is used.")

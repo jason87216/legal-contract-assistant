@@ -9,6 +9,8 @@ from urllib.parse import quote
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+from .statute_cache import contract_type_labels
+
 if TYPE_CHECKING:
     from .contract_review import ReviewContext, RiskFinding
     from .statute_tools import StatuteRetrievalTool
@@ -96,6 +98,11 @@ class NoopLLMProvider:
         if not risk_themes:
             risk_themes = "- 需人工確認"
 
+        checklist = "".join(
+            f"- 規則未判斷，請人工檢查：{item}\n"
+            for item in getattr(context, "llm_checklist", ())
+        )
+
         return f"""# 合約審查報告
 
 ## 一、合約基本判斷
@@ -131,7 +138,7 @@ class NoopLLMProvider:
 {perspective_section}
 
 ## 十、需人工確認事項
-- 本報告尚未接入正式 LLM、官方模板、行政函釋或判決資料。
+{checklist}- 本報告尚未接入正式 LLM、官方模板、行政函釋或判決資料。
 - 法條已附來源 URL，正式使用前仍應回官方頁面核對最新版本。
 - 若條款涉及金額、日期、解除條件、違約金或消費者定型化契約，應由人工再次確認。
 
@@ -647,6 +654,7 @@ def _build_user_prompt(context: "ReviewContext") -> str:
     )
     risk_reasons = "\n".join(f"- {reason}" for reason in context.risk_reasons)
     risk_themes = "\n".join(f"- {theme}" for theme in context.risk_themes)
+    llm_checklist = "\n".join(f"- {item}" for item in getattr(context, "llm_checklist", ()))
     risk_findings = "\n".join(
         f"- {finding.theme}（{finding.level}）\n"
         f"  觸發條款：「{finding.clause_excerpt}」\n"
@@ -689,6 +697,9 @@ def _build_user_prompt(context: "ReviewContext") -> str:
 風險與法條對應（每個風險觸發的條款、依據法條與規則建議）：
 {risk_findings or "- 無"}
 
+規則無法從字面判斷、須由你依合約內容逐項檢查的事項（有問題才列為風險，需要法條時先用工具查詢）：
+{llm_checklist or "- 無"}
+
 合約文字：
 candidate_articles:
 {candidate_articles or "- none"}
@@ -727,7 +738,7 @@ def _tool_parameter_schema() -> dict[str, dict[str, Any]]:
                 "query": {"type": "string"},
                 "contract_mode": {
                     "type": "string",
-                    "enum": ["sale", "labor", "lease", "unknown"],
+                    "enum": [*contract_type_labels(), "unknown"],
                 },
                 "limit": {"type": "integer", "minimum": 1, "maximum": 30},
             },
@@ -740,7 +751,7 @@ def _tool_parameter_schema() -> dict[str, dict[str, Any]]:
                 "contract_text": {"type": "string"},
                 "contract_mode": {
                     "type": "string",
-                    "enum": ["sale", "labor", "lease", "unknown"],
+                    "enum": [*contract_type_labels(), "unknown"],
                 },
                 "limit": {"type": "integer", "minimum": 1, "maximum": 30},
             },

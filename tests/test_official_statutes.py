@@ -71,13 +71,13 @@ def test_importer_reads_the_api_zip() -> None:
 
 
 def test_lookup_finds_articles_outside_the_curated_set(tmp_path) -> None:
-    result = _tool(tmp_path).lookup_article("勞動基準法", "9-1")
+    result = _tool(tmp_path).lookup_article("民法", "1")
 
     assert result["found"] is True
     article = result["article"]
-    assert article["text"].startswith("未符合下列規定者，雇主不得與勞工為離職後競業禁止之約定")
+    assert article["text"].startswith("民事，法律所未規定者，依習慣")
     assert article["curated"] is False
-    assert article["source_url"].endswith("pcode=N0030001&flno=9-1")
+    assert article["source_url"].endswith("pcode=B0000001&flno=1")
 
 
 def test_regulations_and_added_laws_are_imported(tmp_path) -> None:
@@ -146,3 +146,27 @@ def test_mcp_server_exposes_source_info_tool(tmp_path, monkeypatch) -> None:
 
     names = {tool.name for tool in asyncio.run(server.list_tools())}
     assert {"lookup_article", "search_statutes", "statute_source_info"} <= names
+
+
+def test_scope_tiers_and_exceptions(tmp_path) -> None:
+    tool = _tool(tmp_path)
+
+    def article(law_name: str, article_no: str) -> dict:
+        return tool.lookup_article(law_name, article_no)["article"]
+
+    repair = article("民法", "429")
+    assert repair["primary_types"] == ["lease"]
+    assert "修繕" in repair["topics"]
+    # Farmland leases stay in the lease pool, but only as secondary candidates.
+    farmland = article("民法", "457")
+    assert "lease" in farmland["contract_types"] and farmland["primary_types"] == []
+    # General contract law is secondary for every type.
+    penalty = article("民法", "250")
+    assert set(penalty["contract_types"]) >= {"sale", "lease", "work", "loan"}
+    assert penalty["primary_types"] == []
+    # "except" keeps travel out of 承攬 and personnel guarantees out of 借貸.
+    assert "work" not in article("民法", "514-1")["contract_types"]
+    assert article("民法", "514")["primary_types"] == ["work"]
+    personnel = article("民法", "756-1")
+    assert "loan" not in personnel["contract_types"] and "labor" in personnel["contract_types"]
+    assert article("民法", "739")["primary_types"] == ["loan"]

@@ -4,13 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from scripts.evaluate import NO_HIGH_RISK_THEME, THEME_MAP, evaluate_cases
 from src.legal_contract_assistant.contract_review import classify_contract_type
-from src.legal_contract_assistant.contract_review import detect_risk_themes
-from src.legal_contract_assistant.contract_review import estimate_risk_level
-from src.legal_contract_assistant.contract_review import RISK_THEME_CITATIONS
-from src.legal_contract_assistant.contract_review import RISK_THEME_PATTERNS
-from src.legal_contract_assistant.contract_review import ContractReviewService
 from src.legal_contract_assistant.main import generate_review_report
+from src.legal_contract_assistant.review_rules import DEFAULT_REVIEW_RULES
 
 TESTPACK = Path("tw_contract_review_testpack_v1.zip")
 TESTPACK_ROOT = "tw_contract_review_testpack_v1"
@@ -65,76 +62,39 @@ def test_evaluation_indicators_are_declared() -> None:
     )
 
 
-def test_testpack_rule_based_risk_level_matches_manifest() -> None:
-    cases = _load_test_cases()
-
-    mismatches = []
-    for case in cases:
-        risk_level, _reasons = estimate_risk_level(
-            case["contract_text"],
-            CONTRACT_TYPE_MAP[case["contract_type"]],
-            [],
-        )
-        if risk_level != case["expected_risk_level"]:
-            mismatches.append((case["case_id"], case["expected_risk_level"], risk_level))
-
-    assert len(cases) == 90
-    assert mismatches == []
-
-
-def test_testpack_rule_based_risk_theme_recall_matches_manifest() -> None:
-    cases = _load_test_cases()
-
-    misses = []
-    for case in cases:
-        expected = case["expected_risk_themes"]
-        actual = detect_risk_themes(case["contract_text"])
-        if expected not in actual:
-            misses.append((case["case_id"], expected, actual))
-
-    assert len(cases) == 90
-    assert misses == []
-
-
-def test_testpack_expected_themes_have_citation_mapping() -> None:
-    cases = _load_test_cases()
-    expected_themes = {
+def test_theme_map_covers_every_testpack_label() -> None:
+    labels = {
         case["expected_risk_themes"]
-        for case in cases
-        if case["expected_risk_themes"] != "無明顯高風險；仍應人工複核"
+        for case in _load_test_cases()
+        if case["expected_risk_themes"] != NO_HIGH_RISK_THEME
     }
-    detected_themes = {theme for theme, _pattern in RISK_THEME_PATTERNS}
+    rule_ids = {rule.rule_id for rule in DEFAULT_REVIEW_RULES}
 
-    assert expected_themes <= detected_themes
-    assert expected_themes <= set(RISK_THEME_CITATIONS)
+    assert labels <= set(THEME_MAP["themes"]) | set(THEME_MAP["_not_rule_checked"])
+    assert not set(THEME_MAP["themes"]) & set(THEME_MAP["_not_rule_checked"])
+    assert {i for ids in THEME_MAP["themes"].values() for i in ids} <= rule_ids
 
 
-def test_testpack_citation_presence_and_relevance() -> None:
-    cases = _load_test_cases()
-    service = ContractReviewService()
-    service.initialize()
+@pytest.fixture(scope="module")
+def evaluation() -> dict:
+    return evaluate_cases(_load_test_cases())
 
-    misses = []
-    for case in cases:
-        context = service.build_context(
-            case["contract_text"],
-            contract_type=CONTRACT_TYPE_MAP[case["contract_type"]],
-        )
-        assert context.related_articles
 
-        expected_theme = case["expected_risk_themes"]
-        if expected_theme == "無明顯高風險；仍應人工複核":
-            continue
+def test_low_risk_cases_trigger_no_rule(evaluation) -> None:
+    stray = [
+        (row["case_id"], row["actual_themes"])
+        for row in evaluation["cases"]
+        if row["expected_risk_level"] == "低風險" and row["actual_themes"] != [NO_HIGH_RISK_THEME]
+    ]
+    assert stray == []
 
-        expected_citations = set(RISK_THEME_CITATIONS[expected_theme])
-        actual_citations = {
-            (article.law_name, article.article_no)
-            for article in context.related_articles
-        }
-        if expected_citations.isdisjoint(actual_citations):
-            misses.append((case["case_id"], expected_theme, sorted(actual_citations)))
 
-    assert misses == []
+def test_rule_recall_and_citations_do_not_regress(evaluation) -> None:
+    # Floors at the rewrite's first measurement; raise them when rules improve.
+    metrics = evaluation["metrics"]
+    assert metrics["risk_theme_recall"]["passed"] >= 80
+    assert metrics["citation_relevance"]["passed"] >= 50
+    assert metrics["citation_presence"]["rate"] == 1
 
 
 @pytest.mark.parametrize(

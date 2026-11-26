@@ -30,6 +30,7 @@ class RetrievedArticle:
             "source_url": self.article.source_url,
             "contract_types": list(self.article.contract_types),
             "topics": list(self.article.topics),
+            "primary_types": list(self.article.primary_types),
             "curated": self.article.curated,
             "score": self.score,
             "match_reason": self.match_reason,
@@ -79,8 +80,8 @@ class StatuteRetrievalTool:
     ) -> list[dict[str, Any]]:
         """Rank articles by query terms.
 
-        scope "curated" searches the 38 annotated articles (used by the report's
-        candidate retrieval); "all" also searches every imported official article.
+        scope "curated" searches the contract-type candidate ranges used by the
+        report; "all" also searches every imported official article.
         """
         if scope not in SEARCH_SCOPES:
             raise ValueError(f"scope must be one of {SEARCH_SCOPES}")
@@ -90,7 +91,7 @@ class StatuteRetrievalTool:
         ranked: list[RetrievedArticle] = []
         articles = self.lookup_service.cache.list_articles(curated_only=scope == "curated")
         for article in articles:
-            score, reasons = _score_article(article, terms, contract_mode)
+            score, reasons = _score_article(article, terms, contract_mode, query)
             if score > 0:
                 ranked.append(
                     RetrievedArticle(
@@ -224,32 +225,42 @@ def _extract_terms(text: str, *, keep_short_chinese: bool = True) -> list[str]:
     return terms
 
 
+# A primary article defines the contract type (民法 租賃 for a lease); a
+# secondary one is general contract law or a rare variant (耕作地).
+PRIMARY_TYPE_SCORE = 6
+SECONDARY_TYPE_SCORE = 2
+
+
 def _score_article(
     article: StatuteArticle,
     terms: list[str],
     contract_mode: str | None,
+    query: str,
 ) -> tuple[int, list[str]]:
     score = 0
     reasons: list[str] = []
     mode = (contract_mode or "").strip()
-    if mode and mode in article.contract_types:
-        score += 6
+    if mode and mode in article.primary_types:
+        score += PRIMARY_TYPE_SCORE
+        reasons.append(f"contract_mode:{mode}:primary")
+    elif mode and mode in article.contract_types:
+        score += SECONDARY_TYPE_SCORE
         reasons.append(f"contract_mode:{mode}")
 
-    haystacks = {
-        "law_name": article.law_name,
-        "article_no": article.article_no,
-        "topics": " ".join(article.topics),
-        "text": article.text,
-    }
+    # 只有查詢明確提及完整法規名稱才加分，避免「租賃」替整部條例灌分。
+    if article.law_name in query:
+        score += 12
+        reasons.append(f"law_name:{article.law_name}")
+
+    topics = " ".join(article.topics)
     for term in terms:
-        if term in haystacks["law_name"] or term == haystacks["article_no"]:
+        if term == article.article_no:
             score += 12
-            reasons.append(f"law_or_article:{term}")
-        if term in haystacks["topics"]:
+            reasons.append(f"article_no:{term}")
+        if term in topics:
             score += 8
             reasons.append(f"topic:{term}")
-        if term in haystacks["text"]:
+        if term in article.text:
             score += 4
             reasons.append(f"text:{term}")
     return score, reasons

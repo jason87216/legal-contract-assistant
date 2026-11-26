@@ -1,61 +1,1822 @@
 [
-  {"rule_id":"sale_medium_delivery_unclear","risk_theme":"交付期限不明","risk_level":"中風險","pattern":"備貨完成後盡速","legal_basis":[{"law_name":"民法","article_no":"348"}],"suggestion":"明確交付日期、交付地點與遲延責任。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_acceptance_short","risk_theme":"驗收期間過短","risk_level":"中風險","pattern":"到貨當日完成驗收|逾當日未提出","legal_basis":[{"law_name":"民法","article_no":"356"}],"suggestion":"給予合理驗收期間與書面通知程序。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_payment_before_acceptance","risk_theme":"付款早於驗收","risk_level":"中風險","pattern":"一次付清全部價金|收款後再安排交付","legal_basis":[{"law_name":"民法","article_no":"345"},{"law_name":"民法","article_no":"348"}],"suggestion":"將尾款與交付或驗收合格連動。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_spec_unclear","risk_theme":"標的規格不明","risk_level":"中風險","pattern":"商用設備一批|型號、年份、配件","legal_basis":[{"law_name":"民法","article_no":"345"}],"suggestion":"列明型號、數量、配件、版本與附件清單。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_warranty_unclear","risk_theme":"保固條款不明","risk_level":"中風險","pattern":"原廠規定","legal_basis":[{"law_name":"民法","article_no":"354"},{"law_name":"民法","article_no":"359"}],"suggestion":"明確保固期間、範圍、排除事項與補救方式。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_unbalanced_default","risk_theme":"違約責任不對等","risk_level":"中風險","pattern":"遲延付款每日|交付日自動順延","legal_basis":[{"law_name":"民法","article_no":"252"},{"law_name":"民法","article_no":"247-1"}],"suggestion":"調整雙方遲延責任，使違約效果相當。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_jurisdiction","risk_theme":"管轄條款不利","risk_level":"中風險","pattern":"甲方所在地法院","legal_basis":[{"law_name":"消費者保護法","article_no":"12"},{"law_name":"消費者保護法","article_no":"17"}],"suggestion":"避免一律約定企業所在地法院，改依法定管轄或協商。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_return_process","risk_theme":"退換貨程序不明","risk_level":"中風險","pattern":"退換貨方式.*日後另行公告","legal_basis":[{"law_name":"民法","article_no":"354"},{"law_name":"民法","article_no":"359"}],"suggestion":"明確退換貨通知窗口、期限與處理流程。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_ownership_transfer","risk_theme":"所有權移轉不明","risk_level":"中風險","pattern":"所有權、風險與保管責任.*另行確認","legal_basis":[{"law_name":"民法","article_no":"348"}],"suggestion":"明確所有權與風險移轉時點。","source_note":"testpack v1"},
-  {"rule_id":"sale_medium_tax_fee","risk_theme":"價金稅費不明","risk_level":"中風險","pattern":"是否含安裝費、運送費、稅捐","legal_basis":[{"law_name":"民法","article_no":"345"}],"suggestion":"列明價金是否含稅、運費、安裝費與其他規費。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_no_warranty","risk_theme":"完全排除瑕疵責任","risk_level":"高風險","pattern":"概不退換|不負任何瑕疵","legal_basis":[{"law_name":"民法","article_no":"354"},{"law_name":"民法","article_no":"359"},{"law_name":"消費者保護法","article_no":"12"}],"suggestion":"刪除完全免責文字，保留法定瑕疵擔保與合理補救。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_unilateral_substitution","risk_theme":"單方變更標的","risk_level":"高風險","pattern":"同級品、替代品|無須事前通知乙方","legal_basis":[{"law_name":"民法","article_no":"247-1"},{"law_name":"消費者保護法","article_no":"17"}],"suggestion":"替代品交付應經買方同意並保留拒收或解除權。","source_note":"testpack v1"},
-  {"rule_id":"shared_high_penalty","risk_theme":"違約金可能過高","risk_level":"高風險","pattern":"每日.*百分之五|一年租金作為違約金","legal_basis":[{"law_name":"民法","article_no":"252"}],"suggestion":"將違約金調整為合理比例，並區分實際損害與懲罰性效果。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_review_period_waiver","risk_theme":"預先放棄審閱期","risk_level":"高風險","pattern":"放棄.*審閱","legal_basis":[{"law_name":"消費者保護法","article_no":"17"}],"suggestion":"不得預先排除法定或主管機關公告要求的審閱權益。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_early_risk_transfer","risk_theme":"風險移轉過早","risk_level":"高風險","pattern":"簽約日起.*風險均由乙方負擔","legal_basis":[{"law_name":"民法","article_no":"348"}],"suggestion":"將風險移轉與交付、點收或所有權移轉連動。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_delivery_indefinite","risk_theme":"交付義務過度不確定","risk_level":"高風險","pattern":"交付期限由甲方決定|無限期延期交付","legal_basis":[{"law_name":"民法","article_no":"348"}],"suggestion":"明確最晚交付期限與逾期解除或減價機制。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_warranty_shifted","risk_theme":"保固責任排除","risk_level":"高風險","pattern":"自行送修並負擔","legal_basis":[{"law_name":"民法","article_no":"354"},{"law_name":"民法","article_no":"359"}],"suggestion":"保留出賣人就非買方可歸責瑕疵的補救責任。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_no_termination","risk_theme":"解除權受不當限制","risk_level":"高風險","pattern":"不得主張解除|不得解除契約","legal_basis":[{"law_name":"民法","article_no":"359"},{"law_name":"民法","article_no":"247-1"}],"suggestion":"保留重大瑕疵、遲延或無法履行時的解除權。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_used_goods_disclosure","risk_theme":"中古標的揭露不足","risk_level":"高風險","pattern":"不提供事故|不提供.*現況資料","legal_basis":[{"law_name":"民法","article_no":"245-1"},{"law_name":"民法","article_no":"354"}],"suggestion":"補充事故、維修、里程、泡水等現況揭露。","source_note":"testpack v1"},
-  {"rule_id":"sale_high_forfeit_payment","risk_theme":"片面沒收已付款","risk_level":"高風險","pattern":"沒收乙方已付款項","legal_basis":[{"law_name":"民法","article_no":"252"},{"law_name":"民法","article_no":"247-1"}],"suggestion":"沒收款項應限於合理違約金或實際損害範圍。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_deposit_return","risk_theme":"押金返還不明","risk_level":"中風險","pattern":"押金返還條件.*另行決定","legal_basis":[{"law_name":"民法","article_no":"421"},{"law_name":"民法","article_no":"450"}],"suggestion":"明確押金返還期限、扣抵項目與憑證要求。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_repair_unclear","risk_theme":"修繕責任不明","risk_level":"中風險","pattern":"修繕由雙方協議","legal_basis":[{"law_name":"民法","article_no":"429"},{"law_name":"民法","article_no":"430"}],"suggestion":"區分自然耗損、設備老舊與承租人可歸責損害。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_early_termination_penalty","risk_theme":"提前終止罰則偏重","risk_level":"中風險","pattern":"二個月租金作為違約金","legal_basis":[{"law_name":"民法","article_no":"252"},{"law_name":"民法","article_no":"450"}],"suggestion":"調整提前終止違約金並明確通知期。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_equipment_list","risk_theme":"設備清單不足","risk_level":"中風險","pattern":"不另製作清單","legal_basis":[{"law_name":"民法","article_no":"423"}],"suggestion":"建立設備清單、現況照片與點交紀錄。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_utilities","risk_theme":"水電管理費不明","risk_level":"中風險","pattern":"管理費、公共電費|每月結算後通知","legal_basis":[{"law_name":"民法","article_no":"421"}],"suggestion":"明確水電、瓦斯、網路、管理費與稅費負擔。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_entry","risk_theme":"入屋檢查界線不明","risk_level":"中風險","pattern":"認有必要時得查看","legal_basis":[{"law_name":"民法","article_no":"432"}],"suggestion":"限制入屋事由、通知期限與承租人同意程序。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_left_property","risk_theme":"遺留物處理不明","risk_level":"中風險","pattern":"遺留物.*另行協議","legal_basis":[{"law_name":"民法","article_no":"450"}],"suggestion":"明確遺留物通知、保管、處理與費用程序。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_sublease","risk_theme":"轉租約定不明","risk_level":"中風險","pattern":"第三人使用.*未另約定","legal_basis":[{"law_name":"民法","article_no":"432"}],"suggestion":"明確親友短住、看護、共同居住與轉租界線。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_scope","risk_theme":"租賃範圍不明","risk_level":"中風險","pattern":"是否包含陽台|依甲方日後說明","legal_basis":[{"law_name":"民法","article_no":"421"},{"law_name":"民法","article_no":"423"}],"suggestion":"列明租賃範圍、附屬空間與共用設施。","source_note":"testpack v1"},
-  {"rule_id":"lease_medium_renewal","risk_theme":"續租條件不明","risk_level":"中風險","pattern":"續租租金與條件.*屆時另行決定","legal_basis":[{"law_name":"民法","article_no":"450"}],"suggestion":"明確續租通知期、租金調整與續租條件。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_deposit_forfeit","risk_theme":"押金不得任意沒收","risk_level":"高風險","pattern":"押金不論任何原因均不退還","legal_basis":[{"law_name":"民法","article_no":"421"},{"law_name":"民法","article_no":"252"}],"suggestion":"押金扣除應限於有憑證費用或合理損害。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_repair_shift","risk_theme":"修繕責任過度轉嫁","risk_level":"高風險","pattern":"所有修繕.*乙方自行負擔","legal_basis":[{"law_name":"民法","article_no":"429"},{"law_name":"民法","article_no":"430"}],"suggestion":"自然耗損與非承租人可歸責修繕不應一概轉嫁。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_privacy","risk_theme":"隱私與居住安寧風險","risk_level":"高風險","pattern":"隨時自行開門入內","legal_basis":[{"law_name":"民法","article_no":"423"},{"law_name":"民法","article_no":"432"}],"suggestion":"入屋應限於必要事由並經事前通知與同意。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_rent_adjustment","risk_theme":"單方調整租金","risk_level":"高風險","pattern":"每月調整租金","legal_basis":[{"law_name":"民法","article_no":"421"}],"suggestion":"租金調整應以明確條件與雙方合意為基礎。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_no_termination","risk_theme":"終止權過度限制","risk_level":"高風險","pattern":"均不得提前終止","legal_basis":[{"law_name":"民法","article_no":"424"},{"law_name":"民法","article_no":"450"}],"suggestion":"保留法定終止權與重大瑕疵時的解除或終止機制。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_repair_request_blocked","risk_theme":"修繕請求權受限制","risk_level":"高風險","pattern":"不得以房屋或設備故障為由請求修繕","legal_basis":[{"law_name":"民法","article_no":"429"},{"law_name":"民法","article_no":"430"}],"suggestion":"保留修繕、減租、終止或損害賠償等法定救濟。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_unilateral_termination","risk_theme":"單方解約條款","risk_level":"高風險","pattern":"得立即終止契約","legal_basis":[{"law_name":"民法","article_no":"450"},{"law_name":"民法","article_no":"247-1"}],"suggestion":"出租人解約應有明確事由、通知期與補償安排。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_use_penalty","risk_theme":"用途限制不明且重罰","risk_level":"高風險","pattern":"日後公告之任何生活規則","legal_basis":[{"law_name":"民法","article_no":"252"},{"law_name":"民法","article_no":"247-1"}],"suggestion":"生活規則應明確列入契約，違反效果應相當。","source_note":"testpack v1"},
-  {"rule_id":"lease_high_no_receipt","risk_theme":"付款證明不足","risk_level":"高風險","pattern":"不開立收據|不得要求任何付款證明","legal_basis":[{"law_name":"民法","article_no":"421"}],"suggestion":"保留匯款或收據等付款證明。","source_note":"testpack v1"},
-  {"rule_id":"labor_medium_work_scope","risk_theme":"工作內容不明","risk_level":"中風險","pattern":"交辦之一切事項","legal_basis":[{"law_name":"勞動基準法施行細則","article_no":"7"}],"suggestion":"以職務說明書明確界定工作內容。","source_note":"testpack v1","basis_note":"勞動契約應約定工作場所及應從事之工作（勞基法施行細則第7條）；條款涉及任意調動職務或工作地點時，才另依勞基法第10-1條檢視調動原則。"},
-  {"rule_id":"labor_medium_transfer","risk_theme":"調動條款不明","risk_level":"中風險","pattern":"任何職務、部門、關係企業或外縣市","legal_basis":[{"law_name":"勞動基準法","article_no":"10-1"}],"suggestion":"調動應符合必要性、適任性與生活利益考量。","source_note":"testpack v1"},
-  {"rule_id":"labor_medium_bonus","risk_theme":"獎金計算不明","risk_level":"中風險","pattern":"獎金.*得隨時變更或取消","legal_basis":[{"law_name":"勞動基準法","article_no":"2"},{"law_name":"勞動基準法","article_no":"22"}],"suggestion":"明確獎金計算、發放條件與變更程序。","source_note":"testpack v1"},
-  {"rule_id":"labor_medium_probation","risk_theme":"試用期條款不明","risk_level":"中風險","pattern":"試用期.*延長次數與期間不限","legal_basis":[{"law_name":"勞動基準法","article_no":"11"},{"law_name":"勞動基準法","article_no":"12"}],"suggestion":"試用期仍應符合勞基法最低標準與終止程序。","source_note":"testpack v1","basis_note":"現行法未直接規範試用期的長短或延長次數，不得據此認定約定當然違法；條款涉及雇主任意解僱時，參考勞基法第11、12條及相關終止規定。"},
-  {"rule_id":"labor_medium_overtime_approval","risk_theme":"加班認定爭議","risk_level":"中風險","pattern":"加班未於事前取得.*不認定為加班","legal_basis":[{"law_name":"勞動基準法","article_no":"24"},{"law_name":"勞動基準法","article_no":"32"}],"suggestion":"加班認定應兼顧實際出勤、雇主指揮與法定程序。","source_note":"testpack v1"},
-  {"rule_id":"labor_medium_confidentiality","risk_theme":"保密範圍過廣","risk_level":"中風險","pattern":"一切資訊均屬甲方秘密","legal_basis":[{"law_name":"民法","article_no":"247-1"},{"law_name":"營業秘密法","article_no":"2"}],"suggestion":"限縮保密資訊範圍、期間與例外。","source_note":"testpack v1","basis_note":"營業秘密法第2條界定營業秘密的要件，可用來檢視保密範圍是否過廣；但不得據此推論營業秘密以外的資訊均不得約定保密，範圍是否合理仍依民法第247-1條等個案判斷。"},
-  {"rule_id":"labor_medium_service_period","risk_theme":"最低服務年限疑慮","risk_level":"中風險","pattern":"至少服務二年|服務年限理由另由甲方認定","legal_basis":[{"law_name":"勞動基準法","article_no":"15-1"}],"suggestion":"最低服務年限需具合理補償、必要性與明確計算。","source_note":"testpack v1","basis_note":"最低服務年限約定須有雇主負擔專業技術培訓費用或提供合理補償，且期間不得逾合理範圍（勞基法第15-1條）。"},
-  {"rule_id":"labor_medium_attendance","risk_theme":"工時紀錄不明","risk_level":"中風險","pattern":"工時由主管於月底依工作成果認定","legal_basis":[{"law_name":"勞動基準法","article_no":"30"}],"suggestion":"保留逐日出勤紀錄，避免僅由主管事後認定。","source_note":"testpack v1"},
-  {"rule_id":"labor_medium_leave","risk_theme":"休假程序不明","risk_level":"中風險","pattern":"請假、排休及特別休假.*日後公告","legal_basis":[{"law_name":"勞動基準法","article_no":"36"},{"law_name":"勞動基準法","article_no":"38"}],"suggestion":"明確例假、休息日、特休與請假程序。","source_note":"testpack v1"},
-  {"rule_id":"labor_medium_ip","risk_theme":"智慧財產權歸屬過寬","risk_level":"中風險","pattern":"一切創作.*均歸甲方所有","legal_basis":[{"law_name":"著作權法","article_no":"11"},{"law_name":"著作權法","article_no":"12"},{"law_name":"著作權法","article_no":"21"},{"law_name":"專利法","article_no":"7"},{"law_name":"專利法","article_no":"8"},{"law_name":"專利法","article_no":"9"}],"suggestion":"限於職務相關成果並保留非職務創作權益。","source_note":"testpack v1","basis_note":"依實際標的區分：著作依著作權法第11條（職務著作）、第12條（出資聘人著作）判斷著作人與著作財產權歸屬，著作人格權依第21條不得讓與；發明、新型或設計依專利法第7至9條，受雇人非職務上完成者原則歸受雇人，使受雇人不得享受其權益的約定無效（第9條）。"},
-  {"rule_id":"labor_high_overtime_in_salary","risk_theme":"加班費概括包入薪資","risk_level":"高風險","pattern":"工資已包含所有延長工時","legal_basis":[{"law_name":"勞動基準法","article_no":"24"},{"law_name":"勞動基準法","article_no":"30"},{"law_name":"勞動基準法","article_no":"32"}],"suggestion":"加班費應依法另行計算或明確列示合法計算方式。","source_note":"testpack v1"},
-  {"rule_id":"labor_high_resignation_penalty","risk_theme":"離職違約金過高","risk_level":"高風險","pattern":"六個月薪資作為違約金","legal_basis":[{"law_name":"民法","article_no":"252"},{"law_name":"勞動基準法","article_no":"15"},{"law_name":"勞動基準法","article_no":"16"}],"suggestion":"離職違約金應限於合理損害或合法服務年限安排。","source_note":"testpack v1"},
-  {"rule_id":"labor_high_noncompete","risk_theme":"競業禁止過寬且無補償","risk_level":"高風險","pattern":"離職後三年|無須另給補償","legal_basis":[{"law_name":"勞動基準法","article_no":"9-1"},{"law_name":"勞動基準法施行細則","article_no":"7-1"},{"law_name":"勞動基準法施行細則","article_no":"7-2"},{"law_name":"勞動基準法施行細則","article_no":"7-3"}],"suggestion":"競業禁止應限縮期間、地域、職務範圍並提供合理補償。","source_note":"testpack v1","basis_note":"離職後競業禁止須符合勞基法第9-1條四項要件（正當營業利益、可接觸營業秘密、期間區域範圍未逾合理範疇、合理補償），期間最長二年；書面形式、合理範疇與補償標準見施行細則第7-1至7-3條。"},
-  {"rule_id":"labor_high_insurance","risk_theme":"社會保險風險","risk_level":"高風險","pattern":"無須為乙方投保","legal_basis":[{"law_name":"勞工保險條例","article_no":"6"},{"law_name":"就業保險法","article_no":"5"},{"law_name":"勞工職業災害保險及保護法","article_no":"6"},{"law_name":"勞工退休金條例","article_no":"6"}],"suggestion":"依法辦理勞健保與退休金提繳。","source_note":"testpack v1","basis_note":"依險種及適用條件區分：勞工保險依勞工保險條例第6條、就業保險依就業保險法第5條、職業災害保險依勞工職業災害保險及保護法第6條、退休金提繳依勞工退休金條例第6條；各法的適用對象與投保單位條件不同，應依勞工身分與事業單位情形分別判斷。"},
-  {"rule_id":"labor_high_unpaid_probation","risk_theme":"試用期無薪或任意解僱","risk_level":"高風險","pattern":"試用期間工作不給付工資","legal_basis":[{"law_name":"勞動基準法","article_no":"14"},{"law_name":"勞動基準法","article_no":"21"}],"suggestion":"試用期間仍應給付工資並遵守終止程序。","source_note":"testpack v1"},
-  {"rule_id":"labor_high_wage_deduction","risk_theme":"任意扣薪","risk_level":"高風險","pattern":"自行扣減已約定工資","legal_basis":[{"law_name":"勞動基準法","article_no":"21"},{"law_name":"勞動基準法","article_no":"22"}],"suggestion":"不得以主觀評價任意扣減已約定工資。","source_note":"testpack v1"},
-  {"rule_id":"labor_high_exempt_working_hours","risk_theme":"責任制濫用","risk_level":"高風險","pattern":"責任制人員.*不適用工作時間","legal_basis":[{"law_name":"勞動基準法","article_no":"30"},{"law_name":"勞動基準法","article_no":"32"},{"law_name":"勞動基準法","article_no":"36"}],"suggestion":"責任制與工時例外需符合法定要件與程序。","source_note":"testpack v1"},
-  {"rule_id":"labor_high_disguised_contracting","risk_theme":"勞動契約偽裝承攬","risk_level":"高風險","pattern":"名為承攬契約|接受主管指揮監督","legal_basis":[{"law_name":"勞動基準法","article_no":"2"},{"law_name":"民法","article_no":"482"},{"law_name":"民法","article_no":"490"}],"suggestion":"依實際從屬性判斷勞動關係，不以契約名稱規避。","source_note":"testpack v1","basis_note":"契約名稱不決定契約性質，應依人格、經濟及組織上從屬性等實際情形判斷屬僱傭（民法第482條；具從屬性者為勞基法第2條之勞動契約）或承攬（民法第490條）。"},
-  {"rule_id":"labor_high_guarantor_penalty","risk_theme":"違約責任過重","risk_level":"高風險","pattern":"保證人負連帶責任","legal_basis":[{"law_name":"民法","article_no":"252"},{"law_name":"民法","article_no":"247-1"}],"suggestion":"刪除過重懲罰性違約金與保證人連帶責任。","source_note":"testpack v1"},
-  {"rule_id":"labor_high_no_complaints","risk_theme":"權利行使受限制","risk_level":"高風險","pattern":"不得向主管機關|不得.*申訴|不得.*檢舉","legal_basis":[{"law_name":"民法","article_no":"247-1"},{"law_name":"勞動基準法","article_no":"74"}],"suggestion":"不得限制勞工向主管機關、法院或第三人依法主張權利。","source_note":"testpack v1","basis_note":"一般限制權利行使的定型化契約條款，依民法第247-1條判斷是否顯失公平；勞基法第74條僅適用於勞工就違反勞動法令事項向雇主、主管機關或檢查機構申訴的情形。"}
+ {
+  "rule_id": "sale_high_buyer_rescission_barred",
+  "kind": "match",
+  "risk_theme": "限制買方解除契約",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(不得|無權|不能|不可)(主張|請求|要求|行使)?[^。；;\\n]{0,10}(解除|解約|退貨)(本)?(契約|合約|權)?|(放棄|拋棄)[^。；;\\n]{0,6}(解除權|解約權|退貨權|解除契約))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "359"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "254"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "買方因物之瑕疵得解除契約（§359），對方遲延經催告仍不履行時得解除（§254）。定型化條款使他方拋棄或限制權利，依 §247-1 第3款檢視。規則不判斷主詞，若受限制的是賣方，屬誤報。",
+  "suggestion": "保留給付遲延、交付不符或重大瑕疵時買方的解除權。"
+ },
+ {
+  "rule_id": "sale_high_condition_not_disclosed",
+  "kind": "match",
+  "risk_theme": "中古或現況標的揭露不足",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:不(提供|揭露|告知|說明|保證)[^。；;\\n]{0,10}(事故|泡水|火燒|里程|維修紀錄|修復紀錄|現況|車況|屋況))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "354"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "355"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "366"
+   }
+  ],
+  "basis_note": "買方訂約時知道瑕疵，賣方不負擔保（§355 I）；但賣方故意不告知瑕疵時，不得以買方重大過失或免責特約脫免責任（§355 II、§366）。拒絕揭露現況會讓買方難以證明賣方知情而不告知。舊規則引用的 §245-1 是契約未成立時的締約過失，不適用於已成立的買賣，已移除。",
+  "suggestion": "要求賣方以書面揭露事故、泡水、里程、維修紀錄等現況，並約定不實揭露的效果。"
+ },
+ {
+  "rule_id": "sale_high_early_risk_transfer",
+  "kind": "match",
+  "risk_theme": "交付前風險即移轉買方",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(簽約|訂約|成立|付款)(日|時|之日)?(起|後)[^。；;\\n]{0,30}(危險|風險|滅失|毀損)[^。；;\\n]{0,15}(乙方|買方|買受人)(負擔|承擔|負責)|不(論|問)[^。；;\\n]{0,4}(是否)?(已)?(交付|交貨|出貨|送達|到貨|運交|送貨)[^。；;\\n]{0,25}(危險|風險|滅失|毀損)[^。；;\\n]{0,15}(乙方|買方|買受人))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "373"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "買賣標的物的利益及危險原則自交付時起由買受人承受（§373），契約雖可另訂，但在買方尚未取得占有時即轉嫁滅失風險，定型化條款可依 §247-1 檢視。",
+  "suggestion": "將風險移轉時點約定為交付或點收完成時。"
+ },
+ {
+  "rule_id": "sale_high_seller_may_postpone_delivery",
+  "kind": "match",
+  "risk_theme": "賣方得單方延後交付",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(無限期|任意|自行|單方)[^。；;\\n]{0,4}(延期|延後|順延|展延)[^。；;\\n]{0,4}(交付|交貨|出貨|送達|到貨|運交|送貨)|(交付|交貨|出貨|送達|到貨|運交|送貨)(日|日期|期限|時間|期)[^。；;\\n]{0,6}(自動|得|可)[^。；;\\n]{0,2}(順延|延後|展延|延期)|(交付|交貨|出貨|送達|到貨|運交|送貨)(日期|期限|時間|期)[^。；;\\n]{0,6}由(甲方|賣方|出賣人)[^。；;\\n]{0,4}(決定|指定|另行通知))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "348"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "229"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "賣方可自行決定或無限期延後交期，等於架空交付義務（§348）與遲延責任（§229），定型化條款可依 §247-1 檢視是否顯失公平。條款若限定「因不可抗力」且有展延上限，風險較低，需人工判斷。",
+  "suggestion": "刪除賣方可自行或無限期延後交付的文字，改為有上限的展延（例如因不可抗力至多延長若干日），逾期買方得解除契約。"
+ },
+ {
+  "rule_id": "sale_high_substitute_goods",
+  "kind": "match",
+  "risk_theme": "賣方得以替代品交付或變更規格",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(同級品|替代品|替代商品|同等品|同級商品|其他(庫存)?品)[^。；;\\n]{0,15}((交付|交貨|出貨|送達|到貨|運交|送貨)|替代|代替|更換|出貨)|(甲方|賣方|出賣人)[^。；;\\n]{0,6}(得|可|有權)[^。；;\\n]{0,4}(逕行|自行|任意)?(變更|更換|替換)[^。；;\\n]{0,4}(規格|型號|品牌|標的|商品|顏色))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "348"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   },
+   {
+    "law_name": "消費者保護法",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "出賣人應交付約定之物（§348），單方以替代品履行或變更規格屬一方保留變更給付內容，定型化條款依 §247-1、消費契約依消保法 §12 檢視。條款若限定「經買方同意」才可替代，屬誤報。",
+  "suggestion": "替代品交付應事先經買方書面同意，買方保留拒收、解除契約或減價的權利。"
+ },
+ {
+  "rule_id": "sale_high_warranty_excluded",
+  "kind": "match",
+  "risk_theme": "排除或限制瑕疵擔保責任",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:概不(退換|退貨|負責|保固)|售出[^。；;\\n]{0,4}(概不|不予|恕不)|不負[^。；;\\n]{0,4}(任何)?[^。；;\\n]{0,10}(瑕疵|保固|擔保)[^。；;\\n]{0,10}責任|(免除|排除|不負)[^。；;\\n]{0,4}(瑕疵擔保|保固責任|擔保責任))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "354"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "366"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   },
+   {
+    "law_name": "消費者保護法",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "物之瑕疵擔保見 §354。以特約免除或限制瑕疵擔保，出賣人故意不告知瑕疵時特約無效（§366）；定型化條款依 §247-1、消費契約依消保法 §12 檢視。中古品「現況交易」約定在買方知情下可能有效，需人工判斷。限制：一般買賣可有特約；第366條僅使故意不告知瑕疵之免責特約無效。商業保固與法定瑕疵擔保不同；不得一概認定所有免責均無效。不得以概不退換等較長否定句仍可能誤報。",
+  "suggestion": "刪除完全免責文字，保留法定瑕疵擔保（解除契約或減少價金），可另約定合理的保固範圍與補救方式。"
+ },
+ {
+  "rule_id": "sale_medium_acceptance_period_short",
+  "kind": "match",
+  "risk_theme": "驗收或異議期間過短",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(到貨|交貨|交付|收貨|送達|簽收)(當日|當天|時|即時)[^。；;\\n]{0,10}(驗收|檢查|點收|異議|提出)|(驗收|檢查|點收|異議)[^。；;\\n]{0,10}(當日|當天|即時|24\\s*小時|二十四小時)|(當日|當天|24\\s*小時|二十四小時)\\s*內?[^。；;\\n]{0,4}(完成)?(驗收|檢查|點收|異議)|(?<![\\d十])[一1]\\s*日內[^。；;\\n]{0,6}(驗收|檢查|點收|異議))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "356"
+   }
+  ],
+  "basis_note": "買受人應依通常程序從速檢查並通知瑕疵，怠於通知視為承認（§356）。約定期間短到依通常程序無法檢查（當日、24 小時內）時，等於提早失去瑕疵擔保權利。是否「過短」仍依標的性質判斷，簡單商品當日點收未必不合理。",
+  "suggestion": "依標的性質給予合理檢查期間（例如交付後七日），並約定書面通知瑕疵的方式。"
+ },
+ {
+  "rule_id": "sale_medium_buyer_bears_repairs",
+  "kind": "match",
+  "risk_theme": "故障維修費用一概由買方負擔",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(乙方|買方|買受人)[^。；;\\n]{0,4}(應|須)?自行(送修|維修|修理|檢修)|(任何|一切|所有)(故障|瑕疵|損壞)[^。；;\\n]{0,25}(乙方|買方|買受人)[^。；;\\n]{0,4}(自行)?負擔)",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "354"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "359"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "出賣人應擔保危險移轉時無瑕疵（§354），有瑕疵時買方得解除或減價（§359）。條款若明定只適用於保固期滿後或買方可歸責的損壞，則屬誤報；規則無法判斷這個前提，降為中風險。",
+  "suggestion": "區分保固期內非買方可歸責的故障（由賣方修復或更換）與保固期外或買方可歸責的損壞。"
+ },
+ {
+  "rule_id": "sale_medium_cooling_off_excluded",
+  "kind": "match",
+  "risk_theme": "排除七日解除權",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(放棄|拋棄|排除|不適用|不得主張|無)[^。；;\\n]{0,10}(七日|7\\s*日|七天|7\\s*天|鑑賞期|猶豫期|無條件退貨|撤回權)|(七日|7\\s*日|七天|鑑賞期|猶豫期)[^。；;\\n]{0,10}(不適用|放棄|不得(主張|退貨|解除)))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "消費者保護法",
+    "article_no": "19"
+   }
+  ],
+  "basis_note": "僅適用於通訊交易（網購、型錄、電話）或訪問交易的消費者（消保法 §19），違反的約定無效（§19 V）；但行政院公告的合理例外商品（如易腐、客製化、已拆封影音軟體）可排除。一般店面買賣或企業間買賣不適用，屬誤報。",
+  "suggestion": "通訊交易或訪問交易應保留七日內無條件解除權，除非商品屬行政院公告的合理例外。"
+ },
+ {
+  "rule_id": "sale_medium_full_payment_before_delivery",
+  "kind": "match",
+  "risk_theme": "全額付款早於交付或驗收",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(簽約|訂約|下單|訂購)(時|當日|當天|之日|後)[^。；;\\n]{0,8}(一次)?(付清|繳清|全額|支付全部|給付全部)|(全部|全額)(價金|價款|貨款)[^。；;\\n]{0,10}(簽約|訂約|下單)|(收(到|訖|妥)?(全部|全額)?(款項|價金|貨款)|收款|付清)[^。；;\\n]{0,3}後[^。；;\\n]{0,4}(始|再|方)?[^。；;\\n]{0,4}(安排)?(交付|交貨|出貨|送達|到貨|運交|送貨))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "369"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "264"
+   }
+  ],
+  "basis_note": "買賣標的物與價金原則上應同時交付（§369），雙務契約一方得在對方未為對待給付前拒絕自己的給付（§264）。約定買方先全額付款即放棄這個保障，但先付款本身合法，屬商業條件，列中風險提醒。",
+  "suggestion": "改為分期付款，尾款與交付或驗收合格連動；至少保留一部分價金到驗收後支付。"
+ },
+ {
+  "rule_id": "sale_medium_installment_acceleration",
+  "kind": "match",
+  "risk_theme": "分期付款一期遲延即全部到期",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(任何)?(一期|任一期|一次|某期)[^。；;\\n]{0,4}(未付|未繳|遲延|遲付|逾期|未按期)[^。；;\\n]{0,25}(全部|其餘|剩餘|所有|未到期)(之)?(價金|款項|餘款|分期款|價款)[^。；;\\n]{0,8}(視為)?(到期|清償|一次|付清))",
+  "requires": "分期",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "389"
+   }
+  ],
+  "basis_note": "分期付價買賣約定買方遲延時出賣人得請求全部價金者，須遲付之價額已達全部價金五分之一（§389）。條款已寫明五分之一門檻時屬誤報。",
+  "suggestion": "約定須遲付金額達全部價金五分之一，出賣人才得請求支付全部價金。"
+ },
+ {
+  "rule_id": "sale_medium_missing_delivery_date",
+  "kind": "missing",
+  "risk_theme": "未約定交付日期或期限",
+  "risk_level": "中風險",
+  "pattern": "(交付|交貨|出貨|送達|到貨|運交|送貨)[^。；;\\n]{0,25}((\\d+|[一二三四五六七八九十百兩]+)\\s*個?\\s*(工作)?\\s*(日|天|週|星期|月)\\s*[內前]|\\d+\\s*年\\s*\\d+\\s*月\\s*\\d+\\s*日|[一二三四五六七八九十〇百]+年[一二三四五六七八九十]+月[一二三四五六七八九十]+日)|((\\d+|[一二三四五六七八九十百兩]+)\\s*個?\\s*(工作)?\\s*(日|天|週|星期|月)\\s*[內前]|\\d+\\s*年\\s*\\d+\\s*月\\s*\\d+\\s*日|[一二三四五六七八九十〇百]+年[一二三四五六七八九十]+月[一二三四五六七八九十]+日)[^。；;\\n]{0,25}(交付|交貨|出貨|送達|到貨|運交|送貨)",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "348"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "315"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "229"
+   }
+  ],
+  "basis_note": "出賣人負交付義務（§348）。未定清償期時債權人雖得隨時請求（§315），但無確定期限的給付須經催告才負遲延責任（§229 II），買方難以主張遲延。本規則只檢查全文是否出現「交付／交貨…N日內／某年某月某日前」一類用語；以附件或訂單另定交期的合約會被誤報，需人工確認附件。",
+  "suggestion": "明定交付日期或「簽約／付款後幾日內」的期限、交付地點，以及逾期的解除或減價機制。"
+ },
+ {
+  "rule_id": "sale_medium_vague_delivery_time",
+  "kind": "match",
+  "risk_theme": "交付時間以盡速等不確定用語表示",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(盡速|儘速|盡快|儘快|適時|擇期|另行通知|另行約定|視情況|備貨完成後)[^。；;\\n]{0,6}(交付|交貨|出貨|送達|到貨|運交|送貨)|(交付|交貨|出貨|送達|到貨|運交|送貨)(日|日期|時間|期限|期)[^。；;\\n]{0,6}(另行通知|另行約定|另議|再議|待定))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "348"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "315"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "229"
+   }
+  ],
+  "basis_note": "與 sale_medium_missing_delivery_date 互補：該條檢查全文完全沒有交付期限，本條抓「盡速交付」「交期另行通知」等不確定寫法（真實合約常同時存在一個空泛的期限條款）。無確定期限的給付須經催告才負遲延責任（§229 II）。",
+  "suggestion": "改為具體日期或「簽約／付款後幾日內」的期限。"
+ },
+ {
+  "rule_id": "lease_high_deposit_forfeit",
+  "kind": "match",
+  "risk_theme": "押金不退還或得沒收",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:押金[^。；;\\n]{0,20}(不(予)?(退還|返還|退)|概不|沒收|不得(請求)?(返還|退還))|沒收[^。；;\\n]{0,4}押金)",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "7"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "252"
+   }
+  ],
+  "basis_note": "押金在租約消滅、承租人返還房屋並清償債務時，應返還或返還抵充後的剩餘（租賃條例 §7 II，住宅租賃）。約定沒收押金有違約金性質，過高者法院得酌減（民法 §252）。「押金不得抵充租金」是常見合法約定，規則已排除「抵」字。",
+  "suggestion": "押金只能抵充承租人應負擔且有憑證的債務，剩餘應返還；不得約定一律沒收。"
+ },
+ {
+  "rule_id": "lease_high_deposit_over_cap",
+  "kind": "match",
+  "risk_theme": "押金超過二個月租金",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(押金|押租金|保證金|擔保金)[^。；;\\n]{0,10}([三四五六七八九十]|[3-9]|\\d{2})\\s*個?\\s*月)",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "7"
+   },
+   {
+    "law_name": "土地法",
+    "article_no": "99"
+   }
+  ],
+  "basis_note": "住宅租賃押金不得逾二個月租金總額（租賃條例 §7 I）；非住宅的城市房屋租賃，擔保金亦不得超過二個月房屋租金，超過部分承租人得抵付房租（土地法 §99）。土地或廠房以外的動產租賃不受此限，屬誤報。限制：住宅租賃依租賃條例第7條；其他房屋須確認土地法第99條適用，非所有土地或設備租賃均適用。只辨識整數月數，不換算金額、不辨識大寫國字或小數。不得收取三個月等否定句可能誤報。",
+  "suggestion": "押金以不超過二個月租金為限；已超收的部分可要求抵付房租。"
+ },
+ {
+  "rule_id": "lease_high_landlord_entry_any_time",
+  "kind": "match",
+  "risk_theme": "出租人得隨時或自行進入房屋",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(隨時|任意|逕行|自行開門|不經[^。；;\\n]{0,4}(通知|同意)|無須[^。；;\\n]{0,4}(通知|同意))[^。；;\\n]{0,8}(進入|入內|入屋|開門|查看|檢查|帶看))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "423"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "429"
+   }
+  ],
+  "basis_note": "出租人應保持租賃物合於約定使用收益的狀態（§423）。承租人只對出租人「為保存租賃物所為之必要行為」不得拒絕（§429 II；住宅另見租賃條例 §8 IV），不包括任意入屋查看或取物。限制：第423條為使用收益義務，未直接訂定所有入屋通知程序；緊急處置及必要修繕須另外衡量。片段可能描述禁止任意進入，較長否定句需覆核。",
+  "suggestion": "入屋限於修繕、緊急危險等必要事由，並應事前通知、經承租人同意，緊急情形除外。"
+ },
+ {
+  "rule_id": "lease_high_landlord_rent_adjustment",
+  "kind": "match",
+  "risk_theme": "出租人得單方調整租金",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(甲方|出租人|房東)[^。；;\\n]{0,10}(得|可|有權)[^。；;\\n]{0,20}(調整|調漲|提高|增加|變更)[^。；;\\n]{0,2}租金|租金[^。；;\\n]{0,10}由(甲方|出租人|房東)[^。；;\\n]{0,6}(調整|調漲))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "442"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "不動產租金因價值升降而增減，須聲請法院，且定有期限的租賃不得聲請（§442 但書），可見定期租約內租金原則固定。出租人保留單方調漲權，定型化條款依 §247-1、住宅租賃依消保法 §12 檢視。",
+  "suggestion": "租期內租金固定；如需調整，約定調整時點、上限與雙方書面同意。"
+ },
+ {
+  "rule_id": "lease_high_landlord_terminate_at_will",
+  "kind": "match",
+  "risk_theme": "出租人得隨時或立即終止租約",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(甲方|出租人|房東)[^。；;\\n]{0,30}(隨時|立即|即時|逕行|無須[^。；;\\n]{0,4}(通知|催告|預告)|不經[^。；;\\n]{0,4}(通知|催告|預告))[^。；;\\n]{0,6}(終止|解除|解約|收回))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "10"
+   },
+   {
+    "law_name": "土地法",
+    "article_no": "100"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "453"
+   }
+  ],
+  "basis_note": "住宅租賃出租人只能依租賃條例 §10 I 所列事由提前終止，並應於三十日前（重建為三個月前）書面通知；非住宅房屋依土地法 §100 限制出租人收回事由；約定可提前終止者仍應先期通知（民法 §453）。",
+  "suggestion": "出租人提前終止限於法定或約定的具體事由，並應書面預告（住宅至少三十日，重建三個月）。"
+ },
+ {
+  "rule_id": "lease_high_repair_request_barred",
+  "kind": "match",
+  "risk_theme": "承租人不得請求修繕或減租",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:不得[^。；;\\n]{0,15}(請求|要求|主張)[^。；;\\n]{0,4}(修繕|維修|減(少)?租(金)?)|(放棄|拋棄)[^。；;\\n]{0,6}(修繕|減租|減少租金)(請求)?權?)",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "430"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "435"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "8"
+   }
+  ],
+  "basis_note": "出租人不於催告期限內修繕，承租人得終止契約或自行修繕並請求償還或扣抵租金（民法 §430；住宅另見租賃條例 §8 III）；一部滅失得請求減租（§435）。",
+  "suggestion": "保留承租人催告修繕、自行修繕後請求償還或扣抵租金、減租及終止契約的權利。"
+ },
+ {
+  "rule_id": "lease_high_repairs_all_on_tenant",
+  "kind": "match",
+  "risk_theme": "修繕責任全部轉嫁承租人",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(所有|一切|全部|任何)[^。；;\\n]{0,10}(修繕|維修|修理)[^。；;\\n]{0,20}(由)?(乙方|承租人|房客)(自行)?(負擔|負責|處理)|(修繕|維修|修理)[^。；;\\n]{0,15}(無論|不論|不問)[^。；;\\n]{0,6}(原因|事由)[^。；;\\n]{0,10}(乙方|承租人|房客))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "429"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "8"
+   }
+  ],
+  "basis_note": "修繕除契約另有訂定或習慣外由出租人負擔（民法 §429 I），契約雖可另訂，但住宅租賃出租人應保持合於居住使用的狀態並說明負責修繕的範圍（租賃條例 §8 I、II）。一概轉嫁且不論原因，偏離任意規定的立法意旨，可再依消保法 §12（租賃條例 §5 視為消費關係）檢視。",
+  "suggestion": "自然耗損、設備老舊與非承租人可歸責的修繕由出租人負擔；承租人只負擔可歸責於自己的損害。"
+ },
+ {
+  "rule_id": "lease_high_sublease_without_consent",
+  "kind": "match",
+  "risk_theme": "住宅轉租明示無須出租人同意",
+  "risk_level": "高風險",
+  "pattern": "(?:轉租|分租)[^。；;\\n]{0,10}(?:無須|毋須|不需|不必)(?:取得|經)?(?:出租人|房東|甲方)?(?:書面)?同意|(?:無須|毋須|不需|不必)(?:取得|經)?(?:出租人|房東|甲方)?(?:書面)?同意[^。；;\\n]{0,8}(?:轉租|分租)",
+  "requires": "住宅|居住|公寓|套房",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "9"
+   }
+  ],
+  "basis_note": "租賃條例第9條住宅全部或一部轉租須出租人書面同意；排除第4條情形須另確認。非住宅房屋部分轉租依民法第443條可能有例外，不能套用本規則結論。",
+  "suggestion": "確認為適用條例的住宅，轉租取得出租人書面同意並辦理通知。"
+ },
+ {
+  "rule_id": "lease_high_tenant_termination_barred",
+  "kind": "match",
+  "risk_theme": "承租人法定終止權被排除",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(乙方|承租人|房客)[^。；;\\n]{0,25}不得[^。；;\\n]{0,4}(提前|提早)?[^。；;\\n]{0,2}(終止|解約|退租)|(放棄|拋棄)[^。；;\\n]{0,6}終止(契約|租約)?(之)?權)",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "424"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "11"
+   }
+  ],
+  "basis_note": "房屋瑕疵危及承租人安全或健康時，即使已拋棄終止權仍得終止（民法 §424）；住宅租賃承租人另有疾病療養、未修繕、一部滅失等法定提前終止事由（租賃條例 §11）。定期租約本來就沒有任意提前終止權，條款若只排除「任意」終止而保留法定事由，風險較低。",
+  "suggestion": "保留房屋危及安全健康、長期療養、未修繕、一部滅失等法定提前終止事由。"
+ },
+ {
+  "rule_id": "lease_high_terminate_for_short_rent_arrears",
+  "kind": "match",
+  "risk_theme": "遲付租金未達二個月即得終止",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(租金|房租)[^。；;\\n]{0,15}(逾期|遲延|遲付|未付|未繳|積欠|未按期)[^。；;\\n]{0,8}(一個月|1\\s*個月|一期|一次|[一二三四五六七八九十]+日|\\d+\\s*日)[^。；;\\n]{0,20}(終止|解除|解約|收回)|(逾期|遲延|遲付|未付|未繳|積欠)[^。；;\\n]{0,6}(租金|房租)[^。；;\\n]{0,8}(一個月|1\\s*個月|一期|一次|[一二三四五六七八九十]+日|\\d+\\s*日)[^。；;\\n]{0,20}(終止|解除|解約|收回))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "440"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "10"
+   },
+   {
+    "law_name": "土地法",
+    "article_no": "100"
+   }
+  ],
+  "basis_note": "房屋租賃遲付租金總額未達二個月租額，不得終止（民法 §440 II）；住宅租賃另須經催告仍拒繳（租賃條例 §10 I②）；土地法 §100③ 亦以積欠達二個月為收回事由。「六十日」等於二個月的寫法會誤報。",
+  "suggestion": "遲付租金須達二個月租額，並經定相當期限催告仍不支付，出租人才得終止。"
+ },
+ {
+  "rule_id": "lease_medium_deposit_landlord_discretion",
+  "kind": "match",
+  "risk_theme": "押金返還由出租人單方決定",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:押金[^。；;\\n]{0,30}(由)?(甲方|出租人|房東)[^。；;\\n]{0,10}(決定|認定|酌定|核定))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "7"
+   }
+  ],
+  "basis_note": "押金返還要件由法律規定（租賃條例 §7 II，住宅租賃），不應由出租人另行決定。非住宅租賃無對應明文，依契約與民法一般原則。",
+  "suggestion": "明定押金返還期限、可扣抵項目與憑證要求。"
+ },
+ {
+  "rule_id": "lease_medium_landlord_entry_discretion",
+  "kind": "match",
+  "risk_theme": "出租人認有必要即得入屋",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(認(為)?有必要|必要時|視需要)[^。；;\\n]{0,6}(得|可)[^。；;\\n]{0,4}(進入|入內|入屋|查看|檢查))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "423"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "429"
+   }
+  ],
+  "basis_note": "同上一條：§429 II 只容許保存租賃物的必要行為。條款若已寫明「事前通知並經同意」，風險較低。",
+  "suggestion": "列明可入屋的具體事由與事前通知期限。"
+ },
+ {
+  "rule_id": "lease_medium_left_property_disposal",
+  "kind": "match",
+  "risk_theme": "遺留物未經催告即視為拋棄",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(遺留物|留置物|遺留之物|未搬離之物)[^。；;\\n]{0,20}(視為(拋棄|廢棄物)|逕行(處理|丟棄|清除|處分)|任意處(置|理|分)|自行處理))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "住宅租賃點交後的遺留物，除另有約定外，須經出租人定相當期限催告仍不取回，才視為拋棄（租賃條例 §12 II）。條款若已寫明催告程序，屬誤報。",
+  "suggestion": "遺留物應先定相當期限催告承租人取回，逾期才視為拋棄，處理費用可由押金扣除。"
+ },
+ {
+  "rule_id": "lease_medium_missing_deposit_return",
+  "kind": "missing",
+  "risk_theme": "收押金但未約定返還",
+  "risk_level": "中風險",
+  "pattern": "押金[^。；;\\n]{0,60}(返還|退還|歸還|無息返還|退回)|(返還|退還|歸還|退回)[^。；;\\n]{0,10}押金",
+  "requires": "押金|押租金",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "7"
+   }
+  ],
+  "basis_note": "只有合約提到押金時才檢查。住宅租賃即使未約定，出租人仍有返還義務（租賃條例 §7 II），本規則提醒的是返還時點與扣抵範圍未寫明，容易起爭議。限制：租賃住宅依第7條；符合返還住宅並清償債務等條件才應返還。無押金之契約不評估。出現「不退還」也可能滿足此用語檢查，實質合法性仍交LLM；非住宅須另查適用法。",
+  "suggestion": "補充押金返還時點、扣抵項目與憑證要求。"
+ },
+ {
+  "rule_id": "lease_medium_missing_inventory",
+  "kind": "missing",
+  "risk_theme": "未約定設備清單或點交",
+  "risk_level": "中風險",
+  "pattern": "清單|明細|點交|附屬設備",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "423"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "同上一條。空屋或不附設備的租賃可能沒有清單需求，屬誤報。",
+  "suggestion": "附設備清單與現況照片，並約定交屋與退租的點交程序。"
+ },
+ {
+  "rule_id": "lease_medium_missing_repair_terms",
+  "kind": "missing",
+  "risk_theme": "未約定修繕責任",
+  "risk_level": "中風險",
+  "pattern": "修繕|維修|修理|修護",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "429"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "8"
+   }
+  ],
+  "basis_note": "未約定時依民法 §429 I 由出租人負擔，承租人不至於失權；但住宅租賃出租人應於簽約前說明其負責修繕的項目與範圍（租賃條例 §8 II），合約完全未提容易起爭議。修繕責任「有寫但區分不清」交給 LLM 檢查。",
+  "suggestion": "列明出租人與承租人各自負責的修繕項目、通知方式與處理期限。"
+ },
+ {
+  "rule_id": "lease_medium_no_inventory",
+  "kind": "match",
+  "risk_theme": "不製作設備清單或以現場為準",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:不(另)?[^。；;\\n]{0,2}(製作|列|提供|附|作)[^。；;\\n]{0,4}(清單|明細|點交紀錄|點交表)|以(現場|現況)[^。；;\\n]{0,2}為準)",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "423"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "出租人應交付合於約定使用的租賃物（§423）；住宅租賃返還時應共同完成屋況及附屬設備點交（租賃條例 §12 I）。沒有清單時，退租扣押金或賠償缺乏比對基準。",
+  "suggestion": "附設備清單與現況照片，交屋與退租時雙方會同點交。"
+ },
+ {
+  "rule_id": "lease_medium_taxes_on_tenant",
+  "kind": "match",
+  "risk_theme": "房屋稅捐轉由承租人負擔",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(房屋稅|地價稅|稅捐|稅金|稅費)[^。；;\\n]{0,15}由(乙方|承租人|房客)[^。；;\\n]{0,4}(負擔|支付|繳納))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "427"
+   }
+  ],
+  "basis_note": "就租賃物應納的一切稅捐由出租人負擔（§427），屬任意規定，契約可另訂，故只列中風險提醒成本轉嫁。水電、管理費等其他費用是否明確交給 LLM 檢查。",
+  "suggestion": "確認轉嫁的稅捐項目與金額，並反映在租金議定中。"
+ },
+ {
+  "rule_id": "lease_medium_repair_by_later_agreement",
+  "kind": "match",
+  "risk_theme": "修繕責任留待日後協議",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(修繕|維修|修理)[^。；;\\n]{0,20}(由雙方|雙方|另行|屆時|事後|再行|日後)?[^。；;\\n]{0,4}(協議|協商|議定|商議)|(修繕|維修|修理)[^。；;\\n]{0,30}未[^。；;\\n]{0,2}區分)",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "429"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "8"
+   }
+  ],
+  "basis_note": "修繕除契約另有訂定或習慣外由出租人負擔（民法 §429）；住宅租賃的出租人應於簽約前說明其負責修繕的項目與範圍（租賃條例 §8 II）。留待日後協議等於沒有約定，發生時容易爭執。",
+  "suggestion": "區分自然耗損、設備老舊與承租人可歸責的損害，寫明各由誰負擔修繕，以及報修聯絡方式與修繕期限。"
+ },
+ {
+  "rule_id": "lease_medium_fees_set_by_landlord",
+  "kind": "match",
+  "risk_theme": "水電管理等費用由出租人單方結算",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(管理費|水費|電費|瓦斯費|公共電費|水電費|費用)[^。；;\\n]{0,25}由(甲方|出租人|房東)[^。；;\\n]{0,10}(結算|計算|決定|認定|核定|通知|分攤|酌定))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "5"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "住宅租賃視為消費關係，適用消保法（租賃條例 §5）；費用金額由出租人單方決定而沒有計算方式，可能屬加重承租人責任而顯失公平的條款（民法 §247-1）。實際是否過高需看計價方式。",
+  "suggestion": "寫明各項費用的計價方式（例如依帳單、每度單價或固定金額）與分攤比例，並約定提供帳單或計算明細。"
+ },
+ {
+  "rule_id": "lease_medium_left_property_by_later_agreement",
+  "kind": "match",
+  "risk_theme": "遺留物處理留待日後協議",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(遺留物|留置物|遺留之物|未搬離之物)[^。；;\\n]{0,20}(由雙方|雙方|另行|屆時|事後|再行|日後)?[^。；;\\n]{0,4}(協議|協商|議定|商議))",
+  "requires": "出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "點交後的遺留物，除另有約定外，經出租人定相當期限催告仍不取回者視為拋棄，處理費用得由押金扣除（租賃條例 §12 II）。留待日後協議時，通知方式與期限都不明確。",
+  "suggestion": "約定遺留物的催告方式、取回期限、保管責任與處理費用的負擔。"
+ },
+ {
+  "rule_id": "labor_high_complaint_barred",
+  "kind": "match",
+  "risk_theme": "限制勞工申訴或提告",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:不得[^。；;\\n]{0,20}(申訴|檢舉|陳情|提告|起訴|報警|向[^。；;\\n]{0,8}(主管機關|勞工局|勞動部|法院|勞檢)))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "74"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "勞工就雇主違反勞動法令得向雇主、主管機關或檢查機構申訴，雇主不得因此不利處分（勞基法 §74）；其他限制權利行使的定型化條款依民法 §247-1 判斷。",
+  "suggestion": "刪除限制勞工依法申訴、檢舉或提起訴訟的文字。"
+ },
+ {
+  "rule_id": "labor_high_deposit_or_documents_held",
+  "kind": "match",
+  "risk_theme": "收取保證金或扣留證件",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(保證金|押金|擔保金|風險金)|(扣留|留置|保管|收押)[^。；;\\n]{0,6}(身分證|證件|護照|畢業證書|居留證|存摺|印章|財物))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "就業服務法",
+    "article_no": "5"
+   }
+  ],
+  "basis_note": "雇主招募或僱用員工，不得違反員工意思留置身分證、工作憑證或其他證明文件，也不得扣留財物或收取保證金（就業服務法 §5 II②③）。人事保證（保證人）不是保證金，另見保證人規則。",
+  "suggestion": "刪除保證金與扣留證件的約定；如需確認身分，只查驗不留存正本。"
+ },
+ {
+  "rule_id": "labor_high_disguised_contracting",
+  "kind": "match",
+  "risk_theme": "以承攬或委任名義規避勞動關係",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(本契約|雙方)[^。；;\\n]{0,6}(名為|為|屬|係)[^。；;\\n]{0,2}(承攬|委任|外包|合作|業務委託)(契約|關係)|(非|不屬|不構成|無)[^。；;\\n]{0,4}(勞雇|僱傭|勞動)(關係|契約)|不適用勞動基準法)",
+  "requires": "指揮|監督|排班|打卡|出勤|考勤|上下班|班表|工作規則",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "2"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "482"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "490"
+   }
+  ],
+  "basis_note": "契約名稱不決定性質，應依人格、經濟及組織從屬性判斷屬僱傭（民法 §482；具從屬性者為勞基法 §2⑥ 勞動契約）或承攬（民法 §490）。requires 要求同時出現指揮監督、排班等從屬性用語。",
+  "suggestion": "依實際從屬性判斷；如需接受指揮監督、排班打卡，應以勞動契約處理並適用勞基法。"
+ },
+ {
+  "rule_id": "labor_high_exempt_hours_claim",
+  "kind": "match",
+  "risk_theme": "責任制或排除工時規定",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:責任制|不適用[^。；;\\n]{0,15}(工作時間|工時|加班|延長工時|例假|休息日|休假))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "84-1"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "30"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "24"
+   }
+  ],
+  "basis_note": "只有經中央主管機關核定公告的工作者，經書面約定並報當地主管機關核備，才可不受 §30、§32、§36、§37、§49 限制（§84-1）；未經核備即屬一般工時制，仍須依 §24 給付加班費。合法核備的 §84-1 約定屬誤報，需人工確認。限制：責任制須核定公告工作者、勞雇書面約定及報當地主管機關核備；契約未寫不等於未辦，寫有核備亦不證明已完成。第84-1條不排除第24條加班工資。",
+  "suggestion": "確認職務屬主管機關核定公告的 §84-1 工作者，並有書面約定且報地方主管機關核備；否則仍適用正常工時與加班費規定。"
+ },
+ {
+  "rule_id": "labor_high_marriage_pregnancy_termination",
+  "kind": "match",
+  "risk_theme": "結婚或懷孕即須離職",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(結婚|懷孕|分娩|生育|育兒)[^。；;\\n]{0,10}(應|即|須|必須|視為|自動|當然)[^。；;\\n]{0,4}(離職|辭職|留職停薪|終止|解僱|資遣))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "性別平等工作法",
+    "article_no": "11"
+   }
+  ],
+  "basis_note": "勞動契約不得規定或事先約定受僱者結婚、懷孕、分娩或育兒時應離職或留職停薪，亦不得以其為解僱理由，違反者無效（性別平等工作法 §11 II、III）。規則要求出現「應／即／視為」等義務用語，以避開「不得因懷孕而終止」的否定句。",
+  "suggestion": "刪除此類約定。"
+ },
+ {
+  "rule_id": "labor_high_no_attendance",
+  "kind": "match",
+  "risk_theme": "明示不保存出勤紀錄",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:不必|無須|不需|不予)(?:製作|保存|記載)(?:逐日)?(?:出勤紀錄|出勤記錄)|(?:出勤紀錄|出勤記錄)(?:不予|無須|不需)保存",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "30"
+   }
+  ],
+  "basis_note": "第30條出勤紀錄須逐日至分鐘並保存五年。採其他可核實方式可不打卡，單獨「無須打卡」不觸發。",
+  "suggestion": "保留可核實的逐日出勤紀錄至分鐘並保存五年。"
+ },
+ {
+  "rule_id": "labor_high_no_pay_detail",
+  "kind": "match",
+  "risk_theme": "明示不提供工資計算明細",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:無須|不必|不予|不提供)(?:提供)?(?:工資|薪資)(?:計算)?明細|不得要求(?:工資|薪資)(?:計算)?明細",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "23"
+   }
+  ],
+  "basis_note": "第23條要求提供各項目計算方式明細；無紙本但有可取得電子明細不表示違法。",
+  "suggestion": "提供可取得的工資各項目計算方式明細。"
+ },
+ {
+  "rule_id": "labor_high_no_social_insurance",
+  "kind": "match",
+  "risk_theme": "不投保勞保或不提繳退休金",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(無須|不(予|為|幫|替|需)?|免)[^。；;\\n]{0,6}(投保|加保|納保|提繳|提撥)|自行(辦理|投保|加保|負擔)[^。；;\\n]{0,10}(保險|勞保|健保|勞退)|不(提供|負擔|辦理)[^。；;\\n]{0,4}(勞保|健保|勞健保|勞工保險|退休金|勞退))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞工保險條例",
+    "article_no": "6"
+   },
+   {
+    "law_name": "就業保險法",
+    "article_no": "5"
+   },
+   {
+    "law_name": "勞工職業災害保險及保護法",
+    "article_no": "6"
+   },
+   {
+    "law_name": "勞工退休金條例",
+    "article_no": "6"
+   }
+  ],
+  "basis_note": "依險種及適用條件區分：勞工保險（勞保條例 §6，五人以上等條件）、就業保險（就保法 §5）、職災保險（職災保護法 §6，幾乎所有受僱者）、退休金提繳（勞退條例 §6）。全民健康保險法不在官方條文庫內，需由 LLM 另查。",
+  "suggestion": "依法以雇主為投保單位辦理勞保、就保、職災保險及健保，並按月提繳勞工退休金。"
+ },
+ {
+  "rule_id": "labor_high_noncompete_missing_compensation",
+  "kind": "missing",
+  "risk_theme": "競業禁止未約定補償",
+  "risk_level": "高風險",
+  "pattern": "補償",
+  "requires": "競業|離職後[^。；;\\n]{0,20}不得[^。；;\\n]{0,10}(從事|任職|受僱|經營)",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "9-1"
+   },
+   {
+    "law_name": "勞動基準法施行細則",
+    "article_no": "7-1"
+   },
+   {
+    "law_name": "勞動基準法施行細則",
+    "article_no": "7-3"
+   }
+  ],
+  "basis_note": "只有合約出現離職後競業禁止時才檢查。雇主未提供合理補償的競業禁止約定無效（勞基法 §9-1 I④、III）；約定應以書面詳載補償內容（施行細則 §7-1、§7-3）。在職期間的競業（兼職）限制不需補償，若被 requires 誤判為離職後競業，屬誤報。限制：只有離職後競業限制才評估；單純保密或在職忠誠義務不適用。出現無補償或不足額補償不等於合法，仍交LLM檢查。",
+  "suggestion": "補充競業禁止補償金額與給付方式（一次預付或按月給付）。"
+ },
+ {
+  "rule_id": "labor_high_noncompete_unlawful",
+  "kind": "match",
+  "risk_theme": "競業禁止逾二年或明定不補償",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:競業[^。；;\\n]{0,30}([三四五六七八九十]|[3-9]|\\d{2})\\s*年|離職後[^。；;\\n]{0,6}([三四五六七八九十]|[3-9]|\\d{2})\\s*年[^。；;\\n]{0,15}不得[^。；;\\n]{0,10}(從事|任職|受僱|經營|投資)|(競業|離職後[^。；;\\n]{0,20}不得[^。；;\\n]{0,10}(從事|任職|受僱|經營))[^。；;\\n]{0,40}(無須|不另|不予|無)[^。；;\\n]{0,4}(給付|支付|給)?[^。；;\\n]{0,2}補償)",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "9-1"
+   },
+   {
+    "law_name": "勞動基準法施行細則",
+    "article_no": "7-2"
+   },
+   {
+    "law_name": "勞動基準法施行細則",
+    "article_no": "7-3"
+   }
+  ],
+  "basis_note": "離職後競業禁止須符合勞基法 §9-1 I 四要件，未合理補償者無效，期間逾二年縮短為二年（§9-1 IV）；期間、區域、範圍見施行細則 §7-2，補償標準見 §7-3。限制：超過二年的期間依法縮短為二年，不是因此全部無效。只判斷整數年，月數、終身限制及其他合理性由LLM檢查。",
+  "suggestion": "競業期間不逾二年、限縮區域與職務，並約定每月不低於離職時平均工資百分之五十的補償。"
+ },
+ {
+  "rule_id": "labor_high_overtime_included_in_wage",
+  "kind": "match",
+  "risk_theme": "工資已包含加班費",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(工資|薪資|薪水|月薪|底薪|本薪)[^。；;\\n]{0,8}(已)?(包含|包括|含)[^。；;\\n]{0,10}(加班|延長工時|延長工作時間|休息日|例假|國定假日)|不另[^。；;\\n]{0,2}(給付|支付|發給|計|計算)[^。；;\\n]{0,4}(加班費|延長工時工資))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "24"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "39"
+   }
+  ],
+  "basis_note": "延長工時與休息日工作應依 §24 加給工資，休假日出勤工資加倍（§39）。實務上「薪資內含加班費」若明確約定涵蓋時數且不低於法定標準，可能被認可；概括包含所有加班且不另給付者風險高。",
+  "suggestion": "加班費依實際延長工時另行計算；如採固定加班費，須列明涵蓋時數且不低於法定計算結果。"
+ },
+ {
+  "rule_id": "labor_high_resignation_penalty",
+  "kind": "match",
+  "risk_theme": "離職須付違約金或賠償薪資",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(離職|辭職|自請離職|提前終止|未滿[^。；;\\n]{0,6}(年|月))[^。；;\\n]{0,20}(違約金|賠償[^。；;\\n]{0,6}(薪資|工資|月薪|薪水))|(違約金|賠償)[^。；;\\n]{0,15}(離職|辭職))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "15"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "15-1"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "252"
+   }
+  ],
+  "basis_note": "不定期契約勞工終止契約只需依 §16 期間預告（勞基法 §15 II）；以違約金限制離職，須有合法最低服務年限約定（§15-1）為基礎，金額過高者法院得酌減（民法 §252）。",
+  "suggestion": "勞工依法預告即可離職；只有合法的最低服務年限約定（有培訓或補償）才可約定違約責任，且金額應相當。"
+ },
+ {
+  "rule_id": "labor_high_unpaid_probation",
+  "kind": "match",
+  "risk_theme": "試用期間不給工資",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:試用[^。；;\\n]{0,20}(不(給付|支付|支|發|給)?[^。；;\\n]{0,2}(工資|薪資|薪水|報酬)|無薪|免費|義務))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "21"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "22"
+   }
+  ],
+  "basis_note": "工資由勞雇議定但不得低於基本工資（§21），並應全額直接給付（§22 II）；試用期間也是勞動關係，同樣適用。限制：以存在勞動關係且已提供工作為前提，不能因試用即免給薪；純甄試未提供勞務應區別。",
+  "suggestion": "試用期間仍應給付不低於基本工資的工資。"
+ },
+ {
+  "rule_id": "labor_high_unused_leave_no_pay",
+  "kind": "match",
+  "risk_theme": "未休特休逾期無條件歸零不給薪",
+  "risk_level": "高風險",
+  "pattern": "(?:特休|特別休假)[^。；;\\n]{0,18}(?:逾期|年度終結|年底|未休)[^。；;\\n]{0,12}(?:歸零|作廢|不折現|不給付工資)",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "38"
+   }
+  ],
+  "basis_note": "年度終結或終止未休特休應給工資；年度終結可協商遞延，不能只見歸零二字就判違法，須確認已結算或遞延。",
+  "suggestion": "依第38條給付未休工資，遞延應有協商且次年度仍未休須結清。"
+ },
+ {
+  "rule_id": "labor_high_wage_deduction",
+  "kind": "match",
+  "risk_theme": "任意扣薪或預扣工資",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(甲方|雇主|公司|主管)[^。；;\\n]{0,20}(得|可|有權)[^。；;\\n]{0,20}(扣減|扣除|扣發|扣薪|罰款|罰薪|扣罰|減薪|預扣|扣留)[^。；;\\n]{0,6}(工資|薪資|薪水|獎金)?|(遲到|曠職|早退|客訴|績效|違規|請假)[^。；;\\n]{0,15}(扣薪|罰款|罰薪|罰金|扣[^。；;\\n]{0,2}(工資|薪資|薪水))|(預扣|扣留|保留)[^。；;\\n]{0,4}(工資|薪資|薪水)|(工資|薪資|薪水)[^。；;\\n]{0,10}(抵充|抵扣|扣抵|扣除)[^。；;\\n]{0,6}(違約金|賠償))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "22"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "26"
+   }
+  ],
+  "basis_note": "工資應全額直接給付勞工（§22 II），雇主不得預扣工資作為違約金或賠償費用（§26）。依法代扣勞健保自付額、所得稅等不屬違法，條款若只寫這些屬誤報。限制：第26條明文禁止預扣工資作違約金或賠償費用；其他已確定債務之清償須區分。長否定、引述禁止行為可能誤報。",
+  "suggestion": "刪除雇主可自行扣薪或以工資抵扣違約金、賠償的約定；法定代扣（勞健保自付額、所得稅）以外的扣款應經勞工同意。"
+ },
+ {
+  "rule_id": "labor_medium_annual_leave_by_employer",
+  "kind": "match",
+  "risk_theme": "特別休假由雇主排定",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:特(別)?休(假)?[^。；;\\n]{0,10}由(甲方|雇主|公司|主管)[^。；;\\n]{0,4}(排定|指定|安排|決定|統一))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "38"
+   }
+  ],
+  "basis_note": "特別休假期日由勞工排定，雇主基於急迫需求或勞工個人因素才可協商調整（勞基法 §38 II）。",
+  "suggestion": "特別休假由勞工排定，雇主有急迫需求時再與勞工協商調整。"
+ },
+ {
+  "rule_id": "labor_medium_attendance_by_supervisor",
+  "kind": "match",
+  "risk_theme": "工時由主管認定或限制出勤紀錄",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(工時|出勤|工作時間|加班時數)[^。；;\\n]{0,15}由[^。；;\\n]{0,6}(主管|甲方|雇主|公司)[^。；;\\n]{0,8}(認定|決定|核定)|不得[^。；;\\n]{0,6}(主張|調閱|申請|要求|查閱)[^。；;\\n]{0,4}出勤紀錄)",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "30"
+   }
+  ],
+  "basis_note": "雇主應置備逐日記載至分鐘的出勤紀錄並保存五年，勞工申請副本不得拒絕（勞基法 §30 V、VI）。",
+  "suggestion": "保留逐日至分鐘的出勤紀錄，勞工可申請副本。"
+ },
+ {
+  "rule_id": "labor_medium_bonus_revocable",
+  "kind": "match",
+  "risk_theme": "獎金或津貼得單方變更取消",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(獎金|津貼|紅利|年終|加給)[^。；;\\n]{0,25}(得|可|有權)[^。；;\\n]{0,4}(隨時|單方|片面|逕行)?[^。；;\\n]{0,2}(變更|調整|取消|停發|不發|減少))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "2"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "29"
+   }
+  ],
+  "basis_note": "經常性給與不論名義均屬工資（勞基法 §2③），不得單方減少；年度結算有盈餘時，對全年無過失勞工應給與獎金或分配紅利（§29）。恩惠性、非經常性獎金雇主有較大裁量，需依實際發放情形判斷。",
+  "suggestion": "列明獎金計算方式與發放條件；屬經常性給與的津貼視為工資，不得單方取消。"
+ },
+ {
+  "rule_id": "labor_medium_broad_transfer",
+  "kind": "match",
+  "risk_theme": "雇主得任意調動職務或地點",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(調動|調派|調職|調任|派駐|輪調)[^。；;\\n]{0,20}(任何|所有|一切|關係企業|外縣市|海外|國外|其他縣市)|(調動|調派|調職)[^。；;\\n]{0,15}不得(拒絕|異議))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "10-1"
+   }
+  ],
+  "basis_note": "雇主調動須不違反契約約定並符合五原則（勞基法 §10-1）。契約保留調動權不當然違法，但「任何職務或地點、不得拒絕」的寫法容易被用來規避五原則。",
+  "suggestion": "調動限於企業經營必要、不降低工資與勞動條件、勞工可勝任，並考量通勤與家庭生活。"
+ },
+ {
+  "rule_id": "labor_medium_confidentiality_overbroad",
+  "kind": "match",
+  "risk_theme": "保密範圍或期間過廣",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(一切|所有|任何)[^。；;\\n]{0,10}(資訊|資料|訊息|事項)[^。；;\\n]{0,6}(均|皆)?(屬|視為|為)[^。；;\\n]{0,4}(機密|秘密|營業秘密)|永久[^。；;\\n]{0,6}(保密|不得(揭露|洩漏|使用)))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "營業秘密法",
+    "article_no": "2"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "營業秘密法 §2 界定營業秘密要件，可用來檢視保密範圍是否過廣；但不得據此推論營業秘密以外的資訊均不得約定保密，範圍是否合理仍依民法 §247-1 個案判斷。",
+  "suggestion": "保密範圍限於具秘密性與經濟價值、並經合理保密措施的資訊，排除公開資訊與勞工原有知識。"
+ },
+ {
+  "rule_id": "labor_medium_dismissal_at_will",
+  "kind": "match",
+  "risk_theme": "雇主得隨時或立即終止契約",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(甲方|雇主|公司)[^。；;\\n]{0,25}(隨時|立即|即時|逕行|無須[^。；;\\n]{0,4}(預告|理由|通知)|不經預告)[^。；;\\n]{0,6}(終止|解僱|解雇|資遣|辭退))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "11"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "12"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "16"
+   }
+  ],
+  "basis_note": "雇主預告終止限於 §11 各款事由並依 §16 預告；不經預告終止限於 §12 事由且應於知悉後三十日內為之。試用期間亦同。條款若已限定 §12 事由，屬誤報，故列中風險。",
+  "suggestion": "雇主終止限於法定事由：一般事由應預告並給資遣費，不經預告須符合 §12 情節重大等事由。"
+ },
+ {
+  "rule_id": "labor_medium_guarantor_joint_liability",
+  "kind": "match",
+  "risk_theme": "人事保證人負連帶責任",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:保證人[^。；;\\n]{0,10}連帶|連帶保證)",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "756-2"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "756-3"
+   }
+  ],
+  "basis_note": "人事保證的保證人以僱用人不能依他項方法受賠償者為限負責，金額原則以賠償事故發生時受僱人當年可得報酬總額為限（民法 §756-2）；期間不得逾三年（§756-3）。約定連帶責任使保證人與受僱人同列，與補充性不合。",
+  "suggestion": "人事保證人只在雇主無法從受僱人或其他方法受償時才負責，賠償額以受僱人當年可得報酬總額為限，期間不逾三年。"
+ },
+ {
+  "rule_id": "labor_medium_ip_beyond_duty",
+  "kind": "match",
+  "risk_theme": "非職務創作也歸雇主",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(創作|著作|發明|成果|智慧財產)[^。；;\\n]{0,30}(不論|不問|無論)[^。；;\\n]{0,8}(職務|工作)|(不論|不問|無論)[^。；;\\n]{0,8}(職務|工作)[^。；;\\n]{0,30}(創作|著作|發明|成果|智慧財產)|離職後[^。；;\\n]{0,15}(完成|創作|研發)[^。；;\\n]{0,10}(創作|著作|發明|成果)[^。；;\\n]{0,10}(歸|屬))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "專利法",
+    "article_no": "8"
+   },
+   {
+    "law_name": "專利法",
+    "article_no": "9"
+   },
+   {
+    "law_name": "著作權法",
+    "article_no": "11"
+   },
+   {
+    "law_name": "著作權法",
+    "article_no": "21"
+   }
+  ],
+  "basis_note": "受雇人非職務上完成的發明、新型或設計，權利屬於受雇人（專利法 §8），使受雇人不得享受其權益的約定無效（§9）；職務著作依著作權法 §11 判斷，著作人格權不得讓與（§21）。",
+  "suggestion": "權利歸屬限於職務上完成的成果；非職務創作歸勞工，雇主利用其資源者可支付合理報酬後實施。"
+ },
+ {
+  "rule_id": "labor_medium_minimum_service",
+  "kind": "match",
+  "risk_theme": "最低服務年限約定",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(服務|任職|在職)[^。；;\\n]{0,4}(滿|至少|最低|不得少於)[^。；;\\n]{0,4}(\\d+|[一二三四五六七八九十百兩]+)\\s*(個)?(年|月)|(至少|最低|最少)(應)?(服務|任職|在職)[^。；;\\n]{0,2}(\\d+|[一二三四五六七八九十百兩]+)\\s*(個)?(年|月)|最低服務(年限|期間)|綁約)",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "15-1"
+   }
+  ],
+  "basis_note": "最低服務年限須以雇主提供專業技術培訓費用或合理補償為前提，且不得逾合理範圍，違反者約定無效（勞基法 §15-1）。規則只抓到有約定，合理與否交由 LLM 判斷。",
+  "suggestion": "確認雇主有提供專業培訓費用或合理補償，年限與成本相當，並約定不可歸責勞工時免責。"
+ },
+ {
+  "rule_id": "labor_medium_overtime_preapproval_only",
+  "kind": "match",
+  "risk_theme": "未事前核准即不認定加班",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(未|沒有|未經|未事前)[^。；;\\n]{0,10}(核准|申請|同意|簽核|核定)[^。；;\\n]{0,20}(不(予)?(認定|視為|計|算|給付|發給)|一律不|均不)[^。；;\\n]{0,4}(為)?(加班|延長工時|延長工作時間|加班費))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "24"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "32"
+   }
+  ],
+  "basis_note": "雇主延長工時應依 §32 程序，並依 §24 加給工資。加班事前申請制本身合法，風險在於「不論是否實際工作一律不認定」；實務上雇主明知或可得而知而受領勞務，仍可能被認定為加班。",
+  "suggestion": "保留加班申請程序，但雇主知悉或指示的實際延長工時仍應認定並給付加班費。"
+ },
+ {
+  "rule_id": "labor_medium_rules_by_later_notice",
+  "kind": "match",
+  "risk_theme": "勞動條件依日後公告",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(另行|日後|隨時|事後)[^。；;\\n]{0,2}(公告|公布|訂定|制定))",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "70"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "71"
+   },
+   {
+    "law_name": "勞動基準法施行細則",
+    "article_no": "7"
+   }
+  ],
+  "basis_note": "勞動契約應約定工時、休假、工資等事項（施行細則 §7）。雇主以工作規則規範這些事項本身合法（勞基法 §70），但工作規則違反強制或禁止規定者無效（§71），且不得低於法定標準。勞動契約不適用消保法，故與買賣、租賃的「另行公告」規則分開，列中風險。",
+  "suggestion": "工時、休假、工資等主要勞動條件應寫入契約；引用工作規則時確認其已依法核備公開。"
+ },
+ {
+  "rule_id": "labor_medium_unlimited_duties",
+  "kind": "match",
+  "risk_theme": "工作內容概括無限制",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(交辦|指派|指示|交付)之?(一切|所有|任何)[^。；;\\n]{0,4}(事項|工作|事務|任務)|不以[^。；;\\n]{0,12}(職務說明|工作內容|職掌)[^。；;\\n]{0,4}為限)",
+  "requires": "勞工|雇主|勞動契約|僱用|受僱|工資|薪資",
+  "legal_basis": [
+   {
+    "law_name": "勞動基準法施行細則",
+    "article_no": "7"
+   }
+  ],
+  "basis_note": "勞動契約應約定工作場所及應從事之工作（施行細則 §7①）。常見的「其他主管交辦事項」不在本規則範圍，只抓「一切／所有／任何」或「不以職務說明為限」。若條款同時涉及任意調動，另見調動規則。",
+  "suggestion": "以職務說明書列明主要工作內容，其他交辦事項限於與職務相關。"
+ },
+ {
+  "rule_id": "work_high_defect_liability_excluded",
+  "kind": "match",
+  "risk_theme": "排除承攬人瑕疵擔保責任",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:(期滿|超過|逾|屆滿)[^。；;\\n]{0,10}後))[^。；;\\n]*?(?:(承攬人|乙方)[^。；;\\n]{0,10}(不負|免負|概不負|不再負)(任何)?[^。；;\\n]{0,4}(瑕疵|保固|修補)|不(提供|負)(任何)?保固|免除[^。；;\\n]{0,8}(瑕疵|修補|保固)(擔保)?(義務|責任)|不得(據此)?(請求|主張)[^。；;\\n]{0,4}(修補|減少報酬|減價))",
+  "requires": "承攬|定作人|承攬人|委託製作|完成工作|工程款|完工",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "492"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "493"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "501-1"
+   }
+  ],
+  "basis_note": "承攬人應使工作具備約定品質且無瑕疵（§492），定作人得請求修補（§493）。以特約免除或限制瑕疵擔保，承攬人故意不告知瑕疵時無效（§501-1）；其餘情形特約原則有效，但會讓定作人失去救濟。",
+  "suggestion": "保留瑕疵修補、減少報酬與解除的權利，並約定合理的保固期間與範圍。"
+ },
+ {
+  "rule_id": "work_medium_warranty_period_short",
+  "kind": "match",
+  "risk_theme": "瑕疵擔保期間短於法定期間",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:[一二兩三四五六七八九十]\\s*年|\\d+\\s*年|十二個月|二十四個月))[^。；;\\n]*?(?:(保固|瑕疵擔保|擔保)(維護)?(期間|期限|期)[^。；;\\n]{0,15}(\\d+|[一二兩三四五六七八九十百]+)\\s*(個月|日|天|週)|(\\d+|[一二兩三四五六七八九十百]+)\\s*(個月|日|天|週)(內|之)?[^。；;\\n]{0,8}(保固|發見|發現|提出)[^。；;\\n]{0,4}(瑕疵|期)?)",
+  "requires": "承攬|定作人|承攬人|委託製作|完成工作|工程款|完工",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "498"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "499"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "501"
+   }
+  ],
+  "basis_note": "瑕疵發見期間原則為交付後一年（§498），建築物等工作物為五年（§499），得以契約加長但不得減短（§501）。規則只看期間以月、日、週表示，未換算是否確實短於法定期間。",
+  "suggestion": "確認保固期間不短於一年（建築物或重大修繕為五年），並寫明起算點。"
+ },
+ {
+  "rule_id": "work_high_termination_without_compensation",
+  "kind": "match",
+  "risk_theme": "定作人終止契約不賠償承攬人",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:應(按|依|給付|賠償)))(?=[^。；;\\n]*(?:(甲方|定作人|業主)[^。；;\\n]{0,30}(終止|解除)))[^。；;\\n]*?(?:(不負|無須|不予|不另|免|不得|拋棄|放棄)[^。；;\\n]{0,15}(賠償|補償|損害))",
+  "requires": "承攬|定作人|承攬人|委託製作|完成工作|工程款|完工",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "511"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "工作完成前定作人得隨時終止契約，但應賠償承攬人因終止所生的損害（§511）。約定終止不賠償，對承攬人可能顯失公平（§247-1）。",
+  "suggestion": "約定定作人終止時，按已完成部分給付報酬並賠償已支出的成本。"
+ },
+ {
+  "rule_id": "work_medium_acceptance_at_owner_discretion",
+  "kind": "match",
+  "risk_theme": "驗收標準由定作人單方決定",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?=[^。；;\\n]*(?:驗收|合格|品質|標準|預期))[^。；;\\n]*?(?:(以|由|依)(甲方|定作人|業主)[^。；;\\n]{0,15}(滿意|主觀|單方|認定|全權決定|決定為準|認為)|(甲方|定作人|業主)[^。；;\\n]{0,6}(完全)?滿意|全權決定|主觀判斷)",
+  "requires": "承攬|定作人|承攬人|委託製作|完成工作|工程款|完工",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "492"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "承攬人只負使工作具備「約定」品質的義務（§492）；驗收標準由定作人單方決定，等於品質沒有客觀約定，可能顯失公平（§247-1）。",
+  "suggestion": "以規格書、驗收項目或可量測標準作為驗收依據，並約定驗收期限與逾期視為驗收合格。"
+ },
+ {
+  "rule_id": "work_high_pay_when_paid",
+  "kind": "match",
+  "risk_theme": "報酬以業主或第三人付款為條件",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:縱|即使|不受|不得作為|不因))[^。；;\\n]*?(?:背對背|(業主|第三人|客戶|上游|發包人|總包|上包|機關)[^。；;\\n]{0,25}(付款|撥款|撥付|給付|支付|匯入|結清|款項)[^。；;\\n]{0,15}後[^。；;\\n]{0,25}(給付|支付|撥付|轉付|付款))",
+  "requires": "承攬|定作人|承攬人|委託製作|完成工作|工程款|完工",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "505"
+   }
+  ],
+  "basis_note": "報酬原則於工作交付或完成時給付（§505）。以業主付款為條件（背對背付款）時，承攬人要承擔第三人不付款的風險；條件不成就時能否請求報酬，實務上依約定解釋。",
+  "suggestion": "約定付款期限上限，業主遲未付款時仍應於一定期間內給付。"
+ },
+ {
+  "rule_id": "work_medium_unilateral_change_no_price",
+  "kind": "match",
+  "risk_theme": "定作人得單方變更工作而不調整報酬",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?=[^。；;\\n]*(?:變更|追加|增加|調整|增設))[^。；;\\n]*?(?:不得(要求|請求)[^。；;\\n]{0,4}(增加|追加)?[^。；;\\n]{0,6}(報酬|費用|價款|工程款)|不另(行)?(計價|計費|收費|追加費用)|自行吸收|(價款|總價|金額|報酬)[^。；;\\n]{0,8}(不變|維持))",
+  "requires": "承攬|定作人|承攬人|委託製作|完成工作|工程款|完工",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "490"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "承攬報酬以約定工作為對價（§490）；定作人可單方追加工作但報酬不變，等於加重承攬人責任（§247-1）。",
+  "suggestion": "約定變更或追加工作須書面確認，並依變更內容調整報酬與期限。"
+ },
+ {
+  "rule_id": "work_medium_missing_completion_date",
+  "kind": "missing",
+  "risk_theme": "未約定完成或交付期限",
+  "risk_level": "中風險",
+  "pattern": "(((\\d+|[一二兩三四五六七八九十百]+)\\s*年[^。；;\\n]{0,3}(\\d+|[一二兩三四五六七八九十百]+)\\s*月|\\d{1,4}[/.-]\\d{1,2}[/.-]\\d{1,2})|(\\d+|[一二兩三四五六七八九十百]+)\\s*(日|天|週|個月|工作天|個工作天)內)[^。；;\\n]{0,15}(完成|完工|交付|交件|上線|竣工|交貨)|(完成|完工|交付|交件|上線|竣工|交貨)(日期|期限|日)?[^。；;\\n]{0,12}((\\d+|[一二兩三四五六七八九十百]+)\\s*年[^。；;\\n]{0,3}(\\d+|[一二兩三四五六七八九十百]+)\\s*月|\\d{1,4}[/.-]\\d{1,2}[/.-]\\d{1,2})|(工期|履約期間|製作期間)[^。；;\\n]{0,6}(\\d+|[一二兩三四五六七八九十百]+)\\s*(日|天|週|個月)",
+  "requires": "承攬|定作人|承攬人|委託製作|完成工作|工程款|完工",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "502"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "503"
+   }
+  ],
+  "basis_note": "工作逾約定期限或相當時期完成，定作人得請求減少報酬或賠償（§502、§503）；沒有約定期限，只能依「相當時期」爭執。",
+  "suggestion": "寫明完成或交付日期，以及分階段交付的期限。"
+ },
+ {
+  "rule_id": "work_medium_missing_ip_ownership",
+  "kind": "missing",
+  "risk_theme": "未約定成果著作權歸屬",
+  "risk_level": "中風險",
+  "pattern": "著作權|著作財產權|智慧財產權|智財權",
+  "requires": "軟體|程式|系統|網站|設計|著作|文案|影片|攝影|圖|App|APP",
+  "legal_basis": [
+   {
+    "law_name": "著作權法",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "出資聘人完成的著作，未約定時著作人是受聘人，著作財產權歸受聘人，出資人只取得利用權（著作權法 §12）。軟體、設計、文案等外包特別需要約定。",
+  "suggestion": "約定成果著作財產權的歸屬、出資人的利用範圍，以及是否不行使著作人格權。"
+ },
+ {
+  "rule_id": "mandate_medium_termination_barred",
+  "kind": "match",
+  "risk_theme": "限制委任契約的終止權",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:非有正當理由))[^。；;\\n]*?(?:(不得|無權|不能)[^。；;\\n]{0,20}(終止|解除)(本)?(契約|委任)?|(放棄|拋棄|排除)[^。；;\\n]{0,10}終止(權|契約))",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "549"
+   }
+  ],
+  "basis_note": "委任契約任何一方得隨時終止（§549 I），於不利他方時期終止者應賠償（§549 II）。能否以特約排除隨時終止權，實務與學說有不同見解，需人工確認。",
+  "suggestion": "保留雙方終止權，改以預告期間與損害賠償範圍處理提前終止。"
+ },
+ {
+  "rule_id": "mandate_high_full_fee_on_termination",
+  "kind": "match",
+  "risk_theme": "提前終止仍須付全部報酬",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:(按|依)[^。；;\\n]{0,10}(已處理|已完成|比例)[^。；;\\n]{0,6}(結算|計算|給付)))(?=[^。；;\\n]*(?:終止|解約|解除))[^。；;\\n]*?(?:(全部|全額|剩餘|未履行(部分)?|整期|全年|原定總?)(之)?(報酬|酬金|費用|顧問費|服務費|委任費)|全額(照付|給付|支付)|不得按比例(扣減|減少))",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "548"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "549"
+   }
+  ],
+  "basis_note": "委任因非可歸責受任人的事由提前終止，受任人只得就已處理部分請求報酬（§548 II）；終止方只需賠償因不利時期終止造成的損害（§549 II），不等於全部報酬。",
+  "suggestion": "約定提前終止時，按已處理部分計算報酬，未履行部分不收費或只賠償實際損害。"
+ },
+ {
+  "rule_id": "mandate_high_prepaid_fee_non_refundable",
+  "kind": "match",
+  "risk_theme": "預收報酬概不退還",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?=[^。；;\\n]*(?:報酬|費用|顧問費|服務費|委任費|訂金|款項))[^。；;\\n]*?(?:概不退還|不予退還|不退還|不退費|不予退費|恕不退|一律不退|不予退款|不退款)",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "548"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "549"
+   }
+  ],
+  "basis_note": "報酬原則於委任終止並報告顛末後才能請求（§548 I）；提前終止時只得請求已處理部分（§548 II）。預收全部報酬且一律不退，可能使委任人負擔未處理事務的對價。",
+  "suggestion": "約定提前終止時依已處理部分結算，預收款超過部分退還。"
+ },
+ {
+  "rule_id": "mandate_medium_overbroad_authority",
+  "kind": "match",
+  "risk_theme": "授權範圍過廣",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))[^。；;\\n]*?(?:(全權|概括|一切)[^。；;\\n]{0,6}(委任|授權|代理|處理|代表|代為)|(授權|委任)[^。；;\\n]{0,6}(一切|所有)(事務|事項|行為)|為一切(法律)?行為)",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "532"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "534"
+   }
+  ],
+  "basis_note": "受任人權限依契約訂定（§532）；概括委任雖得為一切行為，但不動產處分、逾二年租賃、贈與、和解、起訴、提付仲裁仍須特別授權（§534）。範圍過廣時委任人難以控制風險。",
+  "suggestion": "列明委任事務與權限，重大處分、和解、訴訟等另以書面特別授權。"
+ },
+ {
+  "rule_id": "mandate_medium_free_subdelegation",
+  "kind": "match",
+  "risk_theme": "受任人得自行轉委任第三人",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:未經|非經|須經|應經|不得將))[^。；;\\n]*?(?:(乙方|受任人)[^。；;\\n]{0,10}(?<!不)(得|可|有權)[^。；;\\n]{0,30}(轉委任|複委任|再委託|委由|交由|委託|指派)[^。；;\\n]{0,15}(第三人|他人|外部|其他)|不以[^。；;\\n]{0,8}親自處理為(必要|限))",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "537"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "538"
+   }
+  ],
+  "basis_note": "受任人原則應親自處理委任事務，經同意、有習慣或不得已時才可使第三人代為處理（§537）；違反時就第三人行為負同一責任（§538）。",
+  "suggestion": "約定轉委任須經委任人書面同意，並由受任人對第三人行為負責。"
+ },
+ {
+  "rule_id": "mandate_medium_expenses_on_agent",
+  "kind": "match",
+  "risk_theme": "必要費用由受任人自行負擔",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:(由甲方|甲方應|甲方負責)[^。；;\\n]{0,4}(負擔|支付|預付|償還)|實報實銷))(?=[^。；;\\n]*(?:必要費用|處理費用|代墊|墊付|墊款|規費|雜費|雜支|交通費|住宿費|郵寄費|公證費))[^。；;\\n]*?(?:(由)?(乙方|受任人)[^。；;\\n]{0,4}(自行|自理)?(負擔|吸收|支付|承擔|自理))",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "545"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "546"
+   }
+  ],
+  "basis_note": "委任人應預付必要費用（§545），受任人支出的必要費用委任人應償還並付利息（§546）。約定由受任人負擔，應確認報酬已包含這些費用。",
+  "suggestion": "列明哪些費用已含在報酬內，其餘必要費用由委任人預付或實報實銷。"
+ },
+ {
+  "rule_id": "mandate_medium_missing_report_duty",
+  "kind": "missing",
+  "risk_theme": "未約定受任人報告義務",
+  "risk_level": "中風險",
+  "pattern": "報告|回報|進度|說明處理情形|顛末",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "540"
+   }
+  ],
+  "basis_note": "受任人應報告委任事務進行狀況，終止時應明確報告顛末（§540）。契約未寫時仍有法定義務，但沒有頻率與方式，委任人難以掌握進度。",
+  "suggestion": "約定報告頻率、方式與終止時的結案報告。"
+ },
+ {
+  "rule_id": "mandate_medium_missing_scope",
+  "kind": "missing",
+  "risk_theme": "未約定委任事務範圍",
+  "risk_level": "中風險",
+  "pattern": "委任事務|委任範圍|委任事項|服務內容|服務範圍|處理事項|工作內容|顧問範圍",
+  "requires": "委任|受任人|委任人|顧問|代辦|委託處理|受託人",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "528"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "532"
+   }
+  ],
+  "basis_note": "委任是委託處理事務的契約（§528），受任人權限依契約或事務性質而定（§532）。範圍不明時，報酬對價與責任都難以界定。",
+  "suggestion": "列明委任事務、交付成果與不包含的項目。"
+ },
+ {
+  "rule_id": "loan_high_interest_deducted_upfront",
+  "kind": "match",
+  "risk_theme": "預扣利息或手續費",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:(不|無|未|禁止|不得)[^。；;\\n]{0,4}(預扣|預先扣|先行扣|先扣|扣除|預收)))[^。；;\\n]*?(?:預扣|預先扣除|先行扣除|先扣|預收利息|(利息|手續費|服務費)[^。；;\\n]{0,10}(於撥款時|自借款中|自本金中)(扣除|扣收))",
+  "requires": "借款|借貸|貸與人|借用人|借款人|出借人|本金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "206"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "474"
+   }
+  ],
+  "basis_note": "債權人除法定上限內的利息外，不得以折扣或其他方法巧取利益（§206）；預扣利息使實際交付金額少於借款金額，消費借貸以實際交付的金錢為準（§474）。",
+  "suggestion": "以實際撥付金額為本金計息，不預扣利息；手續費等應列明並計入實質利率檢查。"
+ },
+ {
+  "rule_id": "loan_high_compound_interest",
+  "kind": "match",
+  "risk_theme": "利息滾入本金計算複利",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:不得|不滾入|不併入|不計入|禁止|單利|限制|第二百零七條|207\\s*條))[^。；;\\n]*?(?:複利|利滾利|(利息)[^。；;\\n]{0,20}(滾入|併入|計入|轉入)[^。；;\\n]{0,4}(原本|本金))",
+  "requires": "借款|借貸|貸與人|借用人|借款人|出借人|本金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "207"
+   }
+  ],
+  "basis_note": "利息不得滾入原本再生利息；只有書面約定且利息遲付逾一年、經催告仍不償還時才可滾入（§207 I）。商業上另有習慣者例外（§207 II）。",
+  "suggestion": "刪除複利約定，或改為符合 §207 條件的書面約定。"
+ },
+ {
+  "rule_id": "loan_high_lender_unilateral_rate",
+  "kind": "match",
+  "risk_theme": "出借人得單方調整利率",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))[^。；;\\n]*?(?:(甲方|貸與人|出借人|債權人|銀行)[^。；;\\n]{0,10}(?<!不)(得|可|有權)[^。；;\\n]{0,30}(調整|調高|調升|變更|提高)[^。；;\\n]{0,8}(利率|利息))",
+  "requires": "借款|借貸|貸與人|借用人|借款人|出借人|本金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "205"
+   }
+  ],
+  "basis_note": "利率由出借人單方調整，加重借款人負擔，可能顯失公平（§247-1）；不論如何調整，超過週年百分之十六的部分無效（§205）。",
+  "suggestion": "利率固定，或寫明調整的指標與公式（例如依某銀行基準利率加碼）。"
+ },
+ {
+  "rule_id": "loan_medium_early_repayment_barred",
+  "kind": "match",
+  "risk_theme": "限制借款人提前清償",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))[^。；;\\n]*?(?:(不得|禁止|不可|不能)[^。；;\\n]{0,6}(提前|提早|期前)[^。；;\\n]{0,4}(清償|還款|償還|還本)|(拋棄|放棄)[^。；;\\n]{0,6}(提前|提早|期前)(清償|還款|償還)|(提前|提早)(清償|還款)[^。；;\\n]{0,10}(違約金|手續費|補償))",
+  "requires": "借款|借貸|貸與人|借用人|借款人|出借人|本金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "204"
+   }
+  ],
+  "basis_note": "約定利率逾週年百分之十二者，經一年後借款人得隨時清償原本（一個月前預告），且這個權利不得以契約除去或限制（§204）。利率在百分之十二以下時，限制提前清償原則有效。",
+  "suggestion": "保留提前清償權，或確認利率不超過週年百分之十二。"
+ },
+ {
+  "rule_id": "loan_medium_guarantor_waives_rights",
+  "kind": "match",
+  "risk_theme": "保證人預先拋棄權利",
+  "risk_level": "中風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:僅[^。；;\\n]{0,8}(拋棄|放棄)[^。；;\\n]{0,4}先訴抗辯|保留|不[^。；;\n]{0,2}(預先|事先)?(拋棄|放棄)))(?=[^。；;\\n]*(?:丙方|保證人|保證))[^。；;\\n]*?(?:(預先|事先)?(拋棄|放棄)[^。；;\\n]{0,30}(抗辯|權利|免責|免除保證責任))",
+  "requires": "保證人|保證",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "739-1"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "746"
+   }
+  ],
+  "basis_note": "保證人的權利除法律另有規定外不得預先拋棄（§739-1）；先訴抗辯權是例外，可以拋棄（§746①），所以只拋棄先訴抗辯權的約定不觸發本規則，拋棄其他權利的約定無效。",
+  "suggestion": "保證人確認拋棄先訴抗辯權的後果；刪除拋棄其他權利的約定。"
+ },
+ {
+  "rule_id": "loan_medium_missing_repayment_date",
+  "kind": "missing",
+  "risk_theme": "未約定清償期限",
+  "risk_level": "中風險",
+  "pattern": "(清償|還款|償還|返還|還本)[^。；;\\n]{0,25}(((\\d+|[一二兩三四五六七八九十百]+)\\s*年[^。；;\\n]{0,3}(\\d+|[一二兩三四五六七八九十百]+)\\s*月|\\d{1,4}[/.-]\\d{1,2}[/.-]\\d{1,2})|(\\d+|[一二兩三四五六七八九十百]+)\\s*(日|天|週|個月|年)內|每月|分期|到期日)|(((\\d+|[一二兩三四五六七八九十百]+)\\s*年[^。；;\\n]{0,3}(\\d+|[一二兩三四五六七八九十百]+)\\s*月|\\d{1,4}[/.-]\\d{1,2}[/.-]\\d{1,2})|每月|每期|分期|按月|到期日)[^。；;\\n]{0,15}(清償|還款|償還|返還|還本)|(借款|借貸|借用)(期間|期限)[^。；;\\n]{0,6}(\\d+|[一二兩三四五六七八九十百]+)\\s*(年|個月|日)",
+  "requires": "借款|借貸|貸與人|借用人|借款人|出借人|本金",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "478"
+   }
+  ],
+  "basis_note": "未定返還期限時，借用人得隨時返還，貸與人也得定一個月以上期限催告返還（§478）；雙方都難以預期資金安排。",
+  "suggestion": "寫明清償日或分期還款的期數、金額與日期。"
+ },
+ {
+  "rule_id": "loan_medium_missing_interest_rate",
+  "kind": "missing",
+  "risk_theme": "約定利息但未寫利率",
+  "risk_level": "中風險",
+  "pattern": "年息|年利率|週年利率|月息|利率|百分之|%|％|無息|免息|不計息",
+  "requires": "利息|計息",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "203"
+   }
+  ],
+  "basis_note": "應付利息但利率未約定時，週年利率為百分之五（§203）。只寫「計息」而不寫利率，容易事後爭執。",
+  "suggestion": "寫明利率（年息）與計息方式，或明確約定無息。"
+ },
+ {
+  "rule_id": "shared_high_intent_gross_exclusion",
+  "kind": "match",
+  "risk_theme": "預先免除故意或重大過失責任",
+  "risk_level": "高風險",
+  "pattern": "(?:故意|重大過失)[^。；;\\n]{0,14}(?:概不負責|不負(?:賠償)?責任|免負(?:賠償)?責任)|(?<!不得)(?<!禁止)免除[^。；;\\n]{0,8}(?:故意|重大過失)[^。；;\\n]{0,6}責任",
+  "requires": "",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "222"
+   }
+  ],
+  "basis_note": "第222條禁止預先免除故意或重大過失責任。過失分類、責任主體與是否事故後和解須確認；不以一般免責二字觸發。",
+  "suggestion": "刪除預先免責範圍中的故意及重大過失責任。"
+ },
+ {
+  "rule_id": "shared_high_interest_over_cap",
+  "kind": "match",
+  "risk_theme": "約定利率超過週年百分之十六",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(年息|年利率|週年利率|週年|年利)[^。；;\\n]{0,6}((1[7-9]|[2-9]\\d)(\\.\\d+)?\\s*[%％]|百分之(十[七八九]|[二三四五六七八九]十))|(月息|月利率|每月利息|月利)[^。；;\\n]{0,6}((1\\.[4-9]|[2-9])(\\.\\d+)?\\s*[%％]|百分之[二三四五六七八九]))",
+  "requires": "",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "205"
+   }
+  ],
+  "basis_note": "約定利率超過週年百分之十六者，超過部分無效（§205）。月息一分四（1.4%）換算年息已逾 16%。以「每日」計算的違約金不屬利息，另見違約金規則。",
+  "suggestion": "約定利率不超過週年百分之十六；遲延利息與違約金分開計算。"
+ },
+ {
+  "rule_id": "shared_high_liability_fully_excluded",
+  "kind": "match",
+  "risk_theme": "一方概括免除一切責任",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:概不負責|不負(擔)?(任何|一切)[^。；;\\n]{0,8}責任|免除[^。；;\\n]{0,6}(一切|任何)[^。；;\\n]{0,4}責任)",
+  "requires": "",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "222"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   },
+   {
+    "law_name": "消費者保護法",
+    "article_no": "12"
+   }
+  ],
+  "basis_note": "故意或重大過失的責任不得預先免除（§222）；定型化條款免除或減輕預定條款一方責任，顯失公平者無效（§247-1①），消費契約另依消保法 §12。買賣瑕疵擔保的排除另見 sale_high_warranty_excluded，兩條可能同時命中。",
+  "suggestion": "免責範圍不得包含故意或重大過失；限縮免責事由並列明責任上限。"
+ },
+ {
+  "rule_id": "shared_high_penalty",
+  "kind": "match",
+  "risk_theme": "約定違約金或懲罰性賠償",
+  "risk_level": "高風險",
+  "pattern": "(?:^|(?<=[。；;\\n]))(?![^。；;\\n]*(?:酌減|顯失公平|不得超過|不得高於|不超過|以[^。；;\\n]{0,10}為上限))[^。；;\\n]*?(?:違約金|懲罰性賠償|(賠償|罰款|賠付)[^。；;\\n]{0,8}(\\d+|[一二兩三四五六七八九十百]+)\\s*個?\\s*月(份)?(之)?(租金|房租|薪資|工資|月薪|薪水))",
+  "requires": "",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "250"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "252"
+   }
+  ],
+  "basis_note": "只要約定違約金或以數月租金、薪資作為賠償即列高風險，不以金額門檻判斷；同一句只是限制違約金（得由法院酌減、顯失公平、不得超過一定金額）的不算。違約金分損害賠償總額預定與懲罰性兩種（民法 §250），約定過高者法院得酌減（§252）；勞工的違約金不得以預扣工資收取（勞基法 §26）。",
+  "suggestion": "確認違約金性質（損害賠償預定或懲罰性）、金額與實際損害是否相當，雙方責任是否對等，並設總額上限。"
+ },
+ {
+  "rule_id": "shared_high_penalty_reduction_waived",
+  "kind": "match",
+  "risk_theme": "約定不得請求酌減違約金",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(不得|放棄|拋棄|無權)[^。；;\\n]{0,8}(請求|主張|聲請)?[^。；;\\n]{0,4}(酌減|減少違約金|核減))",
+  "requires": "",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "252"
+   }
+  ],
+  "basis_note": "約定違約金過高者法院得減至相當數額（§252），實務認為此係法院職權，當事人預先約定不得請求酌減不生拘束力。",
+  "suggestion": "刪除放棄酌減的文字。"
+ },
+ {
+  "rule_id": "shared_high_review_period_waived",
+  "kind": "match",
+  "risk_theme": "預先放棄契約審閱期",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(放棄|拋棄|捨棄|免除|不需|無須)[^。；;\\n]{0,8}審閱|審閱(期|期間|權)[^。；;\\n]{0,6}(放棄|拋棄|不適用|免除))",
+  "requires": "",
+  "legal_basis": [
+   {
+    "law_name": "消費者保護法",
+    "article_no": "11-1"
+   }
+  ],
+  "basis_note": "企業經營者與消費者訂立定型化契約前，應有三十日以內的合理審閱期間，以條款使消費者拋棄者無效（消保法 §11-1 I、II）。住宅租賃依租賃條例 §5 適用。舊規則引用的 §17 是主管機關公告應記載事項的授權條文，已改為直接規範審閱期的 §11-1。企業間交易與勞動契約不適用消保法。",
+  "suggestion": "提供至少法定或主管機關公告的審閱期間，刪除放棄審閱的聲明。"
+ },
+ {
+  "rule_id": "shared_high_terms_by_later_notice",
+  "kind": "match",
+  "risk_theme": "契約內容由一方日後公告或單方變更",
+  "risk_level": "高風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:(另行|日後|隨時|事後)[^。；;\\n]{0,2}(公告|公布)|(甲方|賣方|出賣人|出租人|房東|企業經營者|本公司|公司)[^。；;\\n]{0,4}(得|有權|保留)[^。；;\\n]{0,6}(隨時|單方|片面|逕行|自行)?[^。；;\\n]{0,2}(變更|修改|修訂|增訂|補充)[^。；;\\n]{0,4}(本)?(契約|條款|約定|規則|辦法|規定))",
+  "requires": "出賣人|買受人|賣方|買方|買賣契約|價金|出租人|承租人|租賃|租金|房東|房客",
+  "legal_basis": [
+   {
+    "law_name": "消費者保護法",
+    "article_no": "14"
+   },
+   {
+    "law_name": "消費者保護法",
+    "article_no": "17"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ],
+  "basis_note": "未記載於契約、依正常情形消費者無法預見的條款不構成契約內容（消保法 §14）；企業經營者保留契約內容變更權屬主管機關可公告為不得記載的事項類型（§17 III①）。住宅租賃依租賃條例 §5 視為消費關係。企業間交易不適用消保法，改依民法 §247-1。勞動契約另見 labor_medium_rules_by_later_notice（requires 只用買賣、租賃用語把關，混合型合約可能兩條都命中）。限制：「另行公告」本身作高風險線索；單純通知履行資訊、已合意之客觀公式或法定公告不必然不當。民法第247-1條限預定同類契約且顯失公平；消保法第12條限消費定型化，第17條涉及特定行業公告，不是所有單方變更一概無效。較長否定句仍可能誤報。",
+  "suggestion": "把退換貨、生活規則、費用等內容直接寫入契約或附件；變更須經雙方書面同意。"
+ },
+ {
+  "rule_id": "shared_medium_no_receipt",
+  "kind": "match",
+  "risk_theme": "不給收據或付款證明",
+  "risk_level": "中風險",
+  "pattern": "(?<!不得)(?<!禁止)(?:不(另)?(開立|出具|提供|給|開)[^。；;\\n]{0,4}(收據|收款證明|付款證明|發票|單據)|不得要求[^。；;\\n]{0,6}(收據|證明|發票))",
+  "requires": "",
+  "legal_basis": [
+   {
+    "law_name": "民法",
+    "article_no": "324"
+   }
+  ],
+  "basis_note": "清償人得請求受領清償人給與受領證書（§324）。沒有付款證明時，日後爭議押金、租金是否付清會難以舉證。發票開立義務屬稅法，不在官方條文庫內。舊規則為高風險，因條款本身不致無效，調為中風險。",
+  "suggestion": "約定以匯款或開立收據方式付款，保留付款紀錄。"
+ }
 ]

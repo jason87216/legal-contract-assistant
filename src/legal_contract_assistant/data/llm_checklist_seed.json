@@ -1,0 +1,517 @@
+[
+ {
+  "contract_type": "sale",
+  "item": "標的規格是否足以特定（型號、數量、配件、版本、附件清單）",
+  "why": "規格描述方式差異太大，「一批」「一組」也可能附有清單；需讀懂上下文才能判斷。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "345"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "348"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "354"
+   }
+  ]
+ },
+ {
+  "contract_type": "sale",
+  "item": "保固期間、範圍、排除事項與補救方式是否明確",
+  "why": "「依原廠規定」或「依保固書」是否足夠，取決於是否附上保固書與內容，關鍵字無法判斷。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "354"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "359"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "365"
+   }
+  ]
+ },
+ {
+  "contract_type": "sale",
+  "item": "價金是否含稅、運費、安裝費與其他規費",
+  "why": "含稅與否寫法多樣，且未約定時有法定費用分擔規則，需判斷是否真的不明。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "345"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "378"
+   }
+  ]
+ },
+ {
+  "contract_type": "sale",
+  "item": "所有權與風險移轉時點是否清楚",
+  "why": "未約定時依交付移轉（§373、§761），不約定未必是風險；「另行確認」等延後約定需看上下文。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "348"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "373"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "761"
+   }
+  ]
+ },
+ {
+  "contract_type": "sale",
+  "item": "雙方遲延責任與違約效果是否對等",
+  "why": "對等與否需同時比較買賣雙方的條款，單一關鍵字無法判斷；單方延後交付已另有規則。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "229"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "231"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "252"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ]
+ },
+ {
+  "contract_type": "sale",
+  "item": "退換貨的通知窗口、期限與處理流程是否寫明",
+  "why": "「日後另行公告」已另立高風險規則；其餘情形需判斷流程是否完整。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "356"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "359"
+   },
+   {
+    "law_name": "消費者保護法",
+    "article_no": "19"
+   }
+  ]
+ },
+ {
+  "contract_type": "sale",
+  "item": "是否屬消費者定型化契約，有無合理審閱期間",
+  "why": "缺少審閱期條款不一定違法（企業間交易不適用），需先判斷消費關係。",
+  "related_articles": [
+   {
+    "law_name": "消費者保護法",
+    "article_no": "2"
+   },
+   {
+    "law_name": "消費者保護法",
+    "article_no": "11-1"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "租賃範圍（陽台、頂樓、車位、儲藏室、公共空間）是否明確",
+  "why": "範圍描述多樣，需對照地址、附件判斷是否足夠。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "421"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "423"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "水電、瓦斯、網路、管理費等費用負擔與計算方式是否明確",
+  "why": "費用項目多且寫法分散，是否「不明」需看計算方式；稅捐轉嫁已另立規則。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "421"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "427"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "修繕責任是否區分自然耗損、設備老舊與承租人可歸責損害",
+  "why": "完全未提修繕與全部轉嫁已有規則；「有寫但區分不清」需理解內容。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "429"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "432"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "8"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "續租通知期、租金調整與續租條件是否明確",
+  "why": "續租屬另一次合意，不約定也不違法；期滿續用的效果另有 §451。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "450"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "451"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "提前終止的通知期是否合理",
+  "why": "以月數租金為違約金已有中風險規則；是否合理要看剩餘租期與實際損害。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "252"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "453"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "11"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "轉租、親友同住、看護等第三人使用的界線",
+  "why": "完全未約定轉租已有規則；「不得提供第三人使用」等限制是否過寬需判斷。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "443"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "9"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "遺留物的通知、保管、處理與費用程序",
+  "why": "未約定時有法定程序（租賃條例 §12 II）；「另行協議」是否造成爭議需看上下文。",
+  "related_articles": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "12"
+   }
+  ]
+ },
+ {
+  "contract_type": "lease",
+  "item": "租金與押金是否符合土地法上限（非住宅房屋）、住宅租賃是否適用租賃條例",
+  "why": "需先判斷住宅或非住宅、是否短於三十日等適用範圍，才能決定引用哪部法律。",
+  "related_articles": [
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "4"
+   },
+   {
+    "law_name": "租賃住宅市場發展及管理條例",
+    "article_no": "6"
+   },
+   {
+    "law_name": "土地法",
+    "article_no": "97"
+   },
+   {
+    "law_name": "土地法",
+    "article_no": "99"
+   }
+  ]
+ },
+ {
+  "contract_type": "labor",
+  "item": "試用期長度、延長次數與試用期間的終止程序",
+  "why": "現行法未直接規範試用期長短，不能據字面認定違法；需看終止是否符合 §11、§12。",
+  "related_articles": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "11"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "12"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "16"
+   }
+  ]
+ },
+ {
+  "contract_type": "labor",
+  "item": "定期契約是否屬臨時性、短期性、季節性或特定性工作",
+  "why": "繼續性工作應為不定期契約，判斷需理解工作性質。",
+  "related_articles": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "9"
+   }
+  ]
+ },
+ {
+  "contract_type": "labor",
+  "item": "工時、例假、休息日、特休與請假程序是否明確且不低於法定標準",
+  "why": "引用工作規則或公告制度的寫法很多，是否合法需看內容；「日後公告」與特休由雇主排定已有規則。",
+  "related_articles": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "30"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "36"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "38"
+   },
+   {
+    "law_name": "勞動基準法施行細則",
+    "article_no": "7"
+   }
+  ]
+ },
+ {
+  "contract_type": "labor",
+  "item": "工資金額是否不低於基本工資，給付日期與明細是否列明",
+  "why": "基本工資金額每年調整，不適合寫死在規則內。",
+  "related_articles": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "21"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "22"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "23"
+   }
+  ]
+ },
+ {
+  "contract_type": "labor",
+  "item": "違反工作規則、遲到、績效不佳等的懲罰性賠償是否過重",
+  "why": "金額與事由需一併判斷；以月薪為違約金、預扣工資已有規則。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "252"
+   },
+   {
+    "law_name": "勞動基準法",
+    "article_no": "26"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "247-1"
+   }
+  ]
+ },
+ {
+  "contract_type": "labor",
+  "item": "最低服務年限是否有培訓費用或合理補償支撐、年限是否合理",
+  "why": "規則只能偵測有約定，合理性要比較培訓成本、補償與年限。",
+  "related_articles": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "15-1"
+   }
+  ]
+ },
+ {
+  "contract_type": "labor",
+  "item": "是否確有健保投保",
+  "why": "全民健康保險法不在官方條文庫，需由 LLM 以工具查詢。",
+  "related_articles": []
+ },
+ {
+  "contract_type": "work",
+  "item": "工作內容與交付成果是否足以特定（規格、數量、交付物清單）",
+  "why": "描述方式差異大，需讀懂上下文。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "490"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "492"
+   }
+  ]
+ },
+ {
+  "contract_type": "work",
+  "item": "報酬的計算方式、分期付款與驗收是否連動",
+  "why": "付款節點寫法多樣。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "505"
+   }
+  ]
+ },
+ {
+  "contract_type": "work",
+  "item": "材料由誰供給、材料瑕疵與定作人指示不當的責任分配",
+  "why": "需看雙方分工。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "496"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "509"
+   }
+  ]
+ },
+ {
+  "contract_type": "work",
+  "item": "是否實際上屬於僱傭（受指揮監督、按時計酬），而以承攬名義規避勞動法",
+  "why": "從屬性要看實際安排。",
+  "related_articles": [
+   {
+    "law_name": "勞動基準法",
+    "article_no": "2"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "482"
+   }
+  ]
+ },
+ {
+  "contract_type": "mandate",
+  "item": "報酬是按時、按件或按成果計算，以及何時可以請求",
+  "why": "計酬方式寫法多樣。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "547"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "548"
+   }
+  ]
+ },
+ {
+  "contract_type": "mandate",
+  "item": "受任人的注意義務程度（有償應負善良管理人注意）與責任上限是否相當",
+  "why": "需判斷是否有償與責任限制是否合理。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "535"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "544"
+   }
+  ]
+ },
+ {
+  "contract_type": "mandate",
+  "item": "是否實際上屬於承攬（以完成一定成果為目的）或僱傭",
+  "why": "契約定性影響適用條文。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "528"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "529"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "490"
+   }
+  ]
+ },
+ {
+  "contract_type": "loan",
+  "item": "手續費、服務費、帳管費等名目是否實質上是利息，與利息、違約金合計的實質利率是否超過週年百分之十六",
+  "why": "費用是否屬利息、是否過高，需換算金額與期間，字面無法判斷。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "205"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "206"
+   }
+  ]
+ },
+ {
+  "contract_type": "loan",
+  "item": "借款是否實際交付、交付金額與契約記載是否一致",
+  "why": "需對照撥款證明。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "474"
+   }
+  ]
+ },
+ {
+  "contract_type": "loan",
+  "item": "擔保安排（保證人、本票、抵押）的範圍與期間是否明確",
+  "why": "擔保方式與範圍寫法多樣。",
+  "related_articles": [
+   {
+    "law_name": "民法",
+    "article_no": "739"
+   },
+   {
+    "law_name": "民法",
+    "article_no": "740"
+   }
+  ]
+ }
+]

@@ -75,9 +75,9 @@ def test_seeded_cache_initializes_review_rules(tmp_path) -> None:
     rules = cache.list_review_rules()
 
     assert len(rules) >= 50
+    assert {rule.kind for rule in rules} == {"match", "missing"}
     assert any(
-        rule.risk_theme == "違約金可能過高"
-        and ("民法", "252") in rule.legal_basis
+        rule.rule_id == "shared_high_penalty" and ("民法", "252") in rule.legal_basis
         for rule in rules
     )
 
