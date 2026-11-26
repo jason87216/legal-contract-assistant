@@ -313,17 +313,24 @@ def _rule_hits(
     )
 
 
+HIGH_RISK_MIN_RULES = 3
+
+
 def estimate_risk_level(
     contract_text: str,
     contract_type: str,
     missing_items: list[str],
     rules: list[ReviewRule] | None = None,
 ) -> tuple[str, list[str]]:
+    """High risk takes HIGH_RISK_MIN_RULES distinct high-risk rules; one or two
+    make the contract medium risk (each still listed as a reason)."""
     hits = _rule_hits(contract_text, rules, contract_type)
-    for level in ("高風險", "中風險"):
-        reasons = [hit.rule.risk_theme for hit in hits if hit.rule.risk_level == level]
-        if reasons:
-            return level, reasons
+    high = [hit.rule.risk_theme for hit in hits if hit.rule.risk_level == "高風險"]
+    medium = [hit.rule.risk_theme for hit in hits if hit.rule.risk_level == "中風險"]
+    if len(high) >= HIGH_RISK_MIN_RULES:
+        return "高風險", high
+    if high or medium:
+        return "中風險", high + medium
 
     if len(missing_items) >= 3:
         return "中風險", ["多個必要條款未以關鍵字明確呈現"]

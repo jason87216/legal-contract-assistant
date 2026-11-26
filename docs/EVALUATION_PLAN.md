@@ -6,9 +6,19 @@
 
 | 資料 | 位置 | 用途 | 能否用來調整規則 |
 | --- | --- | --- | --- |
-| 調整集 | `tw_contract_review_testpack_v1.zip`（90 筆）、`eval/generated_cases/`（Antigravity 產生 110 筆） | 回歸測試：改規則後不能變差 | 可以；分數不代表準確率 |
+| 調整集 | `tw_contract_review_testpack_v1.zip`（90 筆）、`eval/generated_cases/`（Antigravity 產生 110 筆）、`eval/judgment_clauses.jsonl`（判決書引述的條款 30 條，2026-11-26 起） | 回歸測試：改規則後不能變差 | 可以；分數不代表準確率 |
 | 範本集（待建） | 官方定型化契約範本 | 誤報：合法條款不應被判成風險 | 只能謹慎修誤報 |
-| 判決集（待建） | `eval/judgment_clauses.jsonl`，判決書引述的爭議條款 | 漏抓、精確率、法條是否與法院一致 | 不行；測完即凍結，用過就改列調整集 |
+| 測試集（待建） | 新一批判決條款，取代已用掉的判決集 | 漏抓、精確率、法條是否與法院一致 | 不行；測完即凍結，用過就改列調整集 |
+
+判決集第一次評分時規則沒有依它調整過，那次的分數記在第 5 步；之後依使用者審核改了規則，所以改列調整集。
+
+## 整份合約的風險等級
+
+- 觸發 3 條以上不同的高風險規則，整份合約是高風險。
+- 觸發 1～2 條高風險規則，或任何中風險規則，整份合約是中風險。
+- 沒有觸發規則時是低風險，但 3 項以上必要條款沒有寫到時改判中風險。
+
+同一條規則在合約中出現多次只算一條。每條觸發的規則仍逐項列在報告裡，門檻只影響整份合約的等級標籤（使用者決定，2026-11-26）。
 
 所有分數都要連同規則版本（commit 編號）一起記錄。
 
@@ -50,7 +60,7 @@ $key = $env:LCA_GEMINI_API_KEY
 .venv\Scripts\python.exe -m scripts.evaluate --out-dir reports
 ```
 
-輸出 `reports/evaluation.md`。測試包標籤沿用舊規則主題，`scripts/testpack_theme_map.json` 對應到新規則；改交 LLM 的主題不計分。
+輸出 `reports/evaluation.md`。測試包標籤沿用舊規則主題，`scripts/testpack_theme_map.json` 對應到新規則；改交 LLM 的主題不計分。測試包每筆只標一個風險主題，且沿用「一條高風險就是高風險」的舊定義，所以計算風險等級正確率時，標為高風險的案例改以中風險比對（`expected_level()`）。
 
 ### 3. 規則：產生案例 110 筆
 
@@ -70,7 +80,51 @@ $key = $env:LCA_GEMINI_API_KEY
 
 目前的標準答案是規則引用的法條，有資料洩漏，只能比較做法；判決集完成後改用法院實際適用的條文。
 
-### 5. LLM 第一階段（需要 Gemini key）
+### 5. 規則：判決條款 30 條
+
+```powershell
+.venv\Scripts\python.exe -m scripts.evaluate_judgments
+```
+
+輸出 `reports/judgment_clauses.md`。資料在 `eval/judgment_clauses.jsonl`：6 類合約各 5 條，取自地方法院判決書引述的條款，只保留條款、案號、法院適用的條文與標註，不含當事人姓名。每條逐一跑該類型的規則；「缺少某約定」類的規則因為單一條款看不到整份合約而不計，除非標註本來就預期它。
+
+| 指標 | 定義 |
+| --- | --- |
+| 風險條款被抓到 | 標為風險的條款，預期規則至少一條觸發 |
+| 正常條款誤報 | 標為正常的條款，有任何規則觸發 |
+| 觸發的規則中屬於預期規則 | 觸發次數中，有幾次是標註預期的 |
+| 法院適用條文被規則法條涵蓋 | 抓到的風險條款，法院適用的條文有幾條出現在觸發規則的法律依據 |
+
+結果：
+
+| 指標 | 第一次評分（規則未調整） | 審核並調整規則後 |
+| --- | --- | --- |
+| 風險條款被抓到 | 8/13 | 13/13 |
+| 正常條款誤報 | 1/16 | 1/15 |
+| 觸發的規則中屬於預期規則 | 9/10 | 14/15 |
+| 法院適用條文被規則法條涵蓋 | 6/9 | 7/15 |
+| 不計分 | 1 條 | 2 條 |
+
+只有第一次評分可以當作規則在沒看過的條款上的表現。調整後的分數依這批條款改過規則，只能當回歸檢查。法院條文涵蓋率下降，是因為新抓到的條款（例如 lease_04 的民法 §432、§438，labor_04 的勞基法 §9-1）不在觸發規則的法律依據裡。
+
+使用者審核（2026-11-26）後的修改：
+- 標註：work_05 改為風險（預期 `shared_high_liability_fully_excluded`）。work_02 不計分（`rule_scope: "skip"`）。labor_04 的預期規則改為 `labor_medium_confidentiality_overbroad`。sale_01、loan_05 的違約金維持風險，因為風險提醒不等於法院會判無效。
+- 規則：
+  - `shared_high_penalty`：加入「違約賠償金」（labor_01）。
+  - `shared_high_liability_fully_excluded`：加入「無須…負擔任何…責任」（work_05）。
+  - `lease_medium_deposit_landlord_discretion`：加入「出租人得逕自押金內扣除」（lease_04）。
+  - `labor_medium_confidentiality_overbroad`：加入離職後保密、營業秘密義務，requires 補上「受雇」寫法（labor_04）。
+  - `shared_high_interest_over_cap`：加入「月息 N 分」的口語寫法（loan_04）。
+- 調整前後，產生案例 110 筆的報告內容相同，新寫法沒有造成新的誤報。
+
+限制：
+- 標註由 Claude Code 完成，使用者已審核。第一次評分後補標過兩處（labor_01、labor_03 漏標「有寫就是高風險」的違約金規則），已寫在該條的 note。
+- lease_01 仍是誤報：「1.8個月」裡的「8個月」被當成押金超過 2 個月。使用者認定不該提醒，規則尚未修。
+- 委任 5 條都是正常條款，找不到判決引述的委任風險條款，所以委任只量誤報。
+- 部分條款是判決轉述的約定內容而非契約原文（`source_kind`），口語寫法較多。
+- 法院條文只列判決書明文引用的實體法條；判決沒引用時留空，不算進涵蓋率。
+
+### 6. LLM 第一階段（需要 Gemini key）
 
 先用 1 份合約試跑，確認 key、模型名稱與網路都正常：
 
@@ -111,11 +165,11 @@ $key = $env:LCA_GEMINI_API_KEY
 
 變化做法（選做）：`--no-tools` 跑沒有工具的 pipeline，比較工具的貢獻；`LCA_RETRIEVAL_METHOD=hybrid` 環境變數讓候選法條與工具改用混合檢索，比較 RAG 開關。
 
-### 6. 帶回來的結果
+### 7. 帶回來的結果
 
 把以下檔案帶回（或推上 GitHub）即可分析：
 
-- `reports/evaluation.md`、`reports/generated_cases.md`、`reports/retrieval_evaluation.md`
+- `reports/evaluation.md`、`reports/generated_cases.md`、`reports/judgment_clauses.md`、`reports/retrieval_evaluation.md`
 - `reports/llm_eval/<結果資料夾>/` 整個資料夾（含 `raw/`，可重新計分）
 
 ## 尚未完成
@@ -123,9 +177,11 @@ $key = $env:LCA_GEMINI_API_KEY
 | 項目 | 狀態 |
 | --- | --- |
 | 範本集：官方範本轉文字，跑規則看誤報 | 待建 |
-| 判決集：6 類合約各 5 條短條款，標註應觸發的規則與法院適用條文 | 整理中，標註由使用者審核 |
-| 判決集計分：條款層級的漏抓率、精確率、法條與法院一致率 | 待判決集完成 |
-| LLM 第二階段：評審模型、檢查清單判斷、規則外的風險 | 待判決集；評審需先與人工判斷校準 |
+| 判決集：6 類合約各 5 條短條款 | 已審核，依審核調整規則後改列調整集 |
+| 判決集計分 | 已完成（`scripts/evaluate_judgments.py`） |
+| 新的判決測試集：取代已用掉的判決集 | 待建 |
+| lease_01 誤報：押金「1.8個月」被讀成「8個月」 | 待修 |
+| LLM 第二階段：評審模型、檢查清單判斷、規則外的風險 | 待做；評審需先與人工判斷校準 |
 
 ## 已知限制
 
